@@ -5,7 +5,7 @@ export type Track = {
   cover_source: string
   metadata_sources: Record<string, string>; revision: number; metadata_warnings?: string[]
 }
-export type Album = { id: string; title: string; artists: Artist[]; system_key: string | null; cover_url: string | null }
+export type Album = { id: string; title: string; artists: Artist[]; system_key: string | null; cover_url: string | null; track_count: number }
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 
 export async function metadataRequest<T>(path: string, options: RequestInit = {}): Promise<{ data: T; etag: string }> {

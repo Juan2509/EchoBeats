@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P07 implementado;
-catálogo, importación, etiquetas y edición funcionales; biblioteca visual y audio pendientes.
+Fecha inicial: 12 de noviembre de 2026. Estado: P08 implementado con revisión
+visual pendiente; catálogo, importación, metadatos y biblioteca visual; audio pendiente.
 
 ## 1. Propósito y fuentes
 
@@ -41,9 +41,9 @@ incremento recomendado.
 | Decisión | Dirección del concepto | Resolver antes de |
 | --- | --- | --- |
 | Alcance académico y sustitución de DevFlow | Confirmar requisitos concretos del docente. | Cerrar criterios de entrega; ubicar n8n/agentes en el MVP si se exigen. |
-| Ejecución y usuarios | Local o servidor; usuario único o cuentas, todavía pendiente. | Diseñar acceso a datos y almacenamiento en P02/P05. |
-| Backend y frontend | Python y web HTML/CSS/JS recomendados; FastAPI por evaluar. | Instalar dependencias y crear estructura en P03. |
-| Guardado de medios | Archivos gestionados con referencias en BD, por concretar. | Importación en P06. |
+| Ejecución y usuarios | Resuelto en P02: local de un usuario, sin autenticación ni exposición pública. | Revisar si cambia el despliegue. |
+| Backend y frontend | Resuelto en P02/P03: React/TypeScript/Vite y Python 3.12/FastAPI. | Conservar locks y decisiones documentadas. |
+| Guardado de medios | Resuelto en P02/P05/P06: MEDIA_ROOT, referencias en BD y deduplicación SHA-256. | Conservar medios y correcciones manuales de P07. |
 | IA y embeddings | API de IA y pgvector obligatorios; proveedor/modelos abiertos. | Adaptadores y dimensiones vectoriales en P20/P21. |
 | Análisis acústico | Identificación, descripción de audio y descripción textual son tareas diferentes. | Decidir la fuente de fichas en P19 y las ampliaciones O01/O02. |
 
@@ -237,7 +237,7 @@ procedencia y ETag, agrupación estable y protección de campos manuales. Migrac
 0003_metadata y Pillow bloqueado. 32 pruebas y build correctos, prueba HTTP de
 edición/relectura y datos conservados tras recrear contenedores. Sin reproducción
 ni dashboard todavía. Ver [uso](METADATOS.md) y [validación](VALIDACION_P07.md).
-Implementado sin commit.
+Registrado en `1e24870`.
 
 ### [ ] P08 — Construir navegación y biblioteca visual
 
@@ -250,6 +250,14 @@ Implementado sin commit.
 
 **Cierre:** lo importado aparece correctamente y una búsqueda localiza el álbum
 esperado. Cubrir RF-02, RF-04 y CA-09.
+
+**Resultado:** inicio, navegación, tarjetas, búsqueda y detalle de álbum con
+datos reales, paginación y rutas recuperables. 42 pruebas PostgreSQL aisladas,
+build Windows/Docker, esquema y dependencias correctos; búsqueda real por proxy.
+La casilla sigue pendiente hasta comprobar visualmente teclado y anchos
+360/768/1280: la herramienta se detuvo por no poder identificar la URL del
+navegador con confianza. Ver [validación P08](VALIDACION_P08.md).
+RF-02 se completa para playlists en P11; sin implementación de audio. Sin commit.
 
 ### [ ] P09 — Entregar audio y permitir avance temporal
 
@@ -569,16 +577,16 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P07 terminado en extracción y edición; sin commit.
-- **Aplicación:** catálogo, importación, metadatos y portadas; biblioteca visual y escucha pendientes.
-- **Próximo bloque:** P08 — navegación y biblioteca visual con buscador textual.
+- **Trabajo actual:** P08 implementado sin commit; cierre visual pendiente.
+- **Aplicación:** catálogo, importación, metadatos, portadas y biblioteca visual; escucha pendiente.
+- **Próxima acción:** revisar teclado y anchos 360/768/1280 de P08; después P09, entrega de audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
 - **Estado de Git al iniciar P07:** sin cambios pendientes; P05/P06 registrados
-  en `a316e29`. No se creó commit al terminar P07.
+  en `a316e29`. P07 quedó registrado posteriormente en `1e24870`.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
@@ -617,7 +625,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P04 | Completado | `cb6575b` | BD, migraciones y recuperación registrados. |
 | 2026-11-12 | P05 | Completado | `a316e29` | Catálogo y almacenamiento registrados junto a P06. |
 | 2026-11-12 | P06 | Completado | `a316e29` | Importación y persistencia registradas. |
-| 2026-11-12 | P07 | Implementado sin commit | — | Etiquetas, portadas, edición y persistencia comprobadas; siguiente P08. |
+| 2026-11-12 | P07 | Completado | `1e24870` | Etiquetas, portadas, edición y persistencia comprobadas; siguiente P08. |
+| 2026-11-12 | Revisión de contexto | Revisión documental completada | — | Adjuntos contrastados con referencias; decisiones y estado de P07 actualizados. Sin implementación ni nuevas pruebas funcionales; siguiente P08. |
+| 2026-11-12 | P08 | Implementado sin commit; revisión visual pendiente | — | 42 pruebas aisladas, build Windows/Docker y búsqueda real correctos. Herramienta visual detenida por URL no identificable; cerrar revisión visual y después P09. |
 
 ### Plantilla de cierre de sesión
 

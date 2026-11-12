@@ -43,3 +43,7 @@ Conservar medios importados; `python -m app.media_audit` es solo lectura.
 P07 añade etiquetas, portadas, edición con procedencia y protección de cambios
 manuales. Consultar `docs/METADATOS.md` y `docs/VALIDACION_P07.md`; siguiente P08.
 No reescribir MP3 originales ni sobrescribir campos manuales al extraer etiquetas.
+P08 incorpora inicio, navegación, biblioteca visual paginada, búsqueda textual y
+detalle de álbum. Ver `docs/VALIDACION_P08.md`: implementación y pruebas HTTP
+listas; revisión visual pendiente por bloqueo de la herramienta de navegador.
+No declarar cerrado P08 sin revisar teclado y anchos 360/768/1280; después P09.

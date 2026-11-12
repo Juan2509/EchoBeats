@@ -1,11 +1,12 @@
 from typing import Annotated
 from uuid import UUID
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Header, Query, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
-from sqlalchemy import func, select
+from sqlalchemy import select
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException
@@ -15,13 +16,15 @@ from python_multipart.exceptions import MultipartParseError
 
 from app.integrations.storage import MediaStore
 from app.integrations.tags import normalized, prepare_cover
-from app.models.catalog import album, media_asset, track
+from app.models.catalog import media_asset
 from app.services import metadata as service
+from app.services import library
 from app.services.covers import publications, save_cover
 
 router = APIRouter()
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
 Names = Annotated[list[Name], Field(max_length=20)]
+SearchText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200, pattern=r'^[^\x00]*$')]
 
 
 class InputModel(BaseModel):
@@ -82,15 +85,10 @@ def get_track(track_id: UUID, request: Request):
 
 
 @router.get("/tracks")
-def list_tracks(request: Request, limit: int = Query(24, ge=1, le=100), offset: int = Query(0, ge=0), album_id: UUID | None = None):
-    statement = select(track.c.id)
-    if album_id is not None:
-        statement = statement.where(track.c.album_id == album_id)
-    with engine_for(request).connect() as connection:
-        total = connection.scalar(select(func.count()).select_from(statement.subquery()))
-        ids = connection.scalars(statement.order_by(track.c.title, track.c.id).limit(limit).offset(offset)).all()
-        items = [service.track_data(connection, value)[0] for value in ids]
-    return {"items": items, "total": total, "limit": limit, "offset": offset}
+def list_tracks(request: Request, limit: int = Query(24, ge=1, le=100), offset: int = Query(0, ge=0), album_id: UUID | None = None, q: SearchText = ''):
+    q = q.strip()
+    with engine_for(request).connect().execution_options(isolation_level='REPEATABLE READ') as connection, connection.begin():
+        return library.page(connection, 'tracks', limit, offset, q, album_id)
 
 
 @router.patch("/tracks/{track_id}")
@@ -107,12 +105,23 @@ def extract_metadata(track_id: UUID, request: Request, if_match: str | None = He
 
 
 @router.get("/albums")
-def list_albums(request: Request, limit: int = Query(24, ge=1, le=100), offset: int = Query(0, ge=0)):
-    with engine_for(request).connect() as connection:
-        total = connection.scalar(select(func.count()).select_from(album))
-        ids = connection.scalars(select(album.c.id).order_by(album.c.title, album.c.id).limit(limit).offset(offset)).all()
-        items = [service.album_data(connection, value)[0] for value in ids]
-    return {"items": items, "total": total, "limit": limit, "offset": offset}
+def list_albums(request: Request, limit: int = Query(24, ge=1, le=100), offset: int = Query(0, ge=0), q: SearchText = '', include_empty_system: bool = True):
+    q = q.strip()
+    with engine_for(request).connect().execution_options(isolation_level='REPEATABLE READ') as connection, connection.begin():
+        return library.page(connection, 'albums', limit, offset, q, include_empty_system=include_empty_system)
+
+
+@router.get('/library/search')
+def search_library(request: Request, q: SearchText = Query(..., min_length=1)):
+    q = q.strip()
+    if not q:
+        raise service.MetadataError('invalid_query', 'Escribe un texto para buscar.')
+    with engine_for(request).connect().execution_options(isolation_level='REPEATABLE READ') as connection, connection.begin():
+        groups = {kind: library.page(connection, kind, 10, 0, q) for kind in ('tracks', 'albums', 'playlists')}
+    for kind, view in [('tracks', 'canciones'), ('albums', 'albumes')]:
+        groups[kind]['href'] = '/biblioteca?' + urlencode({'vista': view, 'q': q})
+    groups['playlists']['href'] = None  # navegación y gestión se incorporan en P11
+    return {'query': q, **groups}
 
 
 @router.get("/albums/{album_id}")

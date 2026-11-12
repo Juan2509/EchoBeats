@@ -3,7 +3,8 @@
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
 P03 implementó health, P04 ready y P06 imports. P07 incorpora lectura/edición de
 pistas y álbumes, listas paginadas de selección, extracción y assets de portada.
-Las rutas de audio, búsqueda, playlists, muros e IA siguen pendientes.
+P08 incorpora búsqueda textual, listados filtrados y búsqueda agrupada.
+Las rutas de audio, gestión de playlists, muros e IA siguen pendientes.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -19,8 +20,11 @@ Todos los límites de archivos y consultas de D08 se aplican en servidor.
 Listados: `limit` (24 por defecto, máximo 100) y `offset` (mínimo 0).
 Respuesta `{items, total, limit, offset}`; orden estable por título/nombre e ID,
 salvo pistas de álbum por número y luego título/ID, y playlists por position.
-La búsqueda textual ignora mayúsculas; normalización de tildes se decide y prueba
-en P08 sin prometer tolerancia no implementada. La búsqueda semántica tiene su
+La búsqueda textual ignora mayúsculas y conserva tildes. `q` se recorta y admite
+hasta 200 caracteres sin NUL; `%`, `_` y `\` se buscan literalmente, con parámetros SQL.
+Pistas coinciden por título, álbum y artistas de pista/álbum; álbumes también
+coinciden por sus canciones. No hay duplicados por múltiples créditos.
+La búsqueda semántica tiene su
 propia respuesta ordenada por relevancia.
 
 Errores controlados:
@@ -49,15 +53,15 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | `GET /health` | `{status: "ok"}`; confirma proceso, sin secretos. | P03. |
 | `GET /ready` | `{status, checks: {database, pgvector, migrations}}`; 200 si todos están ok y 503 en caso contrario. No consulta proveedor de IA. | P04 implementado. |
 | `POST /imports` | multipart `files`, hasta 20 MP3. Respuesta 200 con resultado por archivo; cuerpo total excesivo rechaza solicitud con 413. | P06 implementado. |
-| `GET /tracks` | album_id opcional y paginación; fichas de pistas. q se incorpora en P08. | P07 implementado sin búsqueda textual. |
+| `GET /tracks` | album_id opcional, q y paginación; fichas de pistas. Dentro de álbum ordena por número, título e ID; sin álbum por título e ID. | P07/P08 implementado. |
 | `GET /tracks/{id}` | Pista, álbum, artistas, duración, portada heredada y procedencia; `revision`. | P07. |
 | `PATCH /tracks/{id}` | title, artist_names, album_id, track_number y cover_asset_id; `If-Match` requerido. Duración/archivo/procedencia no editables. | P07 implementado. |
 | `POST /tracks/{id}/extract-metadata` | `If-Match` requerido; relee el original y conserva campos manuales. | P07 implementado. |
-| `GET /albums` | Paginación; id, título, artistas, portada y número de pistas. q se incorpora en P08. | P07 implementado para selección. |
+| `GET /albums` | q, paginación; id, título, artistas, portada y número de pistas. include_empty_system=false oculta «Sin álbum» cuando no tiene pistas; por defecto true conserva selección de P07. | P07/P08 implementado. |
 | `POST /albums` | `{title, artist_names}`; crea álbum explícito y devuelve 201 con ID. | P07. |
 | `GET /albums/{id}` | Resumen, datos, procedencia y ETag. Pistas se consultan paginadas en /tracks. | P07 implementado. |
 | `PATCH /albums/{id}` | title/artist_names/cover_asset_id con `If-Match`; no permite cambiar system_key ni renombrar el álbum de sistema. | P07 implementado. |
-| `GET /library/search` | q obligatoria; grupos tracks/albums/playlists, máximo 10 por grupo, conteos y enlaces a listados filtrados. | P08. |
+| `GET /library/search` | q obligatoria no vacía; query y grupos tracks/albums/playlists con items/total/limit/offset/href, máximo 10 por grupo. href enlaza a biblioteca filtrada; playlists busca nombres existentes pero href=null hasta P11. | P08 implementado. |
 | `POST /assets` | multipart file y purpose=cover; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/playlist/GIF se incorporan después. | P07 para portadas; P11/P14 para otros usos. |
 | `GET /assets/{id}/content` | PNG/JPEG validado con nosniff y caché privada; sin rutas arbitrarias ni audio. GIF se incorpora después. | P07 para portadas. |
 | `GET` o `HEAD /tracks/{id}/audio` | Audio de pista válida. GET 200 completo o 206 para rango válido; 416 no satisfacible. HEAD devuelve cabeceras sin cuerpo. | P09. |

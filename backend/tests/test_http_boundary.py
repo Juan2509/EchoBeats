@@ -42,6 +42,11 @@ async def test_unknown_api_does_not_return_fake_success(client):
     assert (await client.get("/api/v1/stations")).status_code == 404
 
 
+@pytest.mark.parametrize('path', ['/tracks?q=' + 'a' * 201, '/albums?q=%00', '/library/search', '/library/search?q=%20%20', '/tracks?limit=101', '/albums?offset=-1'])
+async def test_library_rejects_invalid_query_before_database_access(client, path):
+    assert (await client.get('/api/v1' + path)).status_code == 422
+
+
 async def test_untrusted_host_is_rejected(client):
     assert (await client.get("/api/v1/health", headers={"host": "untrusted.example"})).status_code == 400
 

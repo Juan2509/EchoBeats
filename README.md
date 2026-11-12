@@ -3,10 +3,13 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P07.** Importación real de MP3, extracción de etiquetas/portadas
+**Estado actual: P08 implementado, revisión visual pendiente.** Inicio, navegación,
+biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
+Importación real de MP3, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
-Las correcciones manuales se conservan al releer el original. Biblioteca visual,
-reproducción, muros e IA siguen pendientes. `health` y `ready` comprueban proceso y BD.
+Las correcciones manuales se conservan al releer el original.
+Reproducción, gestión de playlists, muros e IA siguen pendientes.
+`health` y `ready` comprueban proceso y BD.
 
 ## Inicio con Docker
 
@@ -19,13 +22,20 @@ python3 scripts/preparar_entorno.py
 docker compose up --build
 ```
 
-Abrir [EchoBeats](http://localhost:5173). Debe aparecer «Servidor conectado».
+Abrir [EchoBeats](http://localhost:5173) y entrar en «Biblioteca».
+«Configuración» permite comprobar la conexión con el servidor.
 Seleccionar MP3 en «Añade tu música» para importar: hasta 20 archivos, 50 MiB
 por archivo y 200 MiB por solicitud completa. Los originales quedan copiados en
 MEDIA_ROOT. Se leen las etiquetas disponibles; si faltan, se usan datos provisionales
 y álbum «Sin álbum». El editor permite corregirlos sin reescribir el MP3.
 Ver [importación y consistencia](docs/IMPORTACION_MP3.md).
 Ver [metadatos y portadas](docs/METADATOS.md) para edición y relectura segura.
+Buscar por título, artista o álbum y alternar «Álbumes» / «Canciones».
+La búsqueda ignora mayúsculas y conserva tildes; el texto y la página quedan en
+la URL para recargar o usar Atrás/Adelante. Abrir una tarjeta muestra las pistas
+del álbum en orden. El panel «Editar canciones, álbumes y portadas» conserva el
+editor de P07 y sus borradores durante la navegación dentro de la aplicación.
+Ver [validación P08](docs/VALIDACION_P08.md) y sus comprobaciones visuales pendientes.
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).

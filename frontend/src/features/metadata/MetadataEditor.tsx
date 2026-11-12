@@ -8,7 +8,7 @@ type Draft = { title: string; artists: string; album: string; number: string }
 const blank: Draft = { title: '', artists: '', album: '', number: '' }
 const sourceName = (source?: string) => ({ file: 'Del archivo', manual: 'Editado por ti', fallback: 'Provisional', album: 'Del álbum' }[source ?? 'fallback'] ?? 'Registrado')
 
-export function MetadataEditor({ refresh }: { refresh: number }) {
+export function MetadataEditor({ refresh, onSaved }: { refresh: number; onSaved?: () => void }) {
   const [tracks, setTracks] = useState<Track[]>([])
   const [albums, setAlbums] = useState<Album[]>([])
   const [selected, setSelected] = useState('')
@@ -89,6 +89,7 @@ export function MetadataEditor({ refresh }: { refresh: number }) {
       accept(response.data, response.etag)
       setMessage('Cambios guardados en tu biblioteca. El audio original se conserva.')
       await loadLists()
+      onSaved?.()
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo guardar. Tus cambios siguen en el formulario.') }
     finally { setBusy(false) }
   }
@@ -101,6 +102,7 @@ export function MetadataEditor({ refresh }: { refresh: number }) {
       accept(response.data, response.etag)
       setMessage(response.data.metadata_warnings?.length ? 'Etiquetas leídas. Alguna portada no era válida y se ignoró; los cambios manuales se conservaron.' : 'Etiquetas leídas; los campos editados manualmente se conservaron.')
       await loadLists()
+      onSaved?.()
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudieron leer las etiquetas.') }
     finally { setBusy(false) }
   }
@@ -112,6 +114,7 @@ export function MetadataEditor({ refresh }: { refresh: number }) {
       const result = await metadataRequest<Album>('/albums', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: newAlbum.trim(), artist_names: [] }) })
       setAlbums(values => [...values, result.data]); setDraft(value => ({ ...value, album: result.data.id })); setNewAlbum('')
       setMessage('Álbum creado. Guarda la canción para asignarla a él.')
+      onSaved?.()
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo crear el álbum.') }
     finally { setBusy(false) }
   }
@@ -144,7 +147,7 @@ export function MetadataEditor({ refresh }: { refresh: number }) {
           <button type="button" disabled={busy} onClick={extract}>Volver a leer etiquetas del original</button></div>
       </form>
       <fieldset disabled={busy}><legend>Crear otro álbum</legend><label>Nombre del nuevo álbum<input value={newAlbum} maxLength={255} onChange={event => setNewAlbum(event.target.value)} /></label><button type="button" disabled={!newAlbum.trim()} onClick={createAlbum}>Crear álbum y seleccionarlo</button></fieldset>
-      {albums.find(item => item.id === current.album_id)?.system_key === null && <AlbumDialog albumId={current.album_id} disabled={busy || dirty} onSaved={async () => { await loadLists(); await loadTrack(selected) }} />}
+      {albums.find(item => item.id === current.album_id)?.system_key === null && <AlbumDialog albumId={current.album_id} disabled={busy || dirty} onSaved={async () => { await loadLists(); await loadTrack(selected); onSaved?.() }} />}
       {dirty && <p className="note">Guarda o descarta los cambios de la canción antes de editar el álbum compartido.</p>}
     </>}
     {busy && <p role="status">Procesando…</p>}

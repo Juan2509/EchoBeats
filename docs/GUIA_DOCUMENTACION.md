@@ -77,7 +77,8 @@ Una puntuación generada por IA no equivale a una probabilidad calibrada.
 interacciones. session_state conserva datos durante la sesión, no satisface el
 guardado de muros tras cerrar/reabrir. Caché, estado de sesión, historial enviado
 al modelo y persistencia duradera son responsabilidades distintas. Streamlit es
-una alternativa de prototipado; la elección visual de EchoBeats sigue abierta.
+una alternativa de prototipado de la fuente; EchoBeats adoptó React/TypeScript/Vite
+en P02. Consultar `DECISIONES.md` para la elección vigente.
 
 ## Observaciones sobre los ejemplos antes de reutilizarlos
 

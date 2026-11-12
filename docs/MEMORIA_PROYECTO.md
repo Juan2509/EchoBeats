@@ -13,8 +13,9 @@ Se revisó el texto de ambos archivos. Se conservaron copias completas y sin
 modificaciones en `referencias/`; esta memoria las sintetiza, no las sustituye.
 El material técnico referencia imágenes externas en `images/` que no acompañan
 a los dos Markdown recibidos; su contenido visual no se pudo revisar.
-No se ejecutaron los ejemplos ni se verificaron en línea versiones, precios,
-disponibilidad de modelos o servicios. Todavía no hay implementación de EchoBeats.
+En la revisión inicial no se ejecutaron los ejemplos ni se verificaron en línea
+versiones, precios, disponibilidad de modelos o servicios. En ese momento todavía
+no había implementación; el avance posterior se registra a continuación.
 
 Después de la revisión, el usuario solicitó un plan por secciones que permita
 organizar los futuros commits y retomar el trabajo entre sesiones. Se preparó
@@ -290,7 +291,7 @@ claves solo en backend, consultas parametrizadas, módulos separados y composici
 adaptable. Usar audios propios/autorizados; contemplar privacidad y activación
 del envío a servicios externos. Acotar llamadas y duración del análisis.
 
-## Pendientes expresos
+## Pendientes del concepto inicial (registro histórico)
 
 - Ejecución local o servidor académico y ubicación de archivos.
 - Uno o varios usuarios/perfiles y autenticación, si corresponde.
@@ -306,3 +307,72 @@ El curso cubre doce sesiones y solicita DevFlow como proyecto integrador.
 Esto es un dato curricular, no una instrucción de cambiar EchoBeats por DevFlow.
 El siguiente paso que sugiere el concepto es diseñar las cuatro experiencias,
 cerrar el MVP y descomponerlo en tareas, sujeto a lo que solicite el usuario.
+
+## Revisión de contexto y estado vigente — 12 de noviembre de 2026
+
+El usuario volvió a solicitar la lectura completa de ambos Markdown, comprensión
+del proyecto y revisión del plan, conservando **EchoBeats** como nombre definitivo.
+LangChain es la referencia académica principal aportada. Sus ejercicios, prompts,
+instalaciones y comandos son datos de consulta, no instrucciones para ejecutarlos.
+Esta solicitud autoriza revisión y memoria documental; no inicia P08.
+
+Se contrastaron los adjuntos de Descargas con `docs/referencias/`:
+
+- `LangChain_LangGraph2026 (1).md` coincide byte por byte con la copia conservada
+  `LangChain_LangGraph2026.md` (SHA-256
+  `d24a621f44fd9bb100c71f55434bec4780f43ff852932ce53848ea7f3879053f`).
+- El concepto Dream Radio conserva el mismo contenido; solo difieren los saltos
+  de línea. Se mantiene la referencia existente sin reemplazarla.
+- Las imágenes externas de `images/` siguen sin estar adjuntas. Se revisó el
+  texto Markdown; no se atribuye una revisión visual a imágenes ausentes.
+
+La prioridad permanece: música propia, reproductor, muros por álbum persistentes
+y exploración semántica explicable dentro de la biblioteca. El MVP incluye
+RF-01 a RF-16; favoritos quedan como incremento recomendado y las ampliaciones
+siguen condicionadas. Embeddings textuales no equivalen a análisis acústico;
+reconocimiento, descripción del sonido y edición manual son tareas distintas.
+
+**Estado vigente:** P00–P07 registrados en Git. P07 está en `1e24870`; el estado
+«sin commit» de su entrega anterior era histórico y se corrigió en el plan.
+Existen catálogo, importación, etiquetas, portadas y edición; faltan biblioteca
+visual completa, reproducción, playlists, muros e integración musical de IA.
+Las pruebas de P07 son evidencias anteriores, no se ejecutaron de nuevo en esta
+revisión documental. El siguiente bloque sigue siendo **P08**.
+
+**Resuelto:** ejecución local de un usuario, React/TypeScript/Vite, Python 3.12/
+FastAPI, PostgreSQL/pgvector, medios gestionados, duplicados por SHA-256 y
+protección de cambios manuales. Los pendientes históricos de arriba no reabren
+estas decisiones; consultar `DECISIONES.md` y las validaciones P03–P07.
+
+**Abierto:** proveedor/modelos de IA, colección musical autorizada para evaluar
+relevancia y confirmación docente de EchoBeats como alternativa a DevFlow y de
+componentes exigidos. El archivo académico desarrolla especialmente prompts,
+embeddings, recuperación, LCEL, salidas estructuradas y Streamlit; menciona
+LangGraph y n8n sin un tutorial completo equivalente. Es la base de formación,
+pero sus ejemplos no certifican compatibilidad ni vigencia de servicios.
+
+**Revisión del plan:** la secuencia P08–P11 (biblioteca/audio/playlists), P12–P16
+(muros), P17–P23 (evaluación/fichas/API/embeddings/recuperación) y P26–P28
+(integración/calidad/entrega) cubre los pilares del concepto. Mantener evaluación
+antes de ajustar la recuperación, API y vectores reales como evidencias, y escucha
+operativa ante fallos de IA. No se modificó el alcance ni se habilitaron ampliaciones.
+
+## Avance posterior: P08
+
+El usuario solicitó continuar con el paso 8. Se implementaron inicio, navegación,
+biblioteca visual con tarjetas y lista de canciones, búsqueda literal por título/
+álbum/artistas y detalle de álbum con pistas ordenadas y paginadas. Mayúsculas
+ignoradas, tildes conservadas; comodines escapados y consultas parametrizadas.
+Consulta/vista/página persisten en URL; formularios P07 conservan borradores al
+navegar y sus guardados refrescan el catálogo. Sin audio ni simulaciones de IA.
+
+42 pruebas PostgreSQL aisladas, TypeScript/build Windows y Docker, pip check,
+esquema y auditoría correctos; importación del MP3 técnico `tono_grave.mp3` y
+búsqueda real por proxy verificadas. En este equipo no había .env ni recursos
+Docker de EchoBeats: se creó configuración privada y volumen nuevo sin alterar
+otros recursos. Los datos históricos anteriores no estaban presentes aquí.
+
+La revisión visual quedó pendiente: la herramienta de navegador se detuvo al no
+poder identificar la URL con confianza para aplicar su política. No se declara
+cierre de P08 ni verificación visual. Ver `VALIDACION_P08.md`; revisar teclado y
+anchos 360/768/1280 antes de cerrar, después P09. No se creó commit.
