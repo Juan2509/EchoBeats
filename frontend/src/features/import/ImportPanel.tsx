@@ -7,9 +7,10 @@ type ImportResult = {
   status: 'imported' | 'duplicate' | 'rejected'
   track_id?: string
   error?: { code: string; message: string }
+  metadata_warnings?: string[]
 }
 
-export function ImportPanel() {
+export function ImportPanel({ onImported }: { onImported: () => void }) {
   const [files, setFiles] = useState<File[]>([])
   const [results, setResults] = useState<ImportResult[]>([])
   const [busy, setBusy] = useState(false)
@@ -35,6 +36,7 @@ export function ImportPanel() {
       if (!response.ok) throw new Error(data.error?.message ?? 'No se pudo completar la importación.')
       if (!Array.isArray(data.results) || data.results.length !== files.length) throw new Error('La respuesta de importación no está completa.')
       setResults(data.results)
+      onImported()
     } catch (cause) {
       const message = 'No se pudo confirmar la respuesta. Puedes reintentar; los archivos ya guardados se detectarán como duplicados.'
       setError(cause instanceof Error && !(cause instanceof TypeError) && !(cause instanceof SyntaxError) && cause.name !== 'AbortError' ? cause.message : message)
@@ -65,6 +67,7 @@ export function ImportPanel() {
         {results.map(result => <li key={result.index}>
           <strong>{result.file_name}</strong>
           <span>{result.status === 'imported' ? 'Guardado en tu biblioteca' : result.status === 'duplicate' ? 'Ya está en tu biblioteca' : result.error?.message ?? 'No se pudo importar'}</span>
+          {!!result.metadata_warnings?.length && <span>El audio está guardado; revisa sus datos y portada en el editor.</span>}
         </li>)}
       </ul>}
     </section>

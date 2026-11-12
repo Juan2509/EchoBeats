@@ -106,6 +106,25 @@ archivo y álbum desconocido son provisionales; lectura de etiquetas en P07.
 Sin biblioteca visual ni reproducción aún. Detalles en IMPORTACION_MP3.md y
 VALIDACION_P06.md. Sin commit automático. Siguiente: P07.
 
+## Avance posterior: P07
+
+P05/P06 quedaron registrados en `a316e29`. P07 añade lectura de etiquetas
+ID3v1/v2, portadas incrustadas, editor de pistas y álbumes, subida de PNG/JPEG
+manuales, procedencia por campo y ETag/If-Match. Correcciones manuales, campos
+limpiados y agrupaciones corregidas se conservan al releer o reimportar.
+El MP3 original permanece intacto y no se consulta IA ni reconocimiento externo.
+
+Migración 0003_metadata: portada individual, metadata_sources e import_key de
+álbum. Pillow 13.0.0 normaliza portadas verificadas, con SVG propio predeterminado.
+32 pruebas y build correctos; esquema sin diferencias, pip check y auditoría
+correctos. Prueba HTTP real conservó título/artista/álbum/número/portada y revisión
+tras recrear contenedores. Queda una pista sintética específica de P07 en la
+biblioteca local. No se editaron canciones existentes del usuario.
+
+Ver METADATOS.md y VALIDACION_P07.md. Sin inspección visual automatizada ni
+reproductor implementado. Servicios de comprobación se detienen conservando
+volumen/medios/.env. Sin commit automático. Siguiente: P08, biblioteca visual.
+
 ## Fuentes y alcance de sus afirmaciones
 
 - `referencias/Dream_Radio_Documento_Concepto_y_Planificacion.md`: 691 líneas;

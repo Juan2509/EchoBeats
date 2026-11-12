@@ -1,6 +1,7 @@
 # Modelo inicial de datos de EchoBeats
 
-P02 · 12 de noviembre de 2026. P05/P06 implementan catálogo y recursos;
+P02 · 12 de noviembre de 2026. P05/P06 implementan catálogo y recursos; P07
+añade procedencia de álbum, agrupación de importación y portada individual;
 muros, preferencias e IA siguen siendo diseño para migraciones posteriores.
 Complementa [decisiones](DECISIONES.md) y [contrato API](CONTRATO_API.md).
 
@@ -14,7 +15,8 @@ vacías no sustituyen a un valor válido. No hay tabla de usuarios para el MVP l
 Los campos enumerados son el mínimo inicial. Relaciones y restricciones se
 aplican en BD y validación de API, no solo en componentes de interfaz.
 Estado actual: SQLAlchemy Core en `backend/app/models/catalog.py` y migración
-`0002_catalog`; no se extrajeron aún etiquetas musicales ni se crearon muros.
+`0002_catalog` y `0003_metadata`. Hay extracción local de etiquetas;
+los muros siguen pendientes.
 
 ## 2. Entidades y relaciones
 
@@ -26,6 +28,7 @@ erDiagram
     TRACK ||--o{ TRACK_ARTIST : acredita
     ALBUM ||--o{ TRACK : contiene
     MEDIA_ASSET ||--o| TRACK : audio
+    MEDIA_ASSET o|--o{ TRACK : portada
     MEDIA_ASSET o|--o{ ALBUM : portada
     PLAYLIST ||--o{ PLAYLIST_TRACK : ordena
     TRACK ||--o{ PLAYLIST_TRACK : pertenece
@@ -47,9 +50,9 @@ impone `UNIQUE(wall.album_id)`; la creación transaccional garantiza que ningún
 | --- | --- | --- |
 | `media_asset` | id, kind, storage_key, sha256, original_name, mime_type, byte_size, width_px, height_px, frame_count, static_preview_id, created_at | `storage_key` única; tamaño > 0; tipo audio/imagen/GIF/portada. Dimensiones aplican a visuales. Preview estático opcional para GIF, referencia a otro asset sin ciclos. No exponer storage_key. |
 | `artist` | id, name, normalized_name | Nombre no vacío; normalized_name única para deduplicación local de etiquetas tras recorte/casefold. No afirmar identificación externa. |
-| `album` | id, title, cover_asset_id, system_key, revision, created_at, updated_at | Título no vacío; `system_key` nullable y única para el álbum desconocido; revision inicia en 1. Título/artista no constituyen por sí solos identidad única. |
+| `album` | id, title, cover_asset_id, system_key, import_key, metadata_sources, revision, created_at, updated_at | Título no vacío; system_key única para el desconocido; import_key única y opcional, conserva la agrupación original al corregir nombres. revision inicia en 1. Título/artista no son identidad única. |
 | `album_artist` | album_id, artist_id, position | PK compuesta; orden no negativo, único por álbum. |
-| `track` | id, audio_asset_id, content_sha256, album_id, title, duration_ms, track_number, metadata_sources, revision, created_at, updated_at | Asset de audio y hash de bytes únicos; album_id obligatorio; duración positiva; número opcional positivo. revision inicia en 1. |
+| `track` | id, audio_asset_id, content_sha256, album_id, cover_asset_id, title, duration_ms, track_number, metadata_sources, revision, created_at, updated_at | Asset de audio y hash de bytes únicos; álbum obligatorio; portada propia opcional; duración positiva; número opcional positivo. revision inicia en 1. |
 | `track_artist` | track_id, artist_id, position | PK compuesta; orden único por pista. Artista desconocido puede representarse como lista vacía y etiqueta visual provisional. |
 | `playlist` | id, name, appearance, image_asset_id, revision, created_at, updated_at | appearance: `vinyl` o `image`; nombre obligatorio; imagen opcional con alternativa predeterminada. revision inicia en 1. |
 | `playlist_track` | playlist_id, track_id, position | Una pista aparece como máximo una vez por lista; position única por lista. Guardar secuencia completa normaliza posiciones a 0..n−1 en transacción. |

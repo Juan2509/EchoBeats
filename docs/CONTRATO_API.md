@@ -1,7 +1,9 @@
 # Contrato inicial de API de EchoBeats
 
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
-P03 implementó health, P04 ready y P06 imports; las otras rutas siguen pendientes.
+P03 implementó health, P04 ready y P06 imports. P07 incorpora lectura/edición de
+pistas y álbumes, listas paginadas de selección, extracción y assets de portada.
+Las rutas de audio, búsqueda, playlists, muros e IA siguen pendientes.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -47,16 +49,17 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | `GET /health` | `{status: "ok"}`; confirma proceso, sin secretos. | P03. |
 | `GET /ready` | `{status, checks: {database, pgvector, migrations}}`; 200 si todos están ok y 503 en caso contrario. No consulta proveedor de IA. | P04 implementado. |
 | `POST /imports` | multipart `files`, hasta 20 MP3. Respuesta 200 con resultado por archivo; cuerpo total excesivo rechaza solicitud con 413. | P06 implementado. |
-| `GET /tracks` | q opcional, album_id opcional y paginación; resúmenes de pistas. | P07–P08. |
+| `GET /tracks` | album_id opcional y paginación; fichas de pistas. q se incorpora en P08. | P07 implementado sin búsqueda textual. |
 | `GET /tracks/{id}` | Pista, álbum, artistas, duración, portada heredada y procedencia; `revision`. | P07. |
-| `PATCH /tracks/{id}` | Campos editables `title`, `artist_names`, `album_id`, `track_number`; revisión requerida en `If-Match`. Duración/archivo no editables. | P07. |
-| `GET /albums` | q y paginación; id, título, artistas, portada y número de pistas. | P08. |
+| `PATCH /tracks/{id}` | title, artist_names, album_id, track_number y cover_asset_id; `If-Match` requerido. Duración/archivo/procedencia no editables. | P07 implementado. |
+| `POST /tracks/{id}/extract-metadata` | `If-Match` requerido; relee el original y conserva campos manuales. | P07 implementado. |
+| `GET /albums` | Paginación; id, título, artistas, portada y número de pistas. q se incorpora en P08. | P07 implementado para selección. |
 | `POST /albums` | `{title, artist_names}`; crea álbum explícito y devuelve 201 con ID. | P07. |
-| `GET /albums/{id}` | Resumen y datos del álbum. Pistas se consultan paginadas en /tracks. | P08. |
-| `PATCH /albums/{id}` | title/artist_names/cover_asset_id con `If-Match`; no permite cambiar system_key ni renombrar el álbum de sistema. | P07; portada personalizada al incorporar assets en P11. |
+| `GET /albums/{id}` | Resumen, datos, procedencia y ETag. Pistas se consultan paginadas en /tracks. | P07 implementado. |
+| `PATCH /albums/{id}` | title/artist_names/cover_asset_id con `If-Match`; no permite cambiar system_key ni renombrar el álbum de sistema. | P07 implementado. |
 | `GET /library/search` | q obligatoria; grupos tracks/albums/playlists, máximo 10 por grupo, conteos y enlaces a listados filtrados. | P08. |
-| `POST /assets` | multipart `file` y `purpose`: wall/playlist/cover; valida visual y devuelve 201 con id, tipo, dimensiones, content_url y static_preview_url si GIF. | P11/P14. |
-| `GET /assets/{id}/content` | Archivo visual validado, cabeceras de tipo y caché privada; sin aceptar rutas arbitrarias. | P11/P14. |
+| `POST /assets` | multipart file y purpose=cover; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/playlist/GIF se incorporan después. | P07 para portadas; P11/P14 para otros usos. |
+| `GET /assets/{id}/content` | PNG/JPEG validado con nosniff y caché privada; sin rutas arbitrarias ni audio. GIF se incorpora después. | P07 para portadas. |
 | `GET` o `HEAD /tracks/{id}/audio` | Audio de pista válida. GET 200 completo o 206 para rango válido; 416 no satisfacible. HEAD devuelve cabeceras sin cuerpo. | P09. |
 
 Un archivo inválido dentro de un lote admitido no impide procesar los otros.
@@ -78,7 +81,9 @@ significa archivo y registro confirmados; el análisis de IA no forma parte de e
 promesa. Una pista sin etiquetas recibe datos provisionales con su procedencia.
 
 Resumen de pista: `id`, `title`, `artists: [{id, name}]`, `album_id`, `album_title`,
-`duration_ms`, `cover_url` nullable y `audio_url`. Un título provisional no implica
+`duration_ms`, `cover_url` nullable y procedencia. `audio_url` corresponde a P09.
+P07 añade cover_source para imagen propia, manual, heredada o predeterminada.
+Un título provisional no implica
 identificación. Asset perdido devuelve 404 con code `media_missing`; no devuelve
 un archivo distinto ni elimina la pista. Rangos se prueban también después de
 reiniciar y al mover la barra desde el navegador.

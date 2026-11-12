@@ -1,8 +1,8 @@
 # Importación de MP3 — P06
 
 12 de noviembre de 2026. P06 incluye la base de P05, que todavía no existía al
-solicitar este paso. No se han implementado aún edición de etiquetas, biblioteca
-visual ni reproducción; corresponden a P07–P10.
+solicitar este paso. P07 amplió esta importación con etiquetas y portadas;
+la biblioteca visual y reproducción siguen pendientes de P08–P10.
 
 ## Uso
 
@@ -18,10 +18,11 @@ Se cuenta el cuerpo real incluso sin Content-Length. No se procesan archivos
 de un formulario que supere el límite total o el número máximo permitido.
 
 El archivo original se copia a MEDIA_ROOT. Su nombre no se usa como ruta.
-Por ahora el título provisional deriva del nombre del archivo y el álbum es
-«Sin álbum», aunque el MP3 ya contenga etiquetas. Mutagen se usa para lectura
-básica de MPEG Layer III y duración; la extracción de etiquetas y edición manual
-se implementarán en P07. No se envía audio a ningún proveedor de IA.
+Primero se confirma el original con datos provisionales. P07 completa después
+sus etiquetas y portada; si falla ese enriquecimiento el audio sigue guardado
+y el resultado añade metadata_warnings para reintentar. Campos ausentes usan
+el nombre del archivo y «Sin álbum». Ver [METADATOS.md](METADATOS.md).
+No se envía audio a ningún proveedor de IA.
 
 ## API
 
@@ -108,8 +109,8 @@ y demostración; no es el almacenamiento de originales importados.
 Validar cabeceras, cuadros y duración con Mutagen no equivale a decodificar toda
 la grabación. La compatibilidad de escucha se comprobará en P09/P10. CA-01 está
 parcialmente cubierto: se importa y conserva, pero todavía no se reproduce.
-Los GIF, portadas, etiquetas, búsquedas y playlists tienen esquema o planificación;
-no se anuncian como funcionalidades utilizables aún.
+P07 ya permite etiquetas y portadas estáticas; GIF decorativos, búsquedas y
+gestión visual de playlists siguen pendientes de sus pasos.
 
 Ver [VALIDACION_P06.md](VALIDACION_P06.md) para evidencia de esta entrega.
 Fuente del lector de MP3: [documentación oficial de Mutagen](https://mutagen.readthedocs.io/en/latest/api/mp3.html).

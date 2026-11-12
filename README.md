@@ -3,11 +3,10 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P06, incluida su dependencia P05.** Hay catálogo persistente,
-almacenamiento gestionado e importación real de MP3 desde la página inicial.
-Se distingue cada archivo importado, duplicado o rechazado. `health` confirma el
-proceso y `ready` comprueba la BD real. Edición de etiquetas, biblioteca visual,
-reproducción, muros e IA siguen pendientes de sus pasos.
+**Estado actual: P07.** Importación real de MP3, extracción de etiquetas/portadas
+y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
+Las correcciones manuales se conservan al releer el original. Biblioteca visual,
+reproducción, muros e IA siguen pendientes. `health` y `ready` comprueban proceso y BD.
 
 ## Inicio con Docker
 
@@ -23,8 +22,10 @@ docker compose up --build
 Abrir [EchoBeats](http://localhost:5173). Debe aparecer «Servidor conectado».
 Seleccionar MP3 en «Añade tu música» para importar: hasta 20 archivos, 50 MiB
 por archivo y 200 MiB por solicitud completa. Los originales quedan copiados en
-MEDIA_ROOT; títulos provisionales y álbum «Sin álbum» hasta implementar P07.
+MEDIA_ROOT. Se leen las etiquetas disponibles; si faltan, se usan datos provisionales
+y álbum «Sin álbum». El editor permite corregirlos sin reescribir el MP3.
 Ver [importación y consistencia](docs/IMPORTACION_MP3.md).
+Ver [metadatos y portadas](docs/METADATOS.md) para edición y relectura segura.
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).

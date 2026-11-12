@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P06 implementado, incluida P05;
-catálogo e importación funcionales; metadatos, biblioteca visual y audio pendientes.
+Fecha inicial: 12 de noviembre de 2026. Estado: P07 implementado;
+catálogo, importación, etiquetas y edición funcionales; biblioteca visual y audio pendientes.
 
 ## 1. Propósito y fuentes
 
@@ -196,7 +196,7 @@ integridad. La aplicación no acepta rutas arbitrarias del sistema como recursos
 **Resultado:** implementado como dependencia de P06 porque el usuario solicitó
 ese paso cuando P05 todavía estaba pendiente. Migración 0002_catalog, ocho tablas,
 álbum desconocido, restricciones y almacenamiento gestionado. Migraciones e
-integridad comprobadas en bases aisladas; sin commit.
+integridad comprobadas en bases aisladas; registrado junto a P06 en `a316e29`.
 
 ## 6. Fase 2 — Biblioteca, reproductor y playlists
 
@@ -218,9 +218,9 @@ con un mensaje útil y no impide importar otros válidos. Cubre CA-01 parcialmen
 límites por archivo y solicitud, deduplicación concurrente y compensación de fallos.
 24 pruebas y build correctos; importación y reimportación por proxy tras recrear
 contenedores con mismos IDs. Sin metadatos enriquecidos ni reproducción todavía.
-Ver [uso](IMPORTACION_MP3.md) y [validación P05/P06](VALIDACION_P06.md). Sin commit.
+Ver [uso](IMPORTACION_MP3.md) y [validación P05/P06](VALIDACION_P06.md). Registrado en `a316e29`.
 
-### [ ] P07 — Extraer y editar metadatos
+### [x] P07 — Extraer y editar metadatos
 
 **Depende de:** P06. **Commit:** `feat(metadata): extraer etiquetas y permitir edición manual`
 
@@ -231,6 +231,13 @@ Ver [uso](IMPORTACION_MP3.md) y [validación P05/P06](VALIDACION_P06.md). Sin co
 
 **Cierre:** un MP3 sin etiquetas no rompe la biblioteca y sus cambios manuales
 persisten. Cubrir CA-02 y RF-11.
+
+**Resultado:** extracción local ID3v1/v2 y portadas, edición de pistas/álbumes,
+procedencia y ETag, agrupación estable y protección de campos manuales. Migración
+0003_metadata y Pillow bloqueado. 32 pruebas y build correctos, prueba HTTP de
+edición/relectura y datos conservados tras recrear contenedores. Sin reproducción
+ni dashboard todavía. Ver [uso](METADATOS.md) y [validación](VALIDACION_P07.md).
+Implementado sin commit.
 
 ### [ ] P08 — Construir navegación y biblioteca visual
 
@@ -562,16 +569,16 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P06 terminado, incluyendo P05 como dependencia necesaria; sin commit.
-- **Aplicación:** catálogo persistente e importación múltiple real; metadatos y escucha pendientes.
-- **Próximo bloque:** P07 — extraer y editar metadatos.
+- **Trabajo actual:** P07 terminado en extracción y edición; sin commit.
+- **Aplicación:** catálogo, importación, metadatos y portadas; biblioteca visual y escucha pendientes.
+- **Próximo bloque:** P08 — navegación y biblioteca visual con buscador textual.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado de Git al iniciar P06:** sin cambios pendientes; P04 registrado en
-  `cb6575b`. P05 todavía no existía; se completó para habilitar P06.
+- **Estado de Git al iniciar P07:** sin cambios pendientes; P05/P06 registrados
+  en `a316e29`. No se creó commit al terminar P07.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
@@ -593,6 +600,11 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
   faltantes/huérfanos. Ver `VALIDACION_P06.md`. CA-01 solo parcialmente cubierto.
 - **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
   de commit en español; mantener esta práctica en futuras sesiones.
+- **Validación P07:** 32 pruebas, build, schema check, pip check, HTTP real,
+  persistencia de correcciones/portada tras recrear contenedores y auditoría sin
+  medios faltantes/huérfanos. Sin inspección visual automatizada de los formularios.
+- **Demostración P07 local:** pista sintética «Título corregido P07» dentro de
+  «Demostración P07 manual», sin modificar las canciones existentes del usuario.
 
 ### Bitácora
 
@@ -603,8 +615,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P02 | Completado | `6c0163a` | Pantallas, decisiones, datos y API registrados. |
 | 2026-11-12 | P03 | Completado | `4d87180` | Entorno, locks y arranque registrados. |
 | 2026-11-12 | P04 | Completado | `cb6575b` | BD, migraciones y recuperación registrados. |
-| 2026-11-12 | P05 | Implementado sin commit | — | Catálogo y almacenamiento completados como dependencia de P06. |
-| 2026-11-12 | P06 | Implementado sin commit | — | Importación real, deduplicación, límites y persistencia comprobados; siguiente P07. |
+| 2026-11-12 | P05 | Completado | `a316e29` | Catálogo y almacenamiento registrados junto a P06. |
+| 2026-11-12 | P06 | Completado | `a316e29` | Importación y persistencia registradas. |
+| 2026-11-12 | P07 | Implementado sin commit | — | Etiquetas, portadas, edición y persistencia comprobadas; siguiente P08. |
 
 ### Plantilla de cierre de sesión
 

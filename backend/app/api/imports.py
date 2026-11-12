@@ -11,6 +11,10 @@ from python_multipart.exceptions import MultipartParseError
 
 from app.integrations.storage import MediaStore
 from app.services.imports import import_file
+from app.services.metadata import enrich_track, MetadataError
+from sqlalchemy.exc import SQLAlchemyError
+from mutagen import MutagenError
+from uuid import UUID
 
 router = APIRouter()
 
@@ -59,6 +63,14 @@ async def import_audio(request: Request):
                 result = await run_in_threadpool(
                     import_file, engine, store, upload.file, upload.filename, config.import_max_file_bytes,
                 )
+                if result["status"] in {"imported", "duplicate"}:
+                    try:
+                        _, _, warnings = await run_in_threadpool(enrich_track, engine, store, UUID(result["track_id"]))
+                        if warnings:
+                            result["metadata_warnings"] = warnings
+                    except (MetadataError, MutagenError, OSError, ValueError, SQLAlchemyError):
+                        # El original ya está confirmado: no convertirlo en rechazo.
+                        result["metadata_warnings"] = ["metadata_pending"]
                 results.append({"index": index, **result})
             return {"results": results}
     except HTTPException as exc:

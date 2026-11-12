@@ -39,7 +39,7 @@ async def test_readiness_without_configuration_is_not_ready(client):
 
 
 async def test_unknown_api_does_not_return_fake_success(client):
-    assert (await client.get("/api/v1/tracks")).status_code == 404
+    assert (await client.get("/api/v1/stations")).status_code == 404
 
 
 async def test_untrusted_host_is_rejected(client):
@@ -54,4 +54,4 @@ async def test_browser_write_from_external_origin_is_rejected(client):
 
 @pytest.mark.parametrize("headers", [{"origin": "http://localhost:5173"}, {}])
 async def test_local_write_reaches_router_without_pretending_endpoint_exists(client, headers):
-    assert (await client.post("/api/v1/tracks", headers=headers)).status_code == 404
+    assert (await client.post("/api/v1/stations", headers=headers)).status_code == 404

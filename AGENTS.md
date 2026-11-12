@@ -36,7 +36,10 @@ P04 incorpora BD real, Alembic, /ready, respaldo y restauración.
 Consultar `docs/BASE_DATOS.md` y `docs/VALIDACION_P04.md`. Host PostgreSQL 5433;
 interno postgres:5432. Mantener .env privado, volumen y backups existentes.
 Nunca borrar volúmenes al arrancar ni usar la base principal para downgrades/tests.
-P05/P06 añaden catálogo e importación real de MP3; siguiente P07.
+P05/P06 añaden catálogo e importación real de MP3.
 Consultar `docs/IMPORTACION_MP3.md` y `docs/VALIDACION_P06.md`. La importación
-usa nombres provisionales hasta P07 y no implementa reproducción todavía.
+completa etiquetas desde P07; no implementa reproducción todavía.
 Conservar medios importados; `python -m app.media_audit` es solo lectura.
+P07 añade etiquetas, portadas, edición con procedencia y protección de cambios
+manuales. Consultar `docs/METADATOS.md` y `docs/VALIDACION_P07.md`; siguiente P08.
+No reescribir MP3 originales ni sobrescribir campos manuales al extraer etiquetas.
