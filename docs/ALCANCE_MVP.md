@@ -13,8 +13,9 @@ de IA y consultas reales en PostgreSQL con pgvector.
 
 Referencias: [concepto original](referencias/Dream_Radio_Documento_Concepto_y_Planificacion.md),
 [memoria](MEMORIA_PROYECTO.md) y [plan de desarrollo](PLAN_DESARROLLO.md).
-Este documento concreta el alcance funcional; el stack, despliegue y modelo de
-usuarios se resolverán en P02. No presupone autenticación ni publicación en internet.
+Este documento concreta el alcance funcional. P02 resolvió stack, despliegue
+y modelo de usuarios en [DECISIONES.md](DECISIONES.md): aplicación local de
+un usuario, sin autenticación ni publicación en internet.
 
 ## 2. Recorridos incluidos
 
@@ -43,7 +44,7 @@ trabajo previsto que no condiciona su aceptación. Los IDs conservan los del con
 
 | ID | Decisión de alcance | Resultado observable de aceptación | Trabajo / pruebas |
 | --- | --- | --- | --- |
-| RF-01 | Incluido: MP3 individual y múltiple. | Se almacenan pistas válidas con resultados por archivo; inválidos se rechazan sin perder las otras importaciones. Duplicados siguen una política visible, por definir en P02/P05. | P06; CA-01, AC-01. |
+| RF-01 | Incluido: MP3 individual y múltiple. | Se almacenan pistas válidas con resultados por archivo; inválidos se rechazan sin perder las otras importaciones. Copias de bytes idénticos devuelven la pista existente, según D05. | P06; CA-01, AC-01. |
 | RF-02 | Incluido: biblioteca visual. | Álbumes, pistas y playlists reflejan datos persistidos; hay estados de vacío, carga y error. | P08, P11; CA-01, AC-02. |
 | RF-03 | Incluido: reproducción básica. | Play/pausa, avance, volumen y anterior/siguiente funcionan con audio real y mantienen coherente la pista activa. | P09–P10; CA-03. |
 | RF-04 | Incluido: buscador textual. | Encontrar por título, artista y álbum; consulta sin coincidencias muestra estado vacío útil. | P08; CA-09. |
@@ -64,7 +65,8 @@ trabajo previsto que no condiciona su aceptación. Los IDs conservan los del con
 | RF-19 | Posterior: estaciones automáticas. | Cuando se active, listas temáticas reproducibles que contienen solo pistas existentes. | O03. |
 | RF-20 | Futuro: reconocimiento enriquecido, locutor y herramientas multiagente. | Delimitar y evaluar cada función por separado antes de desarrollarla. | O01, O02, O05, O09. |
 
-La reproducción continua al navegar se evaluará en P02 y no se promete todavía.
+P02 incorpora reproducción continua al navegar dentro de la aplicación;
+cerrar/reabrir no inicia audio automáticamente. Se comprobará en P10.
 Aleatorio, repetición y cola avanzada corresponden a O08. Las cuentas múltiples,
 compartir muros y sincronizar dispositivos no se incluyen sin una decisión posterior.
 
@@ -145,8 +147,8 @@ la evaluación de pertinencia de CA-11, no como una prueba ya superada.
 | Agentes y LangGraph | El curso contempla agentes/RAG; el concepto deja LangGraph como ampliación. | Confirmar si exige agente o framework concreto; activar O05 si corresponde antes de P26. |
 | RAG | La recuperación de fichas y generación de explicaciones es una aplicación prevista. | Confirmar si la rúbrica exige además una base documental u otra demostración específica. |
 | Evidencias y sustentación | El curso pide repositorio, pruebas, documentación y defensa individual. | Obtener rúbrica, fecha de entrega y formatos exactos; exportar workflows si se incorporan. |
-| Entorno y cuentas | No hay decisión cerrada sobre despliegue ni perfiles. | Resolver en P02 antes de definir aislamiento/acceso y medios. |
-| Stack, límites y servicios | Existen recomendaciones, no elecciones definitivas. | Registrar decisiones en P02 y verificar servicios cuando se integren. |
+| Entorno y cuentas | P02 adopta ejecución local de un usuario, sin cuentas ni publicación. | Cambiar a servidor/multiusuario requiere nueva decisión de autenticación y propiedad. |
+| Stack, límites y servicios | P02 define stack y límites iniciales en DECISIONES.md. | Fijar/probar versiones en P03; verificar IA al seleccionar proveedor en P20. |
 
 Las preguntas académicas no impiden preparar alcance, diseño y biblioteca.
 No se considera confirmada una exigencia docente solo porque aparezca como

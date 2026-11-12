@@ -34,7 +34,27 @@ MP3, un duplicado y dos archivos inválidos, manifiesto y generador reproducible
 Se verificaron hashes, tamaños, decodificación y etiquetas. La evaluación de
 pertinencia musical sigue requiriendo una colección musical autorizada en P17.
 No se implementó la aplicación ni se creó un commit en este paso.
-Siguiente: P02, diseño de pantallas, datos y decisiones técnicas.
+P01 quedó posteriormente registrado en `bb10254`.
+
+## Avance posterior: P02
+
+El usuario pidió continuar con P02. Se crearon `DECISIONES.md`,
+`DISENO_PANTALLAS.md`, `MODELO_DATOS.md` y `CONTRATO_API.md`.
+Las elecciones actuales de trabajo son una aplicación local de un usuario,
+React/TypeScript/Vite, Python 3.12/FastAPI, SQLAlchemy/Psycopg/Alembic y
+PostgreSQL con pgvector. Docker permitirá usar Python compatible sin modificar
+el Python 3.10 del sistema. Las versiones exactas se comprobarán en P03.
+
+Medios copiados a MEDIA_ROOT, deduplicación por bytes SHA-256, un reproductor
+compartido que continúa durante navegación, un lienzo de 1000 × 700 escalable,
+coordenadas relativas y guardado completo por revisión. Contratos de API y datos
+definen manejo de errores, archivos parciales y conflictos de edición.
+
+Se consultaron fuentes oficiales para orientar capacidades técnicas; no se
+instalaron paquetes ni se construyó aún interfaz/API ejecutable. Proveedor de
+IA y requisitos docentes siguen pendientes. Los apartados históricos siguientes
+reflejan el concepto inicial; las decisiones vigentes se consultan en DECISIONES.md.
+P02 se entrega sin crear commit. Siguiente: P03, estructura y configuración.
 
 ## Fuentes y alcance de sus afirmaciones
 

@@ -116,9 +116,9 @@ no figura como confirmado. La parte académica pendiente queda identificada.
 CA-13 y siete comprobaciones complementarias. Colección técnica sintética real
 en `pruebas/coleccion/`, con generador y manifiesto de procedencia/hashes.
 MP3, metadatos, duplicado y enlaces comprobados. La colección musical autorizada
-para evaluación semántica se preparará en P17. Implementado sin commit.
+para evaluación semántica se preparará en P17. Registrado en `bb10254`.
 
-### [ ] P02 — Diseñar pantallas, datos y decisiones técnicas
+### [x] P02 — Diseñar pantallas, datos y decisiones técnicas
 
 **Depende de:** P01. **Commit:** `docs(design): definir flujos, arquitectura y modelo inicial`
 
@@ -131,6 +131,12 @@ para evaluación semántica se preparará en P17. Implementado sin commit.
 
 **Cierre:** se puede recorrer importación → reproducción → decoración → búsqueda
 en los diseños; álbumes y playlists se distinguen y los controles quedan accesibles.
+
+**Resultado:** [decisiones](DECISIONES.md), [wireframes y flujos](DISENO_PANTALLAS.md),
+[modelo de datos](MODELO_DATOS.md) y [contrato de API](CONTRATO_API.md).
+Definidos ejecución local de un usuario, stack, archivos gestionados, duplicados,
+continuidad del reproductor, lienzo proporcional y guardado con revisión.
+Diseño revisado; sin interfaz ejecutable ni endpoints todavía. Implementado sin commit.
 
 ## 5. Fase 1 — Base técnica reproducible
 
@@ -532,18 +538,24 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P01 terminado en alcance y colección técnica, sin commit.
+- **Trabajo actual:** P02 terminado en diseño y arquitectura, sin commit.
 - **Aplicación:** sin implementación.
-- **Próximo bloque:** P02 — diseñar pantallas, datos y decisiones técnicas.
-- **Decisiones pendientes:** las de la sección 2; no hay stack adicional aprobado.
+- **Próximo bloque:** P03 — crear estructura y configuración de desarrollo.
+- **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
+  Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
+- **Decisiones pendientes:** proveedores/modelos de IA, versiones exactas,
+  selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado de Git al iniciar P01:** sin cambios pendientes; P00 registrado en
-  `0ee2b43`. No se creó un commit al terminar P01; se propone su mensaje al usuario.
+- **Estado de Git al iniciar P02:** sin cambios pendientes; P01 registrado en
+  `bb10254`. No se creó un commit al terminar P02; se propone su mensaje al usuario.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
   tamaños de siete archivos; cuatro MP3 originales decodificados con señal y
   etiquetas esperadas. Sin aplicación todavía para ejecutar aceptación funcional.
+- **Validación de P02:** enlaces, ejemplos JSON y geometría ilustrativa del muro;
+  revisión de coherencia entre rutas, relaciones y recorridos. Fuentes oficiales
+  consultadas para capacidades técnicas; dependencias aún no instaladas/probadas.
 - **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
   de commit en español; mantener esta práctica en futuras sesiones.
 
@@ -552,7 +564,8 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | Fecha | Bloque | Estado | Commit | Validación y siguiente paso |
 | --- | --- | --- | --- | --- |
 | 2026-11-12 | P00 | Completado | `0ee2b43` | Fuentes, memoria y plan registrados; continuado en P01. |
-| 2026-11-12 | P01 | Implementado sin commit | — | Alcance, matrices y colección sintética preparados y verificados; siguiente: P02. |
+| 2026-11-12 | P01 | Completado | `bb10254` | Alcance, matrices y colección sintética registrados. |
+| 2026-11-12 | P02 | Implementado sin commit | — | Pantallas, decisiones, datos y API definidos y revisados; siguiente: P03. |
 
 ### Plantilla de cierre de sesión
 
