@@ -85,7 +85,26 @@ respaldo real y persistencia tras recrear contenedores comprobados.
 Datos conservados en volumen, .env y backups locales, excluidos de Git;
 base restaurada de comprobación aislada de la principal. Detalles en
 BASE_DATOS.md y VALIDACION_P04.md. Aún sin catálogo ni embeddings musicales.
-No se crea commit en esta entrega. Siguiente: P05.
+P04 se registró posteriormente en `cb6575b`.
+
+## Avance posterior: P06 y dependencia P05
+
+El usuario solicitó P06. P05 aún no existía y se completó como dependencia:
+catálogo SQLAlchemy Core, migración 0002_catalog, integridad de relaciones,
+álbum «Sin álbum» y almacenamiento gestionado.
+
+P06 añade selección/carga múltiple y POST /api/v1/imports: valida MP3 mediante
+Mutagen 1.48.1, aplica límites, calcula SHA-256 y evita duplicados concurrentes.
+Transacción por archivo con staging y compensación; un commit ambiguo se comprueba
+antes de retirar medios. `python -m app.media_audit` solo informa inconsistencias.
+
+Se recuperó la configuración .env ausente sincronizando solo el rol local con
+la contraseña generada, sin borrar volumen/datos. Se comprobaron 24 pruebas,
+build, alembic check y persistencia real después de recrear contenedores.
+Cuatro audios sintéticos quedan importados en la biblioteca local. Títulos de
+archivo y álbum desconocido son provisionales; lectura de etiquetas en P07.
+Sin biblioteca visual ni reproducción aún. Detalles en IMPORTACION_MP3.md y
+VALIDACION_P06.md. Sin commit automático. Siguiente: P07.
 
 ## Fuentes y alcance de sus afirmaciones
 

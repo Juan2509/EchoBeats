@@ -23,5 +23,15 @@ h1 { font-size: clamp(2.8rem, 7vw, 4.6rem); line-height: 1.08; letter-spacing: -
 .note { max-width: 540px; margin-top: 24px; }
 button { color: #14121a; background: #cbb7ff; border: 0; border-radius: 8px; padding: 12px 18px; font: inherit; cursor: pointer; margin-top: 16px; }
 button:hover { background: #dfd1ff; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+.import-panel { margin-top: 40px; padding-top: 24px; border-top: 1px solid #353642; }
+.import-panel h2 { font-size: 1.4rem; }
+.import-panel label { display: block; margin: 24px 0 10px; }
+.import-panel input { font: inherit; width: 100%; border: 1px solid #535563; padding: 14px; border-radius: 8px; }
+.import-panel input:focus-visible { outline: 3px solid #cbb7ff; outline-offset: 3px; }
+.import-error { color: #ffb6b6; }
+.import-results { list-style: none; padding: 0; }
+.import-results li { padding: 16px 0; border-bottom: 1px solid #353642; overflow-wrap: anywhere; }
+.import-results span { display: block; margin-top: 6px; color: #b7b8c7; }
 button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
 @media (max-width: 600px) { .workspace { padding: 24px; } .card { padding: 44px 0; } }

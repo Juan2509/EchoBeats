@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P04 implementado;
-entorno y base de datos ejecutables, funcionalidades musicales pendientes.
+Fecha inicial: 12 de noviembre de 2026. Estado: P06 implementado, incluida P05;
+catálogo e importación funcionales; metadatos, biblioteca visual y audio pendientes.
 
 ## 1. Propósito y fuentes
 
@@ -178,9 +178,9 @@ migración Alembic, conexión configurable, /ready y scripts de respaldo/restaur
 en bases nuevas. Nueve pruebas y persistencia tras recrear contenedores verificadas.
 Ver [operación](BASE_DATOS.md) y [validación](VALIDACION_P04.md).
 Configuración local en `.env`, contraseña sin versionar; puerto de host 5433.
-Implementado sin commit.
+Registrado en `cb6575b`.
 
-### [ ] P05 — Crear esquema de biblioteca y almacenamiento
+### [x] P05 — Crear esquema de biblioteca y almacenamiento
 
 **Depende de:** P04. **Commit:** `feat(catalog): crear modelo persistente de biblioteca y recursos`
 
@@ -193,11 +193,16 @@ Implementado sin commit.
 **Cierre:** migraciones funcionan en una BD vacía y las relaciones conservan
 integridad. La aplicación no acepta rutas arbitrarias del sistema como recursos.
 
+**Resultado:** implementado como dependencia de P06 porque el usuario solicitó
+ese paso cuando P05 todavía estaba pendiente. Migración 0002_catalog, ocho tablas,
+álbum desconocido, restricciones y almacenamiento gestionado. Migraciones e
+integridad comprobadas en bases aisladas; sin commit.
+
 ## 6. Fase 2 — Biblioteca, reproductor y playlists
 
 **Entrega de fase:** colección musical utilizable sin depender de la IA.
 
-### [ ] P06 — Importar y almacenar MP3
+### [x] P06 — Importar y almacenar MP3
 
 **Depende de:** P05. **Commit:** `feat(import): importar archivos MP3 a la biblioteca`
 
@@ -208,6 +213,12 @@ integridad. La aplicación no acepta rutas arbitrarias del sistema como recursos
 
 **Cierre:** MP3 válido se conserva tras reiniciar; archivo inválido se rechaza
 con un mensaje útil y no impide importar otros válidos. Cubre CA-01 parcialmente.
+
+**Resultado:** selección múltiple, endpoint real, lectura básica MPEG/duración,
+límites por archivo y solicitud, deduplicación concurrente y compensación de fallos.
+24 pruebas y build correctos; importación y reimportación por proxy tras recrear
+contenedores con mismos IDs. Sin metadatos enriquecidos ni reproducción todavía.
+Ver [uso](IMPORTACION_MP3.md) y [validación P05/P06](VALIDACION_P06.md). Sin commit.
 
 ### [ ] P07 — Extraer y editar metadatos
 
@@ -551,16 +562,16 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P04 terminado en PostgreSQL, migraciones y recuperación, sin commit.
-- **Aplicación:** pantalla de conexión, health/ready, BD real; dominio musical pendiente.
-- **Próximo bloque:** P05 — esquema de biblioteca y almacenamiento.
+- **Trabajo actual:** P06 terminado, incluyendo P05 como dependencia necesaria; sin commit.
+- **Aplicación:** catálogo persistente e importación múltiple real; metadatos y escucha pendientes.
+- **Próximo bloque:** P07 — extraer y editar metadatos.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado de Git al iniciar P04:** sin cambios pendientes; P03 registrado en
-  `4d87180`. No se creó un commit al terminar P04; se propone su mensaje al usuario.
+- **Estado de Git al iniciar P06:** sin cambios pendientes; P04 registrado en
+  `cb6575b`. P05 todavía no existía; se completó para habilitar P06.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
@@ -577,6 +588,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
   respaldo/restauración y volumen conservado tras recreación. Ver `VALIDACION_P04.md`.
 - **Datos locales:** `.env` generado y privado; volumen echobeats_postgres_data
   conservado; base restaurada de comprobación y backups ignorados por Git.
+- **Validación P05/P06:** 24 pruebas, esquema sin diferencias, build y HTTP real;
+  4 audios sintéticos guardados, duplicados conservan IDs tras reiniciar y sin medios
+  faltantes/huérfanos. Ver `VALIDACION_P06.md`. CA-01 solo parcialmente cubierto.
 - **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
   de commit en español; mantener esta práctica en futuras sesiones.
 
@@ -588,7 +602,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P01 | Completado | `bb10254` | Alcance, matrices y colección sintética registrados. |
 | 2026-11-12 | P02 | Completado | `6c0163a` | Pantallas, decisiones, datos y API registrados. |
 | 2026-11-12 | P03 | Completado | `4d87180` | Entorno, locks y arranque registrados. |
-| 2026-11-12 | P04 | Implementado sin commit | — | BD, migraciones, persistencia y recuperación comprobadas; siguiente: P05. |
+| 2026-11-12 | P04 | Completado | `cb6575b` | BD, migraciones y recuperación registrados. |
+| 2026-11-12 | P05 | Implementado sin commit | — | Catálogo y almacenamiento completados como dependencia de P06. |
+| 2026-11-12 | P06 | Implementado sin commit | — | Importación real, deduplicación, límites y persistencia comprobados; siguiente P07. |
 
 ### Plantilla de cierre de sesión
 

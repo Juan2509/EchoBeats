@@ -1,7 +1,7 @@
 # Contrato inicial de API de EchoBeats
 
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
-P03 implementó health y P04 ready; el resto del contrato sigue pendiente.
+P03 implementó health, P04 ready y P06 imports; las otras rutas siguen pendientes.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -46,7 +46,7 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | --- | --- | --- |
 | `GET /health` | `{status: "ok"}`; confirma proceso, sin secretos. | P03. |
 | `GET /ready` | `{status, checks: {database, pgvector, migrations}}`; 200 si todos están ok y 503 en caso contrario. No consulta proveedor de IA. | P04 implementado. |
-| `POST /imports` | multipart `files`, hasta 20 MP3. Respuesta 200 con resultado por archivo; tamaño total excesivo rechaza solicitud con 413. | P06. |
+| `POST /imports` | multipart `files`, hasta 20 MP3. Respuesta 200 con resultado por archivo; cuerpo total excesivo rechaza solicitud con 413. | P06 implementado. |
 | `GET /tracks` | q opcional, album_id opcional y paginación; resúmenes de pistas. | P07–P08. |
 | `GET /tracks/{id}` | Pista, álbum, artistas, duración, portada heredada y procedencia; `revision`. | P07. |
 | `PATCH /tracks/{id}` | Campos editables `title`, `artist_names`, `album_id`, `track_number`; revisión requerida en `If-Match`. Duración/archivo no editables. | P07. |

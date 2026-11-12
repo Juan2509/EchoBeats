@@ -19,6 +19,7 @@ x-backend: &backend-base
     - ./backend/alembic.ini:/app/backend/alembic.ini:ro
     - ./backend/pyproject.toml:/app/backend/pyproject.toml:ro
     - ./data:/app/data
+    - ./pruebas/coleccion:/app/fixtures:ro
 
 services:
   postgres:

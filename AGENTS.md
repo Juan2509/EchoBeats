@@ -32,7 +32,11 @@ El usuario también autorizó P03: ya hay estructura y arranque mínimo local.
 Leer `README.md` y `docs/VALIDACION_P03.md` para instalación y comprobaciones.
 Los locks se instalan con `npm ci` y `pip --require-hashes`;
 no usar el Python 3.10 del host como entorno del backend Python 3.12.
-P04 incorpora BD real, Alembic, /ready, respaldo y restauración; siguiente P05.
+P04 incorpora BD real, Alembic, /ready, respaldo y restauración.
 Consultar `docs/BASE_DATOS.md` y `docs/VALIDACION_P04.md`. Host PostgreSQL 5433;
 interno postgres:5432. Mantener .env privado, volumen y backups existentes.
 Nunca borrar volúmenes al arrancar ni usar la base principal para downgrades/tests.
+P05/P06 añaden catálogo e importación real de MP3; siguiente P07.
+Consultar `docs/IMPORTACION_MP3.md` y `docs/VALIDACION_P06.md`. La importación
+usa nombres provisionales hasta P07 y no implementa reproducción todavía.
+Conservar medios importados; `python -m app.media_audit` es solo lectura.

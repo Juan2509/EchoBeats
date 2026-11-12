@@ -6,6 +6,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.health import router as health_router
 from app.api.readiness import router as readiness_router
+from app.api.imports import router as imports_router
 from app.config import Settings
 from app.database import make_database_engine
 
@@ -24,8 +25,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="EchoBeats API", version="0.1.0", lifespan=lifespan)
     app.state.database_engine = engine
+    app.state.settings = config
     app.include_router(health_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(readiness_router, prefix="/api/v1", tags=["Estado"])
+    app.include_router(imports_router, prefix="/api/v1", tags=["Importación"])
 
     @app.middleware("http")
     async def validate_write_origin(request: Request, call_next):

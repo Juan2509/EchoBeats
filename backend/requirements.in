@@ -6,6 +6,7 @@ SQLAlchemy>=2.0,<3
 psycopg[binary]>=3.2,<4
 alembic>=1.14,<2
 python-multipart>=0.0.20,<1
+mutagen>=1.47,<2
 
 # Verificaciones del entorno de desarrollo.
 pytest>=8,<10

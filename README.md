@@ -3,10 +3,11 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P04.** Entorno local, pantalla de conexión, FastAPI y PostgreSQL
-con pgvector y migraciones. `health` confirma el proceso y `ready` comprueba la
-base real. El catálogo musical, importación, reproductor, muros e IA siguen
-pendientes. La pantalla inicial no contiene un catálogo simulado.
+**Estado actual: P06, incluida su dependencia P05.** Hay catálogo persistente,
+almacenamiento gestionado e importación real de MP3 desde la página inicial.
+Se distingue cada archivo importado, duplicado o rechazado. `health` confirma el
+proceso y `ready` comprueba la BD real. Edición de etiquetas, biblioteca visual,
+reproducción, muros e IA siguen pendientes de sus pasos.
 
 ## Inicio con Docker
 
@@ -20,6 +21,10 @@ docker compose up --build
 ```
 
 Abrir [EchoBeats](http://localhost:5173). Debe aparecer «Servidor conectado».
+Seleccionar MP3 en «Añade tu música» para importar: hasta 20 archivos, 50 MiB
+por archivo y 200 MiB por solicitud completa. Los originales quedan copiados en
+MEDIA_ROOT; títulos provisionales y álbum «Sin álbum» hasta implementar P07.
+Ver [importación y consistencia](docs/IMPORTACION_MP3.md).
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).
@@ -72,6 +77,8 @@ Con servicios iniciados:
 docker compose exec backend python -m pytest
 docker compose exec -e RUN_DB_TESTS=1 backend python -m pytest -W error
 docker compose exec backend python -m pip check
+docker compose exec backend python -m alembic check
+docker compose exec backend python -m app.media_audit
 docker compose exec frontend npm run build
 docker compose config --quiet
 curl --fail http://localhost:8000/api/v1/health

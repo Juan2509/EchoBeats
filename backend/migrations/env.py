@@ -1,17 +1,17 @@
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import MetaData, create_engine, pool
+from sqlalchemy import create_engine, pool
 
 from app.config import Settings
 from app.database import get_database_url
+from app.models.catalog import metadata
 
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
 
-# P05 conectará aquí los modelos del catálogo. No crear tablas al arrancar.
-target_metadata = MetaData()
+target_metadata = metadata
 
 
 def run_migrations_offline():

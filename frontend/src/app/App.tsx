@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getHealth } from '../shared/api/health'
+import { ImportPanel } from '../features/import/ImportPanel'
 
 type Connection = 'checking' | 'connected' | 'error'
 
@@ -27,9 +28,9 @@ export function App() {
     <main className="workspace">
       <header><span className="mark" aria-hidden="true">◉</span> EchoBeats</header>
       <section className="card" aria-labelledby="title">
-        <p className="eyebrow">Entorno de desarrollo · P03</p>
+        <p className="eyebrow">Tu colección personal</p>
         <h1 id="title">El primer compás.</h1>
-        <p className="intro">La base de EchoBeats está en preparación. Aquí comprobaremos la conexión entre la interfaz y el servidor.</p>
+        <p className="intro">Empieza por tu música. Importa tus archivos para dar forma a tu biblioteca personal.</p>
         <div className={`connection ${connection}`} role="status" aria-live="polite">
           <span className="indicator" aria-hidden="true" />
           {connection === 'checking' && 'Comprobando conexión…'}
@@ -37,7 +38,8 @@ export function App() {
           {connection === 'error' && 'No se pudo conectar con el servidor'}
         </div>
         {connection === 'error' && <button onClick={() => setAttempt(value => value + 1)}>Reintentar conexión</button>}
-        <p className="note">La biblioteca, el reproductor y los muros se incorporarán en los siguientes pasos.</p>
+        <ImportPanel />
+        <p className="note">La vista de biblioteca, la edición de metadatos y el reproductor estarán disponibles en los próximos pasos.</p>
       </section>
       <footer>Tu música. Tu espacio.</footer>
     </main>

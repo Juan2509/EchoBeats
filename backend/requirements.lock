@@ -218,6 +218,10 @@ markupsafe==3.0.4 \
     --hash=sha256:fd9f8797427910198f95bced71ddfed61130d7e349213bfb8466c9c99e2c46a8 \
     --hash=sha256:fdb4ca07ab75ffadab4a8b135ad59cdbb3156b99310f3d565370da74a15d6bd3
     # via mako
+mutagen==1.48.1 \
+    --hash=sha256:4f077fe87d3fc7fba259aa63d8c026b18382ca6a42ef37c61e16f1b1b5b82fe7 \
+    --hash=sha256:8f95637ab9f6f305cec6bd1294e197debe207998e3e068596563c74f86b0a173
+    # via -r requirements.in
 opentelemetry-api==1.45.2 \
     --hash=sha256:2cbd737377e710ee740d261c94e93fa0f08e6d037c18f17513cc0a2d94479a34 \
     --hash=sha256:d7b0008e21e5fd61cbe7a7f34ca3b6905a78ab677d9bc395e299359c75cda6b4

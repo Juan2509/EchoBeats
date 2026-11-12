@@ -1,6 +1,7 @@
 # Modelo inicial de datos de EchoBeats
 
-P02 · 12 de noviembre de 2026. Diseño para futuras migraciones, no SQL ejecutado.
+P02 · 12 de noviembre de 2026. P05/P06 implementan catálogo y recursos;
+muros, preferencias e IA siguen siendo diseño para migraciones posteriores.
 Complementa [decisiones](DECISIONES.md) y [contrato API](CONTRATO_API.md).
 
 ## 1. Convenciones
@@ -12,6 +13,8 @@ vacías no sustituyen a un valor válido. No hay tabla de usuarios para el MVP l
 
 Los campos enumerados son el mínimo inicial. Relaciones y restricciones se
 aplican en BD y validación de API, no solo en componentes de interfaz.
+Estado actual: SQLAlchemy Core en `backend/app/models/catalog.py` y migración
+`0002_catalog`; no se extrajeron aún etiquetas musicales ni se crearon muros.
 
 ## 2. Entidades y relaciones
 
