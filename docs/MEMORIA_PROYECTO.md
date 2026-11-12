@@ -21,6 +21,21 @@ organizar los futuros commits y retomar el trabajo entre sesiones. Se preparó
 `PLAN_DESARROLLO.md` con tareas, dependencias, criterios de cierre y bitácora.
 La planificación no implica que sus tareas estén ejecutadas ni sus commits creados.
 
+## Avance posterior: P01
+
+El usuario solicitó desarrollar el paso 1 y recibir al terminar una sugerencia de
+commit en español, preferencia que se mantiene para los siguientes pasos.
+P00 ya estaba registrado en `0ee2b43`. Se completó P01 con `ALCANCE_MVP.md`:
+RF-01 a RF-16 incluidos, RF-17 posterior recomendado y RF-18 a RF-20 aplazados.
+CA-01 a CA-12 aplican al MVP; CA-13 queda condicional al reconocimiento.
+
+Se creó una colección técnica original en `pruebas/coleccion/`, con cuatro señales
+MP3, un duplicado y dos archivos inválidos, manifiesto y generador reproducible.
+Se verificaron hashes, tamaños, decodificación y etiquetas. La evaluación de
+pertinencia musical sigue requiriendo una colección musical autorizada en P17.
+No se implementó la aplicación ni se creó un commit en este paso.
+Siguiente: P02, diseño de pantallas, datos y decisiones técnicas.
+
 ## Fuentes y alcance de sus afirmaciones
 
 - `referencias/Dream_Radio_Documento_Concepto_y_Planificacion.md`: 691 líneas;

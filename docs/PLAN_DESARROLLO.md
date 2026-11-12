@@ -89,7 +89,7 @@ Formato sugerido: `tipo(ambito): descripción`, por ejemplo
 **Entrega de fase:** especificación inicial revisable y decisiones suficientes
 para comenzar, manteniendo identificados los puntos aún abiertos.
 
-### [ ] P00 — Conservar el contexto y este plan
+### [x] P00 — Conservar el contexto y este plan
 
 **Commit:** `docs(project): registrar concepto, referencias y plan de EchoBeats`
 
@@ -98,9 +98,9 @@ para comenzar, manteniendo identificados los puntos aún abiertos.
 - Enlazar los documentos desde las instrucciones de contexto del repositorio.
 
 **Cierre:** documentos accesibles y coherentes con el nombre EchoBeats.
-Los archivos ya están preparados; su registro en Git sigue pendiente.
+Registrado en el commit `0ee2b43`.
 
-### [ ] P01 — Delimitar MVP y criterios de aceptación
+### [x] P01 — Delimitar MVP y criterios de aceptación
 
 **Depende de:** P00. **Commit:** `docs(scope): definir alcance y aceptación del MVP`
 
@@ -111,6 +111,12 @@ Los archivos ya están preparados; su registro en Git sigue pendiente.
 
 **Cierre:** cada función incluida tiene un resultado observable; lo desconocido
 no figura como confirmado. La parte académica pendiente queda identificada.
+
+**Resultado:** [alcance del MVP](ALCANCE_MVP.md) con RF-01 a RF-20, CA-01 a
+CA-13 y siete comprobaciones complementarias. Colección técnica sintética real
+en `pruebas/coleccion/`, con generador y manifiesto de procedencia/hashes.
+MP3, metadatos, duplicado y enlaces comprobados. La colección musical autorizada
+para evaluación semántica se preparará en P17. Implementado sin commit.
 
 ### [ ] P02 — Diseñar pantallas, datos y decisiones técnicas
 
@@ -523,24 +529,30 @@ Implementado sin commit, Completado o Bloqueado por una dependencia concreta.
 Una casilla marcada significa que se cumplió el criterio de cierre, no solo que
 se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 
-### Estado inicial
+### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** plan preparado; P00 implementado en documentación, sin commit.
+- **Trabajo actual:** P01 terminado en alcance y colección técnica, sin commit.
 - **Aplicación:** sin implementación.
-- **Próximo bloque:** revisar/registrar P00 y continuar con P01.
+- **Próximo bloque:** P02 — diseñar pantallas, datos y decisiones técnicas.
 - **Decisiones pendientes:** las de la sección 2; no hay stack adicional aprobado.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado preexistente observado:** `Md test.md` aparece eliminado en Git;
-  conservar esa modificación del usuario y no incluirla automáticamente en P00.
-- **Validación de esta planificación:** coherencia con memoria/concepto, enlaces
-  locales y dependencias; no corresponde ejecutar pruebas de aplicación todavía.
+- **Estado de Git al iniciar P01:** sin cambios pendientes; P00 registrado en
+  `0ee2b43`. No se creó un commit al terminar P01; se propone su mensaje al usuario.
+- **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
+  RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
+- **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
+  tamaños de siete archivos; cuatro MP3 originales decodificados con señal y
+  etiquetas esperadas. Sin aplicación todavía para ejecutar aceptación funcional.
+- **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
+  de commit en español; mantener esta práctica en futuras sesiones.
 
 ### Bitácora
 
 | Fecha | Bloque | Estado | Commit | Validación y siguiente paso |
 | --- | --- | --- | --- | --- |
-| 2026-11-12 | P00 | Implementado sin commit | — | Fuentes conservadas, memoria y plan preparados; siguiente: P01. |
+| 2026-11-12 | P00 | Completado | `0ee2b43` | Fuentes, memoria y plan registrados; continuado en P01. |
+| 2026-11-12 | P01 | Implementado sin commit | — | Alcance, matrices y colección sintética preparados y verificados; siguiente: P02. |
 
 ### Plantilla de cierre de sesión
 

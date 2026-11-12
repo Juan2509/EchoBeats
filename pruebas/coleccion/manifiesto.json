@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "procedencia": "Señales originales generadas matemáticamente para EchoBeats; sin grabaciones de terceros.",
+  "uso": "Pruebas, modificación y demostración dentro del proyecto EchoBeats.",
+  "generador": "scripts/generar_coleccion_prueba.py",
+  "codificador": "libmp3lame del sistema, 64 kbps mono; el resultado puede variar entre versiones.",
+  "archivos": [
+    {
+      "id": "T01",
+      "archivo": "tono_grave.mp3",
+      "bytes": 96675,
+      "sha256": "cd5ce3a2fd91703fe9c9b0b6d7e13527bbd16d7b36bb926882fa2d24491bfdce",
+      "valido": true,
+      "duracion_senal_segundos": 12,
+      "frecuencia_muestreo_hz": 44100,
+      "frecuencia_tono_hz": 220,
+      "amplitud_pulsante": false,
+      "titulo": "Tono grave",
+      "album": "Álbum técnico A",
+      "artista": "EchoBeats - prueba sintetica",
+      "portada_incrustada": false,
+      "descripcion_verificada": "Señal sinusoidal sintética de 220 Hz, mono, con amplitud estable salvo entrada y salida.",
+      "fuente_descripcion": "Parámetros del generador; sin análisis mediante IA."
+    },
+    {
+      "id": "T02",
+      "archivo": "pulsos_medios.mp3",
+      "bytes": 96675,
+      "sha256": "0df7759a8b86cf9cb51cebf15c9d673fad12c473dd151735c5b6072bab08f141",
+      "valido": true,
+      "duracion_senal_segundos": 12,
+      "frecuencia_muestreo_hz": 44100,
+      "frecuencia_tono_hz": 440,
+      "amplitud_pulsante": true,
+      "titulo": "Pulsos medios",
+      "album": "Álbum técnico A",
+      "artista": "EchoBeats - prueba sintetica",
+      "portada_incrustada": false,
+      "descripcion_verificada": "Señal sinusoidal sintética de 440 Hz, mono, con amplitud pulsante.",
+      "fuente_descripcion": "Parámetros del generador; sin análisis mediante IA."
+    },
+    {
+      "id": "T03",
+      "archivo": "tono_agudo.mp3",
+      "bytes": 96675,
+      "sha256": "ce4e10c1c84b712fe62ee4a3a7ab07f8ff6d21172ca6164cacb38e6c119a221b",
+      "valido": true,
+      "duracion_senal_segundos": 12,
+      "frecuencia_muestreo_hz": 44100,
+      "frecuencia_tono_hz": 880,
+      "amplitud_pulsante": false,
+      "titulo": "Tono agudo",
+      "album": "Álbum técnico B",
+      "artista": "EchoBeats - prueba sintetica",
+      "portada_incrustada": false,
+      "descripcion_verificada": "Señal sinusoidal sintética de 880 Hz, mono, con amplitud estable salvo entrada y salida.",
+      "fuente_descripcion": "Parámetros del generador; sin análisis mediante IA."
+    },
+    {
+      "id": "T04",
+      "archivo": "sin_etiquetas.mp3",
+      "bytes": 96547,
+      "sha256": "be6552770345e8848654c0094ed94f84c9cc903ef4f7919624abc97c882c066c",
+      "valido": true,
+      "duracion_senal_segundos": 12,
+      "frecuencia_muestreo_hz": 44100,
+      "frecuencia_tono_hz": 330,
+      "amplitud_pulsante": true,
+      "titulo": null,
+      "album": null,
+      "artista": null,
+      "portada_incrustada": false,
+      "descripcion_verificada": "Señal sinusoidal sintética de 330 Hz, mono, con amplitud pulsante.",
+      "fuente_descripcion": "Parámetros del generador; sin análisis mediante IA."
+    },
+    {
+      "id": "T05",
+      "archivo": "tono_grave_duplicado.mp3",
+      "bytes": 96675,
+      "sha256": "cd5ce3a2fd91703fe9c9b0b6d7e13527bbd16d7b36bb926882fa2d24491bfdce",
+      "valido": true,
+      "duplicado_de": "T01"
+    },
+    {
+      "id": "T06",
+      "archivo": "invalido.mp3",
+      "bytes": 48,
+      "sha256": "dae62b6f1298c83b754bce3d472a16bc3fdde907da3b106c6b750b9253ef0ced",
+      "valido": false
+    },
+    {
+      "id": "T07",
+      "archivo": "vacio.mp3",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "valido": false
+    }
+  ]
+}
