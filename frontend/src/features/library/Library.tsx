@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Album, Track } from '../../shared/api/metadata'
 import defaultCover from '../../shared/assets/default-cover.svg'
+import { usePlayer } from '../player/Player'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 type Navigate = (path: string) => void
@@ -40,8 +41,14 @@ function Pagination({ offset, total, move }: { offset: number; total: number; mo
     <button disabled={offset + 24 >= total} onClick={() => move(offset + 24)}>Siguiente</button>
   </nav> : null
 }
-function TrackList({ tracks, navigate }: { tracks: Track[]; navigate: Navigate }) {
-  return <ul className="track-list">{tracks.map(item => <li key={item.id}>
+function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[]; navigate: Navigate; queuePath: string; queueLabel: string }) {
+  const player = usePlayer()
+  return <ul className="track-list">{tracks.map(item => <li key={item.id} className={player.state.track?.id === item.id ? 'active-track' : undefined}>
+    <button className="track-play" aria-label={`${player.state.track?.id === item.id && (player.state.playing || player.state.loading) ? 'Pausar' : 'Reproducir'} ${item.title}`}
+      aria-pressed={player.state.track?.id === item.id && player.state.playing} onClick={() => {
+        if (player.state.track?.id === item.id) player.control()?.toggle()
+        else player.select(item, { path: queuePath, label: queueLabel }, tracks)
+      }}>{player.state.track?.id === item.id && (player.state.playing || player.state.loading) ? 'Ⅱ' : '▶'}</button>
     <Cover url={item.cover_url} title={item.title} />
     <div><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><span>{artists(item)}</span>
       <a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a></div>
@@ -76,7 +83,7 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
       {!result.data.items.length && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : 'Importa tus MP3 para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
       {view === 'albumes' ? <div className="album-grid">{(result.data.items as Album[]).map(item => <a className="album-card" key={item.id} href={`/albumes/${item.id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>
         <Cover url={item.cover_url} title={item.title} /><h2>{item.title}</h2><p>{artists(item)}</p><span>{item.track_count} pistas</span>
-      </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} />}
+      </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} queuePath={`/tracks?${new URLSearchParams({ q: query })}`} queueLabel={query ? `Búsqueda: ${query}` : 'Mi biblioteca'} />}
       <Pagination offset={offset} total={result.data.total} move={value => move(view, query, value)} />
     </>}
   </section>
@@ -88,8 +95,8 @@ export function AlbumView({ id, refresh, navigate }: { id: string; refresh: numb
   const songs = useRead<Page<Track>>(`/tracks?album_id=${encodeURIComponent(id)}&limit=24&offset=${offset}`, refresh)
   return <section><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a>
     <ReadState {...info} />{info.data && <><div className="album-heading"><Cover url={info.data.cover_url} title={info.data.title} /><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
-      <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList tracks={songs.data.items} navigate={navigate} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
-      <p className="note">La reproducción y la pared personalizable llegarán en los próximos pasos.</p>
+      <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
+      <p className="note">La pared personalizable llegará en los próximos pasos. Abrir este álbum no cambia la canción que está sonando.</p>
     </>}
   </section>
 }

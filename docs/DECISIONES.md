@@ -141,6 +141,18 @@ Al terminar una pista avanza a la siguiente; al final se detiene. Anterior vuelv
 a la pista anterior; en la primera reinicia su posición. Siguiente en la última
 queda deshabilitado. Aleatorio/repetición y edición avanzada de cola quedan en O08.
 
+Actualización P10: un PlayerProvider contiene el único audio fuera de las vistas.
+La selección inicia audio durante el clic y recupera fichas de la lista completa
+del álbum o de los resultados filtrados, con orden del catálogo; no precarga los
+audios de esa lista. Anterior/siguiente esperan a que se prepare la lista. Si la
+consulta falla, la cola se limita a la página visible y se muestra un aviso.
+Si la pista termina mientras se prepara la lista, continúa al recibirla, salvo
+que el usuario haya pausado. Un error de audio detiene la pista y ofrece reintento;
+no se saltan canciones fallidas automáticamente. La cola es una selección en
+memoria: editar el catálogo no la reorganiza durante la escucha; seleccionar otra
+pista desde una vista prepara una nueva lista. La metadata de la pista activa
+se refresca al guardar desde el editor, sin reiniciar su audio.
+
 ## D07 — Muros con lienzo proporcional y guardado versionado
 
 El área decorable es un lienzo de referencia **1000 × 700**, separado del panel

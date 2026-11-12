@@ -11,6 +11,7 @@ from app.api.readiness import router as readiness_router
 from app.api.imports import router as imports_router
 from app.api.imports import error_response
 from app.api.metadata import router as metadata_router
+from app.api.audio import router as audio_router
 from app.services.metadata import MetadataError
 from app.config import Settings
 from app.database import make_database_engine
@@ -35,6 +36,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(readiness_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(imports_router, prefix="/api/v1", tags=["Importación"])
     app.include_router(metadata_router, prefix="/api/v1", tags=["Metadatos"])
+    app.include_router(audio_router, prefix="/api/v1", tags=["Audio"])
 
     @app.exception_handler(MetadataError)
     async def metadata_error(request, exc):

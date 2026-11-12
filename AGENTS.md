@@ -47,3 +47,14 @@ P08 incorpora inicio, navegación, biblioteca visual paginada, búsqueda textual
 detalle de álbum. Ver `docs/VALIDACION_P08.md`: implementación y pruebas HTTP
 listas; revisión visual pendiente por bloqueo de la herramienta de navegador.
 No declarar cerrado P08 sin revisar teclado y anchos 360/768/1280; después P09.
+El usuario autorizó avanzar P09 aunque P08 conserve esa revisión pendiente.
+P09 sirve MP3 originales mediante GET/HEAD y rangos; fichas incluyen audio_url.
+Consultar `docs/VALIDACION_P09.md`: pruebas de bytes/HTTP listas; reproducción y
+seek manual no confirmados por actividad del usuario durante el control UI.
+Siguiente implementación P10, manteniendo registradas las revisiones pendientes.
+El usuario autorizó P10: reproductor compartido único, selección desde pistas,
+cola completa del álbum/búsqueda, controles y errores de audio. Consultar
+`docs/VALIDACION_P10.md`; las pruebas de controlador usan un doble de audio,
+no acreditan escucha real ni continuidad visual. La revisión manual quedó
+pendiente por actividad del usuario en Brave; P08/P09 mantienen sus pendientes.
+Siguiente implementación P11. No iniciar audio automáticamente al recargar.

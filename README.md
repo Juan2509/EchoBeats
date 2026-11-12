@@ -3,12 +3,14 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P08 implementado, revisión visual pendiente.** Inicio, navegación,
+**Estado actual: P10 implementado; validación manual de audio pendiente.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
 Las correcciones manuales se conservan al releer el original.
-Reproducción, gestión de playlists, muros e IA siguen pendientes.
+Entrega de MP3 con GET/HEAD y rangos; reproductor compartido con selección,
+pausa, anterior/siguiente, avance y volumen. Gestión de playlists, muros e IA
+siguen pendientes.
 `health` y `ready` comprueban proceso y BD.
 
 ## Inicio con Docker
@@ -36,6 +38,15 @@ la URL para recargar o usar Atrás/Adelante. Abrir una tarjeta muestra las pista
 del álbum en orden. El panel «Editar canciones, álbumes y portadas» conserva el
 editor de P07 y sus borradores durante la navegación dentro de la aplicación.
 Ver [validación P08](docs/VALIDACION_P08.md) y sus comprobaciones visuales pendientes.
+P09 permite abrir la `audio_url` de una pista directamente en el reproductor
+nativo del navegador. GET admite rangos y HEAD consulta tamaño/tipo sin descargar
+el audio. Uso, evidencias y límites en [validación P09](docs/VALIDACION_P09.md).
+P10 añade botones para reproducir en «Canciones» y dentro de cada álbum. La barra
+compartida conserva pista, posición y volumen al navegar dentro de la aplicación.
+La lista sigue el álbum o la búsqueda seleccionados, incluso entre páginas.
+Al terminar avanza a la siguiente pista y se detiene al final; cerrar/recargar
+la página no restaura ni inicia audio automáticamente. Ver
+[validación P10](docs/VALIDACION_P10.md) para pruebas y revisión manual pendiente.
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).
@@ -91,6 +102,7 @@ docker compose exec backend python -m pip check
 docker compose exec backend python -m alembic check
 docker compose exec backend python -m app.media_audit
 docker compose exec frontend npm run build
+docker compose exec frontend npm test
 docker compose config --quiet
 curl --fail http://localhost:8000/api/v1/health
 curl --fail http://localhost:5173/api/v1/health

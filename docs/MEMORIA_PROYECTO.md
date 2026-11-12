@@ -376,3 +376,50 @@ La revisión visual quedó pendiente: la herramienta de navegador se detuvo al n
 poder identificar la URL con confianza para aplicar su política. No se declara
 cierre de P08 ni verificación visual. Ver `VALIDACION_P08.md`; revisar teclado y
 anchos 360/768/1280 antes de cerrar, después P09. No se creó commit.
+
+## Avance posterior: P09
+
+P08 quedó registrado en `ddd5b20`, conservando su revisión visual pendiente.
+El usuario autorizó avanzar P09, que depende de P07. Se implementó GET/HEAD
+`/api/v1/tracks/{id}/audio`, resolución de MP3 gestionado y `audio_url` en fichas
+y listados. FileResponse de Starlette sirve por bloques con rangos, If-Range,
+ETag/fecha, MIME audio/mpeg e inline. HEAD devuelve cabeceras completas sin cuerpo.
+Comprueba tipo, ruta, archivo regular, tamaño y apertura; errores seguros de
+ausencia/permisos no exponen rutas ni eliminan pistas. No cambia originales,
+esquema ni dependencias. El reproductor compartido sigue correspondiendo a P10.
+
+57 pruebas PostgreSQL aisladas con avisos como errores, build y OpenAPI correctos.
+Proxy real: HEAD 200, 96.675 bytes; GET bytes=1000-1999 responde 206 y 1.000 bytes.
+Brave cargó el MP3 técnico de P08 y reconoció duración de unos 12,084 s; no se
+confirmó reproducir/seek porque el control UI detectó actividad del usuario en
+la ventana e interrumpió las acciones. No se afirma escucha audible.
+
+Ver `VALIDACION_P09.md`. P09 queda implementado sin commit, con su criterio
+manual pendiente; P08 conserva revisión de teclado/anchos. Próxima implementación
+P10, manteniendo explícitas ambas comprobaciones pendientes. Sin commit automático.
+
+## Avance posterior: P10
+
+El usuario autorizó avanzar al paso 10 con las comprobaciones manuales anteriores
+pendientes. Se incorporó un PlayerProvider con único elemento audio fuera de las
+vistas, selección desde Canciones/Álbum y barra de reproducción compartida. Play/
+pausa, anterior/siguiente, progreso, seek y volumen; fin de pista avanza y fin
+de lista se detiene. Abrir otra vista no cambia pista ni cola. Al recargar no
+se restaura ni comienza audio automáticamente.
+
+La cola recupera todas las fichas del álbum/búsqueda, sin descargar sus audios;
+play se solicita durante el clic antes de esperar a la lista. Fallo de lista
+completa usa la página visible con aviso. Errores de audio, autoplay bloqueado,
+pausas externas y promesas/eventos/colas antiguos se gestionan explícitamente.
+Correcciones de metadata actualizan la pista activa sin reiniciar el audio.
+
+13 pruebas del controlador/colas en Windows y Docker, con dobles de audio/HTTP;
+57 pruebas backend aisladas, builds TypeScript/Vite en ambos entornos y Compose
+correctos. Sin nuevas dependencias ni migraciones. Tests frontend montados como
+solo lectura en Compose y script `npm test` con node:test.
+
+Brave seguía recibiendo actividad del usuario y el control UI no permitió abrir
+la prueba. No se acredita escucha real, seek manual, continuidad audible ni
+validación de teclado/tamaños. CA-01/CA-03 y los cierres visuales P08/P09/P10
+permanecen pendientes de su recorrido manual; ver `VALIDACION_P10.md`.
+P09/P10 siguen sin commit. Siguiente implementación P11; no se crean commits.

@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P08 implementado con revisión
-visual pendiente; catálogo, importación, metadatos y biblioteca visual; audio pendiente.
+Fecha inicial: 12 de noviembre de 2026. Estado: P10 implementado; reproductor
+compartido disponible. Recorrido manual de audio y revisiones P08/P09 pendientes.
 
 ## 1. Propósito y fuentes
 
@@ -270,6 +270,14 @@ RF-02 se completa para playlists en P11; sin implementación de audio. Sin commi
 **Cierre:** el navegador reproduce una pista real y puede solicitar un punto
 intermedio sin cargar toda la biblioteca. Verificar una respuesta parcial si aplica.
 
+**Resultado:** GET/HEAD de audio original por ID, `audio_url`, rangos de bytes,
+If-Range y errores seguros. 57 pruebas aisladas correctas, build y OpenAPI sin
+avisos; proxy devuelve 206 con bytes/longitud correctos. Navegador cargó el MP3
+y reconoció duración, pero actividad del usuario interrumpió reproducir/seek;
+la casilla permanece pendiente de esa comprobación manual. Ver
+[validación P09](VALIDACION_P09.md). Implementado sin commit. P10 es el siguiente
+bloque de implementación; no se declaran cerradas las revisiones visuales pendientes.
+
 ### [ ] P10 — Integrar reproductor y estado musical
 
 **Depende de:** P08, P09. **Commit:** `feat(player): integrar controles y selección de pistas`
@@ -281,6 +289,14 @@ intermedio sin cargar toda la biblioteca. Verificar una respuesta parcial si apl
 
 **Cierre:** los controles responden con audio real y no muestran datos de otra
 pista. Completar CA-01 y CA-03; comprobar límites de inicio/final de la lista.
+
+**Resultado:** reproductor único fuera de las vistas, selección desde pistas,
+cola completa del álbum/búsqueda, controles y tratamiento de errores/promesas
+obsoletas. 13 pruebas de controlador/colas con dobles en Windows/Docker y 57 de
+backend correctas; builds correctos. Control UI interrumpido por actividad del
+usuario en Brave: no se declara CA-01/CA-03 completa ni continuidad audible
+comprobada. Casilla pendiente del recorrido manual, teclado y tamaños. Ver
+[validación P10](VALIDACION_P10.md). Sin commit automático; siguiente implementación P11.
 
 ### [ ] P11 — Gestionar playlists y su apariencia
 
@@ -577,9 +593,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P08 implementado sin commit; cierre visual pendiente.
-- **Aplicación:** catálogo, importación, metadatos, portadas y biblioteca visual; escucha pendiente.
-- **Próxima acción:** revisar teclado y anchos 360/768/1280 de P08; después P09, entrega de audio.
+- **Trabajo actual:** P10 implementado sin commit; recorrido manual de audio pendiente. P09 sigue sin commit; P08 registrado en `ddd5b20`.
+- **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
+- **Próximo bloque de implementación:** P11, playlists. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
@@ -627,7 +643,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P06 | Completado | `a316e29` | Importación y persistencia registradas. |
 | 2026-11-12 | P07 | Completado | `1e24870` | Etiquetas, portadas, edición y persistencia comprobadas; siguiente P08. |
 | 2026-11-12 | Revisión de contexto | Revisión documental completada | — | Adjuntos contrastados con referencias; decisiones y estado de P07 actualizados. Sin implementación ni nuevas pruebas funcionales; siguiente P08. |
-| 2026-11-12 | P08 | Implementado sin commit; revisión visual pendiente | — | 42 pruebas aisladas, build Windows/Docker y búsqueda real correctos. Herramienta visual detenida por URL no identificable; cerrar revisión visual y después P09. |
+| 2026-11-12 | P08 | Registrado; revisión visual pendiente | `ddd5b20` | 42 pruebas aisladas, build Windows/Docker y búsqueda real correctos. Revisión visual pendiente; usuario autorizó continuar P09. |
+| 2026-11-12 | P09 | Implementado sin commit; reproducción/seek manual pendientes | — | 57 pruebas, build, OpenAPI y rangos reales por proxy correctos; navegador reconoce MP3/duración, actividad del usuario interrumpe interacción. Siguiente implementación P10. |
+| 2026-11-12 | P10 | Implementado sin commit; recorrido manual pendiente | — | 13 pruebas frontend Windows/Docker con dobles, 57 backend y builds correctos. Control UI interrumpido por actividad del usuario; recorrido real y revisiones previas pendientes. Siguiente implementación P11. |
 
 ### Plantilla de cierre de sesión
 

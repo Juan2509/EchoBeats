@@ -3,6 +3,7 @@ import { getHealth } from '../shared/api/health'
 import { ImportPanel } from '../features/import/ImportPanel'
 import { MetadataEditor } from '../features/metadata/MetadataEditor'
 import { AlbumView, Library } from '../features/library/Library'
+import { PlayerBar, PlayerProvider } from '../features/player/Player'
 
 type Connection = 'checking' | 'connected' | 'error'
 export function App() {
@@ -38,7 +39,7 @@ export function App() {
     return () => { disposed = true; controller.abort(); window.clearTimeout(timeout) }
   }, [attempt])
   const changed = () => setRefresh(value => value + 1)
-  return <div className="workspace">
+  return <PlayerProvider refresh={refresh}><div className="workspace">
     <a className="skip-link" href="#content">Saltar al contenido</a>
     <header className="site-header"><a className="brand" href="/" onClick={event => { event.preventDefault(); navigate('/') }}><span className="mark" aria-hidden="true">◉</span> EchoBeats</a>
       <nav aria-label="Navegación principal">{[['/', 'Inicio'], ['/biblioteca', 'Biblioteca'], ['/explorar', 'Explorar']].map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={event => { event.preventDefault(); navigate(href) }}>{label}</a>)}<button className="secondary" aria-expanded={configuration} onClick={() => setConfiguration(value => !value)}>Configuración</button></nav>
@@ -55,6 +56,7 @@ export function App() {
         <details className="metadata-tools"><summary>Editar canciones, álbumes y portadas</summary><MetadataEditor refresh={refresh} onSaved={changed} /></details>
       </div>
     </main>
-    <footer>EchoBeats <span>Tu colección personal · Reproducción disponible en un próximo paso</span></footer>
-  </div>
+    <footer>EchoBeats <span>Tu colección personal · Tu música, tu espacio</span></footer>
+    <PlayerBar navigate={navigate} />
+  </div></PlayerProvider>
 }

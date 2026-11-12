@@ -4,7 +4,8 @@ P02 · 12 de noviembre de 2026. Especificación previa a implementación.
 P03 implementó health, P04 ready y P06 imports. P07 incorpora lectura/edición de
 pistas y álbumes, listas paginadas de selección, extracción y assets de portada.
 P08 incorpora búsqueda textual, listados filtrados y búsqueda agrupada.
-Las rutas de audio, gestión de playlists, muros e IA siguen pendientes.
+P09 incorpora entrega de audio original y rangos de bytes.
+La gestión de playlists, muros e IA sigue pendiente.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -64,7 +65,7 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | `GET /library/search` | q obligatoria no vacía; query y grupos tracks/albums/playlists con items/total/limit/offset/href, máximo 10 por grupo. href enlaza a biblioteca filtrada; playlists busca nombres existentes pero href=null hasta P11. | P08 implementado. |
 | `POST /assets` | multipart file y purpose=cover; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/playlist/GIF se incorporan después. | P07 para portadas; P11/P14 para otros usos. |
 | `GET /assets/{id}/content` | PNG/JPEG validado con nosniff y caché privada; sin rutas arbitrarias ni audio. GIF se incorpora después. | P07 para portadas. |
-| `GET` o `HEAD /tracks/{id}/audio` | Audio de pista válida. GET 200 completo o 206 para rango válido; 416 no satisfacible. HEAD devuelve cabeceras sin cuerpo. | P09. |
+| `GET` o `HEAD /tracks/{id}/audio` | audio/mpeg inline. GET 200 completo o 206 con Content-Range para rangos válidos (también sufijos y rangos abiertos/múltiples); 416 fuera de tamaño, 400 sintaxis inválida. HEAD 200 describe el archivo completo sin cuerpo e ignora Range. If-Range compatible por ETag o Last-Modified; token distinto devuelve 200 completo. | P09 implementado. |
 
 Un archivo inválido dentro de un lote admitido no impide procesar los otros.
 Si una petición no puede analizarse por multipart inválido o límite global, es
@@ -85,12 +86,22 @@ significa archivo y registro confirmados; el análisis de IA no forma parte de e
 promesa. Una pista sin etiquetas recibe datos provisionales con su procedencia.
 
 Resumen de pista: `id`, `title`, `artists: [{id, name}]`, `album_id`, `album_title`,
-`duration_ms`, `cover_url` nullable y procedencia. `audio_url` corresponde a P09.
+`duration_ms`, `cover_url` nullable y procedencia. P09 añade `audio_url`, relativa
+a `/api/v1/tracks/{id}/audio`; también se devuelve en los listados de pistas.
 P07 añade cover_source para imagen propia, manual, heredada o predeterminada.
 Un título provisional no implica
 identificación. Asset perdido devuelve 404 con code `media_missing`; no devuelve
 un archivo distinto ni elimina la pista. Rangos se prueban también después de
 reiniciar y al mover la barra desde el navegador.
+
+Audio incluye `Accept-Ranges: bytes`, `Content-Length`, `ETag`, `Last-Modified`,
+`X-Content-Type-Options: nosniff` y `Cache-Control: private, no-cache`. No incluye
+nombre original ni clave de almacenamiento. Solo resuelve recursos audio/mpeg
+gestionados, regulares y con el tamaño registrado; duración en `duration_ms`.
+Archivo ausente/inválido devuelve 404 `media_missing`; acceso denegado u otro
+fallo de almacenamiento devuelve 503 `media_unavailable`, conservando la pista.
+Errores de rango los genera FileResponse: 400/416 pueden tener cuerpo de texto
+del framework; 416 incluye `Content-Range: bytes */tamaño`.
 
 ## 3. Playlists
 

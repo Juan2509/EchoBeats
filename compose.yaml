@@ -72,6 +72,7 @@ services:
       - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
     volumes:
       - ./frontend/src:/app/frontend/src
+      - ./frontend/tests:/app/frontend/tests:ro
       - ./frontend/index.html:/app/frontend/index.html:ro
       - ./frontend/vite.config.ts:/app/frontend/vite.config.ts:ro
     depends_on:

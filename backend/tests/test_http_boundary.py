@@ -42,6 +42,14 @@ async def test_unknown_api_does_not_return_fake_success(client):
     assert (await client.get("/api/v1/stations")).status_code == 404
 
 
+async def test_audio_contract_has_distinct_get_and_head_operations(client):
+    response = await client.get('/openapi.json')
+    assert response.status_code == 200
+    route = response.json()['paths']['/api/v1/tracks/{track_id}/audio']
+    assert route['get']['operationId'] != route['head']['operationId']
+    assert 'audio/mpeg' in route['get']['responses']['200']['content']
+
+
 @pytest.mark.parametrize('path', ['/tracks?q=' + 'a' * 201, '/albums?q=%00', '/library/search', '/library/search?q=%20%20', '/tracks?limit=101', '/albums?offset=-1'])
 async def test_library_rejects_invalid_query_before_database_access(client, path):
     assert (await client.get('/api/v1' + path)).status_code == 422
