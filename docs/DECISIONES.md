@@ -211,3 +211,8 @@ autorizada y rúbrica docente. No se contrataron servicios ni se instalaron paqu
 P03 prepara estructura, Compose, configuración de ejemplo, bloqueos de dependencias
 y arranque mínimo. La BD real corresponde a P04 y los modelos a P05. El diseño
 de P02 no adelanta la implementación funcional de esos bloques.
+
+Actualización P03: estructura y arranque mínimo preparados y comprobados.
+Versiones efectivas, pruebas y límites en [VALIDACION_P03.md](VALIDACION_P03.md).
+Los locks y los digests de Dockerfiles son la referencia reproducible actual.
+La base de datos y su versión concreta siguen pendientes de P04.

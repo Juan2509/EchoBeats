@@ -1,6 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: planificación; aplicación sin implementar.
+Fecha inicial: 12 de noviembre de 2026. Estado: P03 implementado;
+entorno mínimo ejecutable y funcionalidades musicales pendientes.
 
 ## 1. Propósito y fuentes
 
@@ -136,14 +137,14 @@ en los diseños; álbumes y playlists se distinguen y los controles quedan acces
 [modelo de datos](MODELO_DATOS.md) y [contrato de API](CONTRATO_API.md).
 Definidos ejecución local de un usuario, stack, archivos gestionados, duplicados,
 continuidad del reproductor, lienzo proporcional y guardado con revisión.
-Diseño revisado; sin interfaz ejecutable ni endpoints todavía. Implementado sin commit.
+Diseño revisado; registrado en `6c0163a`. La interfaz mínima se incorpora en P03.
 
 ## 5. Fase 1 — Base técnica reproducible
 
 **Entrega de fase:** interfaz, backend, base de datos y almacenamiento inicial
 arrancan con instrucciones documentadas.
 
-### [ ] P03 — Crear estructura y configuración de desarrollo
+### [x] P03 — Crear estructura y configuración de desarrollo
 
 **Depende de:** P02. **Commit:** `chore(setup): preparar estructura y entorno de desarrollo`
 
@@ -154,6 +155,11 @@ arrancan con instrucciones documentadas.
 
 **Cierre:** el entorno se puede instalar siguiendo el README y no se versionan
 claves ni archivos personales de prueba. No instalar siguiendo ciegamente ejemplos.
+
+**Resultado:** estructura frontend/backend, Docker Compose local, `.env.example`,
+exclusiones, locks con dependencias probadas y README. Pantalla de conexión y health
+reales; seis pruebas, build, compatibilidad Python y proxy HTTP correctos.
+Ver [registro de validación](VALIDACION_P03.md). Sin BD hasta P04. Implementado sin commit.
 
 ### [ ] P04 — Preparar PostgreSQL y extensión vectorial
 
@@ -538,16 +544,16 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P02 terminado en diseño y arquitectura, sin commit.
-- **Aplicación:** sin implementación.
-- **Próximo bloque:** P03 — crear estructura y configuración de desarrollo.
+- **Trabajo actual:** P03 terminado en entorno y arranque inicial, sin commit.
+- **Aplicación:** pantalla de conexión React y health FastAPI; dominio musical pendiente.
+- **Próximo bloque:** P04 — PostgreSQL, pgvector y migraciones.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
-- **Decisiones pendientes:** proveedores/modelos de IA, versiones exactas,
+- **Decisiones pendientes:** proveedores/modelos de IA, imagen/versión de BD,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado de Git al iniciar P02:** sin cambios pendientes; P01 registrado en
-  `bb10254`. No se creó un commit al terminar P02; se propone su mensaje al usuario.
+- **Estado de Git al iniciar P03:** sin cambios pendientes; P02 registrado en
+  `6c0163a`. No se creó un commit al terminar P03; se propone su mensaje al usuario.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
@@ -556,6 +562,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 - **Validación de P02:** enlaces, ejemplos JSON y geometría ilustrativa del muro;
   revisión de coherencia entre rutas, relaciones y recorridos. Fuentes oficiales
   consultadas para capacidades técnicas; dependencias aún no instaladas/probadas.
+- **Validación de P03:** imágenes construidas desde locks; seis tests sin avisos,
+  pip check, TypeScript y build en host/Docker, HTTP directo/proxy y página 200.
+  Sin inspección visual en navegador; detalle en `VALIDACION_P03.md`.
 - **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
   de commit en español; mantener esta práctica en futuras sesiones.
 
@@ -565,7 +574,8 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | --- | --- | --- | --- | --- |
 | 2026-11-12 | P00 | Completado | `0ee2b43` | Fuentes, memoria y plan registrados; continuado en P01. |
 | 2026-11-12 | P01 | Completado | `bb10254` | Alcance, matrices y colección sintética registrados. |
-| 2026-11-12 | P02 | Implementado sin commit | — | Pantallas, decisiones, datos y API definidos y revisados; siguiente: P03. |
+| 2026-11-12 | P02 | Completado | `6c0163a` | Pantallas, decisiones, datos y API registrados. |
+| 2026-11-12 | P03 | Implementado sin commit | — | Entorno, locks y arranque real verificados; siguiente: P04. |
 
 ### Plantilla de cierre de sesión
 

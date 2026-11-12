@@ -54,7 +54,20 @@ Se consultaron fuentes oficiales para orientar capacidades técnicas; no se
 instalaron paquetes ni se construyó aún interfaz/API ejecutable. Proveedor de
 IA y requisitos docentes siguen pendientes. Los apartados históricos siguientes
 reflejan el concepto inicial; las decisiones vigentes se consultan en DECISIONES.md.
-P02 se entrega sin crear commit. Siguiente: P03, estructura y configuración.
+P02 se entregó sin crear commit y el usuario lo registró después en `6c0163a`.
+
+## Avance posterior: P03
+
+Se prepararon frontend React/TypeScript/Vite, backend FastAPI con health real,
+configuración por entorno, Docker Compose local, exclusiones de archivos privados
+y README de instalación. Locks npm y Python (versiones/hashes) e imágenes por digest.
+No se implementaron todavía biblioteca, reproducción, muros, IA ni base de datos.
+
+Se construyeron ambas imágenes y se comprobó arranque local, seis pruebas HTTP
+sin avisos, compatibilidad de paquetes, build de frontend en host/Node 24 y
+respuesta HTTP directa y por proxy. Sin verificación visual en navegador.
+Detalles y versiones en `VALIDACION_P03.md`. Los servicios de comprobación se
+detienen al finalizar; no se publica ni se crea commit. Siguiente: P04.
 
 ## Fuentes y alcance de sus afirmaciones
 

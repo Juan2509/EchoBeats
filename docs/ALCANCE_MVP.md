@@ -2,7 +2,8 @@
 
 Fecha: 12 de noviembre de 2026. Entregable de P01.
 Estado: alcance de trabajo definido a partir del concepto; validación docente pendiente.
-La aplicación todavía no está implementada y las pruebas funcionales no se han ejecutado.
+P03 incorporó el entorno y una pantalla de conexión; las funciones musicales
+y las pruebas de aceptación de este alcance todavía no se han implementado/ejecutado.
 
 ## 1. Objetivo de la primera entrega
 

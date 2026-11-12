@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+**/.env
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/dist
+data
+postgres_data
+docs/referencias
+pruebas/coleccion/*.mp3

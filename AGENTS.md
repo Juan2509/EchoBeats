@@ -28,3 +28,7 @@ La solicitud inicial fue leer, comprender y conservar el contexto. No autorizó
 por sí sola elegir todo el stack, instalar dependencias ni implementar la aplicación.
 Las solicitudes posteriores autorizaron desarrollar P01 y P02; las decisiones
 técnicas de P02 son elecciones de trabajo documentadas, no aprobaciones docentes.
+El usuario también autorizó P03: ya hay estructura y arranque mínimo local.
+Leer `README.md` y `docs/VALIDACION_P03.md` para instalación y comprobaciones.
+Siguiente paso: P04. Los locks se instalan con `npm ci` y `pip --require-hashes`;
+no usar el Python 3.10 del host como entorno del backend Python 3.12.
