@@ -28,6 +28,7 @@ coverage/
 # Medios personales, bases y temporales
 /data/
 /postgres_data/
+/backups/
 *.log
 .DS_Store
 .sites-runtime/

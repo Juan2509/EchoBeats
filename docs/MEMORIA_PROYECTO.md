@@ -67,7 +67,25 @@ Se construyeron ambas imágenes y se comprobó arranque local, seis pruebas HTTP
 sin avisos, compatibilidad de paquetes, build de frontend en host/Node 24 y
 respuesta HTTP directa y por proxy. Sin verificación visual en navegador.
 Detalles y versiones en `VALIDACION_P03.md`. Los servicios de comprobación se
-detienen al finalizar; no se publica ni se crea commit. Siguiente: P04.
+detienen al finalizar; no se publica ni se crea commit. P03 se registró después
+en `4d87180`.
+
+## Avance posterior: P04
+
+El usuario autorizó continuar con PostgreSQL y pgvector. Se incorporó la imagen
+por digest (PostgreSQL 17.11/pgvector 0.8.7), volumen nombrado, Alembic con
+`0001_enable_vector`, motor SQLAlchemy/Psycopg y endpoint /api/v1/ready.
+El arranque aplica migraciones antes del backend. Puerto de host 5433 porque
+5432 ya tenía otro servicio, que se dejó intacto. Backend usa postgres:5432.
+
+`scripts/preparar_entorno.py` genera .env privado sin sobrescribir uno existente.
+`scripts/base_datos.py` respalda con manifiesto/hash y restaura solo a una base
+nueva. Nueve pruebas, caída/recuperación, distancias de vectores de prueba,
+respaldo real y persistencia tras recrear contenedores comprobados.
+Datos conservados en volumen, .env y backups locales, excluidos de Git;
+base restaurada de comprobación aislada de la principal. Detalles en
+BASE_DATOS.md y VALIDACION_P04.md. Aún sin catálogo ni embeddings musicales.
+No se crea commit en esta entrega. Siguiente: P05.
 
 ## Fuentes y alcance de sus afirmaciones
 

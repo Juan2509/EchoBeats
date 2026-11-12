@@ -215,4 +215,6 @@ de P02 no adelanta la implementación funcional de esos bloques.
 Actualización P03: estructura y arranque mínimo preparados y comprobados.
 Versiones efectivas, pruebas y límites en [VALIDACION_P03.md](VALIDACION_P03.md).
 Los locks y los digests de Dockerfiles son la referencia reproducible actual.
-La base de datos y su versión concreta siguen pendientes de P04.
+P04 añadió PostgreSQL 17.11/pgvector 0.8.7, imagen fijada por digest en Compose,
+volumen nombrado, Alembic y readiness real. Host local 5433 e interno 5432.
+Operación y evidencia: [BASE_DATOS.md](BASE_DATOS.md), [VALIDACION_P04.md](VALIDACION_P04.md).

@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P03 implementado;
-entorno mínimo ejecutable y funcionalidades musicales pendientes.
+Fecha inicial: 12 de noviembre de 2026. Estado: P04 implementado;
+entorno y base de datos ejecutables, funcionalidades musicales pendientes.
 
 ## 1. Propósito y fuentes
 
@@ -159,9 +159,9 @@ claves ni archivos personales de prueba. No instalar siguiendo ciegamente ejempl
 **Resultado:** estructura frontend/backend, Docker Compose local, `.env.example`,
 exclusiones, locks con dependencias probadas y README. Pantalla de conexión y health
 reales; seis pruebas, build, compatibilidad Python y proxy HTTP correctos.
-Ver [registro de validación](VALIDACION_P03.md). Sin BD hasta P04. Implementado sin commit.
+Ver [registro de validación](VALIDACION_P03.md). Registrado en `4d87180`.
 
-### [ ] P04 — Preparar PostgreSQL y extensión vectorial
+### [x] P04 — Preparar PostgreSQL y extensión vectorial
 
 **Depende de:** P03. **Commit:** `chore(database): preparar PostgreSQL con pgvector`
 
@@ -172,6 +172,13 @@ Ver [registro de validación](VALIDACION_P03.md). Sin BD hasta P04. Implementado
 
 **Cierre:** conexión real, extensión comprobada y persistencia tras reiniciar.
 La tabla de embeddings espera a la elección de modelo en P20/P21.
+
+**Resultado:** PostgreSQL 17/pgvector fijados por digest, volumen nombrado,
+migración Alembic, conexión configurable, /ready y scripts de respaldo/restauración
+en bases nuevas. Nueve pruebas y persistencia tras recrear contenedores verificadas.
+Ver [operación](BASE_DATOS.md) y [validación](VALIDACION_P04.md).
+Configuración local en `.env`, contraseña sin versionar; puerto de host 5433.
+Implementado sin commit.
 
 ### [ ] P05 — Crear esquema de biblioteca y almacenamiento
 
@@ -544,16 +551,16 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P03 terminado en entorno y arranque inicial, sin commit.
-- **Aplicación:** pantalla de conexión React y health FastAPI; dominio musical pendiente.
-- **Próximo bloque:** P04 — PostgreSQL, pgvector y migraciones.
+- **Trabajo actual:** P04 terminado en PostgreSQL, migraciones y recuperación, sin commit.
+- **Aplicación:** pantalla de conexión, health/ready, BD real; dominio musical pendiente.
+- **Próximo bloque:** P05 — esquema de biblioteca y almacenamiento.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
-- **Decisiones pendientes:** proveedores/modelos de IA, imagen/versión de BD,
+- **Decisiones pendientes:** proveedores/modelos de IA,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
 - **Ampliaciones habilitadas:** ninguna por ahora.
-- **Estado de Git al iniciar P03:** sin cambios pendientes; P02 registrado en
-  `6c0163a`. No se creó un commit al terminar P03; se propone su mensaje al usuario.
+- **Estado de Git al iniciar P04:** sin cambios pendientes; P03 registrado en
+  `4d87180`. No se creó un commit al terminar P04; se propone su mensaje al usuario.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
   RF-18 a RF-20 aplazados. CA-13 condicional al reconocimiento.
 - **Validación de P01:** cobertura completa de IDs, enlaces locales, hashes y
@@ -565,6 +572,11 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 - **Validación de P03:** imágenes construidas desde locks; seis tests sin avisos,
   pip check, TypeScript y build en host/Docker, HTTP directo/proxy y página 200.
   Sin inspección visual en navegador; detalle en `VALIDACION_P03.md`.
+- **Validación de P04:** nueve pruebas; PostgreSQL 17.11/pgvector 0.8.7,
+  upgrade/downgrade aislados, vector real de prueba, ready 503/recuperación,
+  respaldo/restauración y volumen conservado tras recreación. Ver `VALIDACION_P04.md`.
+- **Datos locales:** `.env` generado y privado; volumen echobeats_postgres_data
+  conservado; base restaurada de comprobación y backups ignorados por Git.
 - **Preferencia del usuario:** terminar cada paso con una sugerencia de mensaje
   de commit en español; mantener esta práctica en futuras sesiones.
 
@@ -575,7 +587,8 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P00 | Completado | `0ee2b43` | Fuentes, memoria y plan registrados; continuado en P01. |
 | 2026-11-12 | P01 | Completado | `bb10254` | Alcance, matrices y colección sintética registrados. |
 | 2026-11-12 | P02 | Completado | `6c0163a` | Pantallas, decisiones, datos y API registrados. |
-| 2026-11-12 | P03 | Implementado sin commit | — | Entorno, locks y arranque real verificados; siguiente: P04. |
+| 2026-11-12 | P03 | Completado | `4d87180` | Entorno, locks y arranque registrados. |
+| 2026-11-12 | P04 | Implementado sin commit | — | BD, migraciones, persistencia y recuperación comprobadas; siguiente: P05. |
 
 ### Plantilla de cierre de sesión
 

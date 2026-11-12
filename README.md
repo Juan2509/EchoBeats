@@ -3,19 +3,19 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P03.** Existen el entorno de desarrollo, una pantalla de conexión
-y `GET /api/v1/health`. Importación, reproducción, muros, BD e IA siguen pendientes
-de sus pasos. La pantalla inicial no contiene un catálogo simulado.
+**Estado actual: P04.** Entorno local, pantalla de conexión, FastAPI y PostgreSQL
+con pgvector y migraciones. `health` confirma el proceso y `ready` comprueba la
+base real. El catálogo musical, importación, reproductor, muros e IA siguen
+pendientes. La pantalla inicial no contiene un catálogo simulado.
 
 ## Inicio con Docker
 
 Requisitos: Docker con daemon activo y Docker Compose **2.24 o superior**.
 La primera construcción descarga imágenes y paquetes; requiere acceso a internet.
-Ejecutar desde la raíz del repositorio. Copiar `.env.example` solo si todavía
-no existe un `.env` local que se deba conservar:
+Ejecutar desde la raíz del repositorio:
 
 ```bash
-cp .env.example .env
+python3 scripts/preparar_entorno.py
 docker compose up --build
 ```
 
@@ -23,12 +23,14 @@ Abrir [EchoBeats](http://localhost:5173). Debe aparecer «Servidor conectado».
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).
+La comprobación de dependencias está en [ready](http://localhost:8000/api/v1/ready).
 
 Los puertos del host se publican solo en `127.0.0.1`; el proceso dentro de cada
 contenedor escucha en su interfaz interna. No cambiar las publicaciones a
 `0.0.0.0` para compartirlo: la arquitectura actual no tiene cuentas/autenticación.
-P03 permite arrancar sin `.env` con valores locales predeterminados; el archivo
-de ejemplo documenta la configuración y prepara el siguiente paso.
+El script crea `.env` con contraseña aleatoria, sin imprimirla ni versionarla.
+Si ya existe, lo conserva; completar los campos POSTGRES_* siguiendo `.env.example`
+al actualizar desde P03. La contraseña vacía impide iniciar PostgreSQL.
 
 Frontend y backend recargan cambios en `frontend/src` y `backend/app`.
 Cambios de dependencias requieren reconstruir la imagen. No montar un
@@ -40,9 +42,9 @@ Para detener, pulsar Ctrl+C en la terminal del arranque y después:
 docker compose down
 ```
 
-No se usan opciones de borrado de volúmenes. P04 incorporará PostgreSQL, pgvector,
-su volumen, migraciones y comprobación de disponibilidad; health en P03 confirma
-solo el proceso y no anuncia conexión a una base de datos inexistente.
+No se usan opciones de borrado de volúmenes. El volumen `echobeats_postgres_data`
+conserva la BD al recrear contenedores. Compose aplica migraciones pendientes
+antes del backend; el servicio `migrate` finaliza correctamente, no queda corriendo.
 
 ## Configuración
 
@@ -53,7 +55,10 @@ solo el proceso y no anuncia conexión a una base de datos inexistente.
 | `ALLOWED_HOSTS` | localhost, 127.0.0.1 y backend interno de Compose. |
 | `ALLOWED_ORIGINS` | Orígenes de navegador autorizados para escrituras. Al cambiar puertos, ajustar la lista. |
 | `MEDIA_ROOT` | `./data/media` en ejecución nativa; Compose utiliza `/app/data/media` montado desde `./data`. |
-| `DATABASE_URL` | Reservada para P04; no se necesita en P03. |
+| `POSTGRES_DB` / `POSTGRES_USER` | Base y usuario locales; por defecto echobeats. |
+| `POSTGRES_PASSWORD` | Contraseña aleatoria del .env; nunca versionada. |
+| `POSTGRES_HOST` / `POSTGRES_PORT` | 127.0.0.1:5433 para clientes nativos; Compose usa postgres:5432 internamente. |
+| `DATABASE_URL` | Opcional para ejecución nativa con esquema postgresql+psycopg. Vacía usa POSTGRES_*. Compose no usa la URL nativa. |
 
 No guardar claves en variables `VITE_*`: su contenido puede acabar en el cliente.
 El frontend de Compose solo recibe la dirección interna del proxy. No se necesitan
@@ -65,21 +70,39 @@ Con servicios iniciados:
 
 ```bash
 docker compose exec backend python -m pytest
+docker compose exec -e RUN_DB_TESTS=1 backend python -m pytest -W error
 docker compose exec backend python -m pip check
 docker compose exec frontend npm run build
 docker compose config --quiet
 curl --fail http://localhost:8000/api/v1/health
 curl --fail http://localhost:5173/api/v1/health
+curl --fail http://localhost:8000/api/v1/ready
 ```
 
-El último comando verifica el proxy que usa la interfaz. Los tests comprueban
-health sin BD, rechazo de Host y origen de escritura no autorizados, y que rutas
-no implementadas no devuelvan un éxito falso. El build comprueba TypeScript y
-genera los archivos del frontend. La verificación visual en navegador es adicional.
+La petición al puerto 5173 verifica el proxy. Las pruebas básicas comprueban
+health, readiness sin configuración y restricciones HTTP locales. Las pruebas
+con RUN_DB_TESTS crean/eliminan únicamente una base aleatoria aislada y verifican
+migraciones, pgvector y estados de readiness; no alteran el esquema principal.
+El build comprueba TypeScript. La verificación visual en navegador es adicional.
 
 Si los servicios están detenidos, las comprobaciones sin iniciarlos permanentemente
 pueden ejecutarse con `docker compose run --rm --no-deps backend python -m pytest`
 y `docker compose run --rm --no-deps frontend npm run build`, después del build.
+
+## Base de datos, respaldo y restauración
+
+PostgreSQL se publica en `127.0.0.1:5433` para evitar el servicio ya existente
+en 5432. Migraciones, conexión, persistencia y recuperación se explican en
+[BASE_DATOS.md](docs/BASE_DATOS.md).
+
+```bash
+docker compose exec backend python -m alembic current
+python3 scripts/base_datos.py respaldar
+```
+
+El respaldo va a `backups/` con manifiesto y hash. Restaurar siempre crea una
+base nueva `echobeats_restore_<nombre>` y nunca reemplaza la activa. El dump
+no incluye medios: para una biblioteca futura conservar también MEDIA_ROOT.
 
 ## Ejecución nativa opcional
 
@@ -90,8 +113,12 @@ La versión 3.10 del equipo donde se preparó P03 no es el entorno de referencia
 python3.12 -m venv backend/.venv
 backend/.venv/bin/python -m pip install --require-hashes -r backend/requirements.lock
 cd backend
+.venv/bin/python -m alembic upgrade head
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+
+Antes de migrar nativamente, preparar `.env` e iniciar PostgreSQL con
+`docker compose up --detach --wait postgres`. Se usa el puerto 5433 del host.
 
 Frontend: Node **24** como versión de referencia del contenedor, npm y una segunda
 terminal. El rango mínimo del proyecto está en package.json; se comprobó también
@@ -117,6 +144,8 @@ nativa debe conservar el argumento final `--host 127.0.0.1`.
   `pip install --require-hashes -r backend/requirements.lock`.
 - Imágenes de Python y Node fijadas por digest en sus Dockerfiles. Actualizarlas
   deliberadamente y repetir las comprobaciones cuando se cambien.
+- Imagen de PostgreSQL/pgvector fijada por digest en Compose; sus cambios requieren
+  comprobar compatibilidad y persistencia de la BD.
 
 Para actualizar Python: resolver `requirements.in` con pip-tools en Python 3.12
 usando `pip-compile --generate-hashes --strip-extras --output-file requirements.lock

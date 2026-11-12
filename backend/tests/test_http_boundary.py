@@ -2,6 +2,7 @@
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from pydantic import SecretStr
 
 from app.config import Settings
 from app.main import create_app
@@ -17,7 +18,10 @@ def anyio_backend():
 
 @pytest.fixture
 async def client():
-    settings = Settings(_env_file=None, allowed_hosts="localhost", allowed_origins="http://localhost:5173")
+    settings = Settings(
+        _env_file=None, allowed_hosts="localhost", allowed_origins="http://localhost:5173",
+        database_url=SecretStr(""), postgres_password=SecretStr(""),
+    )
     async with AsyncClient(transport=ASGITransport(app=create_app(settings)), base_url="http://localhost") as session:
         yield session
 
@@ -26,6 +30,12 @@ async def test_health_without_database_or_api_credentials(client):
     response = await client.get("/api/v1/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+async def test_readiness_without_configuration_is_not_ready(client):
+    response = await client.get("/api/v1/ready")
+    assert response.status_code == 503
+    assert response.json()["checks"]["database"] == "unavailable"
 
 
 async def test_unknown_api_does_not_return_fake_success(client):

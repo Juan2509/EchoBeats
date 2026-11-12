@@ -1,25 +1,62 @@
 name: echobeats
 
+x-backend: &backend-base
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+  env_file:
+    - .env
+  environment:
+    MEDIA_ROOT: /app/data/media
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: 5432
+    # Compose construye la URL desde POSTGRES_*; no usa una URL nativa localhost.
+    DATABASE_URL: ""
+  volumes:
+    - ./backend/app:/app/backend/app
+    - ./backend/tests:/app/backend/tests
+    - ./backend/migrations:/app/backend/migrations
+    - ./backend/alembic.ini:/app/backend/alembic.ini:ro
+    - ./backend/pyproject.toml:/app/backend/pyproject.toml:ro
+    - ./data:/app/data
+
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    env_file:
-      - path: .env
-        required: false
+  postgres:
+    image: pgvector/pgvector:pg17@sha256:7d0a41464797aeb9862dfdc0bbf1526b82cfd324cdd8036df19e3545f4a9ccb8
     environment:
-      MEDIA_ROOT: /app/data/media
+      POSTGRES_DB: ${POSTGRES_DB:-echobeats}
+      POSTGRES_USER: ${POSTGRES_USER:-echobeats}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Ejecuta python3 scripts/preparar_entorno.py}
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     volumes:
-      - ./backend/app:/app/backend/app
-      - ./backend/tests:/app/backend/tests
-      - ./data:/app/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=2)"]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  migrate:
+    <<: *backend-base
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    restart: "no"
+
+  backend:
+    <<: *backend-base
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/ready', timeout=8)"]
+      interval: 5s
+      timeout: 10s
       retries: 10
       start_period: 5s
     command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
@@ -40,4 +77,5 @@ services:
       backend:
         condition: service_healthy
 
-# PostgreSQL, pgvector y su volumen se incorporan en P04.
+volumes:
+  postgres_data:

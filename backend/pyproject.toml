@@ -2,3 +2,4 @@
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
+markers = ["integration: requiere PostgreSQL real y crea una base aislada de pruebas"]

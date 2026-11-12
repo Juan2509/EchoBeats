@@ -10,5 +10,5 @@ class HealthResponse(BaseModel):
 
 @router.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    """Confirma el proceso; la disponibilidad de BD se añadirá en P04."""
+    """Confirma el proceso; /ready comprueba las dependencias de base de datos."""
     return HealthResponse(status="ok")

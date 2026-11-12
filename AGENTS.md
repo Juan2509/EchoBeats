@@ -30,5 +30,9 @@ Las solicitudes posteriores autorizaron desarrollar P01 y P02; las decisiones
 técnicas de P02 son elecciones de trabajo documentadas, no aprobaciones docentes.
 El usuario también autorizó P03: ya hay estructura y arranque mínimo local.
 Leer `README.md` y `docs/VALIDACION_P03.md` para instalación y comprobaciones.
-Siguiente paso: P04. Los locks se instalan con `npm ci` y `pip --require-hashes`;
+Los locks se instalan con `npm ci` y `pip --require-hashes`;
 no usar el Python 3.10 del host como entorno del backend Python 3.12.
+P04 incorpora BD real, Alembic, /ready, respaldo y restauración; siguiente P05.
+Consultar `docs/BASE_DATOS.md` y `docs/VALIDACION_P04.md`. Host PostgreSQL 5433;
+interno postgres:5432. Mantener .env privado, volumen y backups existentes.
+Nunca borrar volúmenes al arrancar ni usar la base principal para downgrades/tests.

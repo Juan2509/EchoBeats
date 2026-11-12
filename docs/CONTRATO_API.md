@@ -1,7 +1,8 @@
 # Contrato inicial de API de EchoBeats
 
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
-No hay endpoints ejecutables todavía. El OpenAPI generado por FastAPI se
+P03 implementó health y P04 ready; el resto del contrato sigue pendiente.
+El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
 Ver [modelo](MODELO_DATOS.md), [decisiones](DECISIONES.md) y
@@ -44,7 +45,7 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | Método y ruta | Entrada / salida principal | Cierre / paso |
 | --- | --- | --- |
 | `GET /health` | `{status: "ok"}`; confirma proceso, sin secretos. | P03. |
-| `GET /ready` | Estado de BD y extensión; 503 si falta una dependencia local requerida. No comprueba proveedor de IA para permitir escucha sin IA. | P04. |
+| `GET /ready` | `{status, checks: {database, pgvector, migrations}}`; 200 si todos están ok y 503 en caso contrario. No consulta proveedor de IA. | P04 implementado. |
 | `POST /imports` | multipart `files`, hasta 20 MP3. Respuesta 200 con resultado por archivo; tamaño total excesivo rechaza solicitud con 413. | P06. |
 | `GET /tracks` | q opcional, album_id opcional y paginación; resúmenes de pistas. | P07–P08. |
 | `GET /tracks/{id}` | Pista, álbum, artistas, duración, portada heredada y procedencia; `revision`. | P07. |
