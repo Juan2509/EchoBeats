@@ -395,6 +395,12 @@ saltos inesperados; los elementos siguen siendo recuperables en ventanas pequeñ
 
 ### [ ] P16 — Completar guardado, restauración y restablecimiento
 
+Implementado el 13 de noviembre de 2026; recorrido visual de cierre pendiente.
+Autoguardado agrupado, cambios nuevos durante una escritura, restauración y reset
+versionado con confirmación. 42 pruebas frontend aprobadas. Ver VALIDACION_P16.md.
+No cerrar CA-06/CA-07 sin recorrido de reinicio y A/B; P15 conserva su pendiente.
+Próxima implementación P17; sin commit automático.
+
 **Depende de:** P12–P15. **Commit:** `feat(walls): guardar y restaurar diseños completos`
 
 - Guardar al finalizar acciones significativas y mostrar pendiente/guardando/guardado/error.
@@ -639,9 +645,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P14 implementado sin commit; ver VALIDACION_P14.md. P13 registrado en `655add4`. P12 registrado en `4c5c0d4`. P11 registrado en `12bd0e5`. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
+- **Trabajo actual:** P16 implementado con recorrido visual pendiente; ver VALIDACION_P16.md. P15 registrado en 97f797a con revisión visual pendiente. Conservar los pendientes de P08 y audio.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P15, rotación/tamaño/orden de objetos. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
+- **Próximo bloque de implementación:** P17, casos de búsqueda y evaluación musical. P15/P16 conservan sus revisiones manuales de cierre pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

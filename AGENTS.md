@@ -1,5 +1,10 @@
 # EchoBeats: contexto del proyecto
 
+P16 añade autoguardado agrupado y serializado, conserva ediciones nuevas durante
+una escritura y ofrece restauración/reset versionado con confirmación. Ver
+`docs/VALIDACION_P16.md`. 42 pruebas frontend aprobadas; recorrido visual y reinicio
+CA-06/CA-07 pendientes por host de navegador no disponible. Próxima implementación P17.
+
 P15 implementa tamaño, giro y capas con selector de objetos tapados; ver
 `docs/VALIDACION_P15.md`. Pruebas frontend y build aprobados; cierre visual
 360/768/1280 pendiente por bloqueo de identificación de URL en Computer Use.

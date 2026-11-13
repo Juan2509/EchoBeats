@@ -2,6 +2,17 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P16 — 13 de noviembre de 2026
+
+El usuario autorizó P16. Implementado autoguardado a 700 ms, cola de composición
+reciente sin sobrescribirla con respuestas anteriores, restaurar guardado y reset
+persistente con confirmación y ETag. Mantener borrador al fallar, sin reintentos
+inciertos. Navegación advierte que una escritura enviada podría completarse.
+42 pruebas frontend aprobadas. Ver VALIDACION_P16.md. Revisión visual pendiente:
+Computer Use informó que el host de acceso al navegador no está disponible.
+CA-06/CA-07 con cierre/reinicio siguen pendientes; P15/P08/audio no se dan por
+cerrados. P15 registrado por el usuario en 97f797a. Próxima implementación P17.
+
 ## Avance vigente: P15 — 13 de noviembre de 2026
 
 El usuario autorizó P15. Implementados ancho/alto 3–60 %, giro normalizado,

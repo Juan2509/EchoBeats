@@ -155,6 +155,13 @@ se refresca al guardar desde el editor, sin reiniciar su audio.
 
 ## D07 — Muros con lienzo proporcional y guardado versionado
 
+Actualización P16: el editor agrupa acciones durante 700 ms; espera al final de
+arrastre/subida y serializa escrituras. Permite continuar transformando durante
+un PUT; la respuesta actualiza revisión confirmada sin reemplazar el borrador más
+reciente. Reset usa el endpoint versionado existente, con confirmación; fallo
+conserva el borrador. No se almacena copia persistente local ni se reintenta una
+escritura incierta. Ver VALIDACION_P16.md para evidencia y pendientes visuales.
+
 El área decorable es un lienzo de referencia **1000 × 700**, separado del panel
 de pistas y de la barra de audio. Se escala uniformemente según ancho disponible;
 su proporción se mantiene en todas las ventanas. No se usa el viewport completo

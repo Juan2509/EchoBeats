@@ -31,13 +31,13 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
   const [kind, setKind] = useState<'poster' | 'sticker' | 'image'>('poster')
   const [animated, setAnimated] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
-    const instance = new WallController(albumId); controller.current = instance
+    const instance = new WallController(albumId, undefined, undefined, { autosaveMs: 700 }); controller.current = instance
     const unsubscribe = instance.subscribe(() => setState(instance.state))
     setState(instance.state); void instance.load()
     return () => { drag.current = null; unsubscribe(); instance.dispose(); controller.current = null }
   }, [albumId])
   const dirty = isDirty(state), busy = state.saving || state.uploading || state.moving
-  const editable = state.editing && !state.loading && !state.saving && !state.uploading && !state.needsReload
+  const editable = controller.current?.canEdit ?? false
   useEffect(() => { onDirty(dirty || busy); return () => onDirty(false) }, [dirty, busy, onDirty])
   useEffect(() => {
     const prevent = (event: BeforeUnloadEvent) => { if (dirty || busy) event.preventDefault() }
@@ -52,6 +52,9 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
   }, [])
   function reload() {
     if (!dirty || window.confirm('¿Descartar el borrador y recargar la pared guardada?')) void controller.current?.load()
+  }
+  function reset() {
+    if (window.confirm('¿Restablecer esta pared? Se guardará el fondo inicial sin objetos y se reemplazará el diseño de este álbum. Los archivos importados se conservan.')) void controller.current?.reset()
   }
   function remove(id: string) { controller.current?.remove(id); requestAnimationFrame(() => upload.current?.focus()) }
   function down(item: WallElement, event: PointerEvent<HTMLButtonElement>) {
@@ -106,7 +109,7 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
           {[['#242038', 'Ciruela'], ['#193A55', 'Azul nocturno'], ['#284333', 'Verde bosque'], ['#442244', 'Malva']].map(([color, label]) => <button key={color} className="wall-swatch" style={{ backgroundColor: color }} aria-label={`Fondo ${label}`} aria-pressed={state.color === color} disabled={!editable || state.moving} onClick={() => controller.current?.setColor(color)} />)}
         </div>
         <div className="wall-add"><label>Añadir como<select value={kind} disabled={!editable || state.moving} onChange={event => setKind(event.target.value as typeof kind)}><option value="poster">Póster</option><option value="sticker">Sticker</option><option value="image">Imagen</option></select></label>
-          <label>Añadir recurso PNG, JPEG o GIF<input ref={upload} type="file" accept="image/png,image/jpeg,image/gif" disabled={!editable || state.moving || state.elements.length >= 30} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void controller.current?.addFile(file, kind) }} /></label>
+          <label>Añadir recurso PNG, JPEG o GIF<input ref={upload} type="file" accept="image/png,image/jpeg,image/gif" disabled={!editable || busy || state.elements.length >= 30} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void controller.current?.addFile(file, kind) }} /></label>
           <p className="note">{state.elements.length}/30 objetos · Hasta 5 MiB por archivo, 4096 píxeles por lado. GIF: hasta 200 fotogramas y 32 millones de píxeles en total.</p>
         </div>
         {!!ordered.length && <label>Seleccionar objeto (de atrás hacia delante)<select value={state.selectedId ?? ''} disabled={!editable || state.moving} onChange={event => controller.current?.select(event.target.value || null)}><option value="">Ninguno</option>{ordered.map((item, index) => <option key={item.id} value={item.id}>{index + 1}. {kinds[item.kind]} · {item.id.slice(0, 8)}</option>)}</select></label>}
@@ -123,7 +126,10 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
           <div className="wall-move-buttons">{[[-.01, 0, 'Izquierda'], [0, -.01, 'Arriba'], [0, .01, 'Abajo'], [.01, 0, 'Derecha']].map(([dx, dy, label]) => <button key={label} disabled={!editable || state.moving} aria-label={`Mover objeto: ${label}`} onClick={() => controller.current?.nudge(selected.id, Number(dx), Number(dy))}>{label}</button>)}
           <button disabled={!editable || state.moving} onClick={() => remove(selected.id)}>Quitar objeto</button></div>
         </div>}
-        <button disabled={!dirty || busy || state.needsReload} onClick={() => void controller.current?.save()}>Guardar pared</button>
+        <p className="note">Guardado automático tras finalizar los cambios. Puedes seguir editando durante un guardado; los cambios nuevos se guardarán después.</p>
+        <button disabled={!dirty || busy || state.needsReload} onClick={() => void controller.current?.save()}>Guardar ahora</button>
+        <button className="secondary" disabled={busy || state.needsReload || state.loading} onClick={reload}>Restaurar pared guardada</button>
+        <button className="secondary" disabled={!editable || busy} onClick={reset}>Restablecer diseño</button>
       </div>}
     </>}
   </section>

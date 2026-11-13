@@ -30,17 +30,17 @@ export type Wall = { id: string; album_id: string; schema_version: 1; revision: 
 export type WallResult = { wall: Wall; etag: string }
 export type Composition = ReturnType<typeof composition>
 export function composition(wall: Wall, color: string, elements: WallElement[] = wall.elements) {
-  return { schema_version: wall.schema_version, background_color: color, elements: elements.map(({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index }) =>
+  return { schema_version: wall.schema_version, background_color: color, elements: [...elements].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index }) =>
     ({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index })) }
 }
 export class WallRequestError extends Error {
   status: number
   constructor(message: string, status: number) { super(message); this.status = status }
 }
-export type WallGateway = (id: string, signal: AbortSignal, write?: { body: Composition; etag: string }) => Promise<WallResult>
+export type WallGateway = (id: string, signal: AbortSignal, write?: { body: Composition; etag: string; reset?: boolean }) => Promise<WallResult>
 export const requestWall: WallGateway = async (id, signal, write) => {
-  const response = await fetch(`/api/v1/albums/${encodeURIComponent(id)}/wall`, {
-    signal, cache: 'no-store', ...(write ? { method: 'PUT', headers: { 'Content-Type': 'application/json', 'If-Match': write.etag }, body: JSON.stringify(write.body) } : {}),
+  const response = await fetch(`/api/v1/albums/${encodeURIComponent(id)}/wall${write?.reset ? '/reset' : ''}`, {
+    signal, cache: 'no-store', ...(write ? { method: write.reset ? 'POST' : 'PUT', headers: { 'Content-Type': 'application/json', 'If-Match': write.etag }, ...(write.reset ? {} : { body: JSON.stringify(write.body) }) } : {}),
   })
   const data = await response.json()
   if (!response.ok) throw new WallRequestError(data.error?.message ?? 'No se pudo completar la operación del muro.', response.status)
@@ -73,10 +73,21 @@ export class WallController {
   private gateway: WallGateway
   private uploader: VisualUploader
   private gesture: WallElement | null = null
-  constructor(albumId: string, gateway: WallGateway = requestWall, uploader: VisualUploader = uploadVisual) { this.albumId = albumId; this.gateway = gateway; this.uploader = uploader }
-  private editable() { return this.alive && !!this.state.wall && this.state.editing && !this.state.loading && !this.state.saving && !this.state.uploading && !this.state.needsReload }
+  private timer: ReturnType<typeof setTimeout> | null = null
+  private saveTask: Promise<boolean> | null = null
+  private resetting = false
+  private autosaveMs: number | undefined
+  constructor(albumId: string, gateway: WallGateway = requestWall, uploader: VisualUploader = uploadVisual, options: { autosaveMs?: number } = {}) { this.albumId = albumId; this.gateway = gateway; this.uploader = uploader; this.autosaveMs = options.autosaveMs }
+  private editable() { return this.alive && !!this.state.wall && this.state.editing && !this.state.loading && (!this.state.saving || this.autosaveMs !== undefined) && !this.resetting && !this.state.uploading && !this.state.needsReload }
+  get canEdit() { return this.editable() }
+  private clearTimer() { if (this.timer !== null) clearTimeout(this.timer); this.timer = null }
+  private schedule() {
+    this.clearTimer()
+    if (this.autosaveMs === undefined || !this.editable() || this.state.moving || this.state.saving || this.state.error || !isDirty(this.state)) return
+    this.timer = setTimeout(() => { this.timer = null; void this.save() }, this.autosaveMs)
+  }
   subscribe(listener: () => void) { this.listeners.add(listener); return () => { this.listeners.delete(listener) } }
-  private update(changes: Partial<WallState>) { if (!this.alive) return; this.state = { ...this.state, ...changes }; this.listeners.forEach(listener => listener()) }
+  private update(changes: Partial<WallState>) { if (!this.alive) return; this.state = { ...this.state, ...changes }; this.listeners.forEach(listener => listener()); this.schedule() }
   private accept(result: WallResult) { this.update({ wall: result.wall, elements: result.wall.elements.map(item => ({ ...item })), selectedId: null, etag: result.etag, color: result.wall.background_color, loading: false, error: '', needsReload: false }) }
   async load() {
     if (!this.alive || this.state.saving || this.state.uploading || this.state.moving) return
@@ -101,21 +112,34 @@ export class WallController {
   async toggleEditing() {
     if (!this.state.wall || this.state.loading || this.state.saving || this.state.uploading || this.state.moving) return
     if (!this.state.editing) { this.update({ editing: true }); return }
-    if (isDirty(this.state) && !await this.save()) return
+    while (isDirty(this.state)) { if (!await this.save()) return }
     this.update({ editing: false, selectedId: null })
   }
   async save(): Promise<boolean> {
+    this.clearTimer()
+    if (this.saveTask) {
+      if (this.autosaveMs === undefined) return false
+      const ok = await this.saveTask
+      return ok && this.alive && isDirty(this.state) ? this.save() : ok
+    }
+    this.saveTask = this.persist()
+    try { return await this.saveTask } finally { this.saveTask = null; this.schedule() }
+  }
+  private async persist(reset = false): Promise<boolean> {
     if (!this.alive || !this.state.wall || this.state.loading || this.state.saving || this.state.uploading || this.state.moving || this.state.needsReload) return false
-    if (!isDirty(this.state)) return true
+    if (!reset && !isDirty(this.state)) return true
     const wanted = composition(this.state.wall, this.state.color, this.state.elements), token = ++this.operation
     const abort = new AbortController(); this.pending = abort
     const timeout = setTimeout(() => abort.abort(), 15000)
     this.update({ saving: true, error: '', notice: '' })
     try {
-      const result = await this.gateway(this.albumId, abort.signal, { body: wanted, etag: this.state.etag })
+      const result = await this.gateway(this.albumId, abort.signal, { body: wanted, etag: this.state.etag, ...(reset ? { reset: true } : {}) })
       if (!this.alive || token !== this.operation) return false
       if (abort.signal.aborted) throw new Error('wall_request_aborted')
-      this.accept(result); this.update({ notice: 'Pared guardada.' }); return true
+      const newer = JSON.stringify(composition(this.state.wall!, this.state.color, this.state.elements)) !== JSON.stringify(wanted)
+      if (newer) this.update({ wall: result.wall, etag: result.etag, error: '', needsReload: false, notice: '' })
+      else { const selectedId = this.state.selectedId; this.accept(result); this.update({ selectedId, notice: 'Pared guardada.' }) }
+      return true
     } catch (cause) {
       if (token !== this.operation || !this.alive) return false
       const conflict = cause instanceof WallRequestError && cause.status === 412
@@ -123,6 +147,18 @@ export class WallController {
       this.update({ needsReload: conflict || uncertain, error: conflict ? 'El diseño cambió en otra pestaña. Tu diseño sigue en el borrador; recarga la pared guardada para revisar el cambio.' : uncertain ? 'No se pudo confirmar el guardado. Tu diseño sigue en el borrador; recarga la pared guardada para comprobar el resultado antes de volver a editar.' : cause instanceof Error ? cause.message : 'No se pudo guardar la pared.' })
       return false
     } finally { clearTimeout(timeout); if (token === this.operation) this.update({ saving: false }) }
+  }
+  async reset(): Promise<boolean> {
+    if (!this.editable() || this.state.saving || this.state.moving || this.state.uploading) return false
+    this.clearTimer(); this.resetting = true
+    const previous = { color: this.state.color, elements: this.state.elements, selectedId: this.state.selectedId }
+    this.update({ color: '#242038', elements: [], selectedId: null, error: '', notice: '' })
+    try {
+      this.saveTask = this.persist(true)
+      const ok = await this.saveTask
+      if (!ok && this.alive) this.update(previous)
+      return ok
+    } finally { this.saveTask = null; this.resetting = false; this.update({}) }
   }
   select(id: string | null) { if (this.editable() && !this.state.moving) this.update({ selectedId: id && this.state.elements.some(item => item.id === id) ? id : null }) }
   move(id: string, cx: number, cy: number) {
@@ -164,7 +200,7 @@ export class WallController {
     this.update({ elements: this.state.elements.filter(item => item.id !== id), selectedId: null, notice: '' })
   }
   async addFile(file: File, kind: 'poster' | 'sticker' | 'image') {
-    if (!this.editable() || this.state.moving) return
+    if (!this.editable() || this.state.moving || this.state.saving) return
     if (this.state.elements.length >= 30) { this.update({ error: 'La pared admite hasta 30 objetos.' }); return }
     if (!file.size || file.size > 5 * 1024 * 1024) { this.update({ error: 'El recurso está vacío o supera 5 MiB.' }); return }
     const token = ++this.operation, abort = new AbortController(); this.pending = abort
@@ -182,5 +218,5 @@ export class WallController {
       if (this.alive && token === this.operation) this.update({ error: cause instanceof WallRequestError ? cause.message : 'No se pudo confirmar la importación. La composición anterior se conserva.' })
     } finally { clearTimeout(timeout); if (token === this.operation) this.update({ uploading: false }) }
   }
-  dispose() { this.alive = false; ++this.operation; this.pending?.abort(); this.listeners.clear() }
+  dispose() { this.clearTimer(); this.alive = false; ++this.operation; this.pending?.abort(); this.listeners.clear() }
 }

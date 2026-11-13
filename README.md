@@ -3,7 +3,7 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P15 implementado con revisión visual pendiente; O06 y audio conservan su validación manual pendiente.** Inicio, navegación,
+**Estado actual: P16 implementado con recorrido visual pendiente; P15 y audio conservan sus validaciones manuales pendientes.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
@@ -15,6 +15,10 @@ P14 permite añadir PNG/JPEG/GIF, seleccionar, mover y quitar objetos.
 P15 añade ancho/alto, giro, capas y selección de objetos tapados; su revisión visual
 de cierre sigue pendiente. La IA sigue pendiente. Ver [validación P15](docs/VALIDACION_P15.md).
 `health` y `ready` comprueban proceso y BD.
+
+P16 guarda la pared automáticamente tras una pausa al editar, conserva cambios
+nuevos durante un guardado y permite restaurar lo guardado o restablecer el diseño
+con confirmación. Ver [validación P16](docs/VALIDACION_P16.md).
 
 ## Inicio con Docker
 
