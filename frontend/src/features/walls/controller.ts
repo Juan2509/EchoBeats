@@ -11,6 +11,21 @@ export function moveWithinWall(item: WallElement, cx: number, cy: number): WallE
   return { ...item, cx: Math.max(bx, Math.min(1 - bx, cx)), cy: Math.max(by, Math.min(1 - by, cy)) }
 }
 
+/** Ajusta el tamaño proporcionalmente si el rectángulo girado supera el lienzo. */
+export function transformWithinWall(item: WallElement, changes: Partial<Pick<WallElement, 'width' | 'height' | 'rotation_deg'>>): WallElement {
+  if (Object.values(changes).some(value => !Number.isFinite(value))) return item
+  const next = { ...item, ...changes }
+  next.width = Math.max(.03, Math.min(.6, next.width))
+  next.height = Math.max(.03, Math.min(.6, next.height))
+  next.rotation_deg = ((next.rotation_deg + 180) % 360 + 360) % 360 - 180
+  const angle = next.rotation_deg * Math.PI / 180
+  const factor = Math.min(1, 1000 / (Math.abs(next.width * 1000 * Math.cos(angle)) + Math.abs(next.height * 700 * Math.sin(angle))), 700 / (Math.abs(next.width * 1000 * Math.sin(angle)) + Math.abs(next.height * 700 * Math.cos(angle))))
+  next.width *= factor; next.height *= factor
+  return moveWithinWall(next, next.cx, next.cy)
+}
+// Coincide con el desempate del servidor; no depende del orden recibido.
+export const orderedElements = (elements: WallElement[]) => [...elements].sort((a, b) => a.z_index - b.z_index || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+
 export type Wall = { id: string; album_id: string; schema_version: 1; revision: number; background_color: string; updated_at: string; elements: WallElement[] }
 export type WallResult = { wall: Wall; etag: string }
 export type Composition = ReturnType<typeof composition>
@@ -119,6 +134,19 @@ export class WallController {
     const item = this.state.elements.find(value => value.id === id)
     if (item) this.move(id, item.cx + dx, item.cy + dy)
   }
+  transform(id: string, changes: Partial<Pick<WallElement, 'width' | 'height' | 'rotation_deg'>>) {
+    if (!this.editable() || this.state.moving) return
+    this.update({ elements: this.state.elements.map(item => item.id === id ? transformWithinWall(item, changes) : item), notice: '' })
+  }
+  reorder(id: string, direction: 'back' | 'backward' | 'forward' | 'front') {
+    if (!this.editable() || this.state.moving) return
+    const sorted = orderedElements(this.state.elements), from = sorted.findIndex(item => item.id === id)
+    if (from < 0) return
+    const to = direction === 'back' ? 0 : direction === 'front' ? sorted.length - 1 : Math.max(0, Math.min(sorted.length - 1, from + (direction === 'forward' ? 1 : -1)))
+    if (from === to) return
+    sorted.splice(to, 0, sorted.splice(from, 1)[0])
+    this.update({ elements: sorted.map((item, z_index) => ({ ...item, z_index })), notice: '' })
+  }
   beginMove(id: string) {
     if (!this.editable() || this.state.moving) return false
     this.gesture = this.state.elements.find(item => item.id === id) ?? null
@@ -149,7 +177,7 @@ export class WallController {
       const item: WallElement = { id: crypto.randomUUID(), asset_id: asset.id, kind: asset.mime_type === 'image/gif' ? 'gif' : kind,
         cx: .5, cy: .5, width: .25, height: Math.max(.03, Math.min(.6, .25 * 1000 / 700 * asset.height_px / asset.width_px)), rotation_deg: 0,
         z_index: Math.min(29, Math.max(-1, ...this.state.elements.map(value => value.z_index)) + 1), content_url: asset.content_url, static_preview_url: asset.static_preview_url }
-      this.update({ elements: [...this.state.elements, item], selectedId: item.id, notice: 'Recurso añadido al borrador. Guarda la pared para conservarlo.' })
+      this.update({ elements: [...orderedElements(this.state.elements).map((value, z_index) => ({ ...value, z_index })), { ...item, z_index: this.state.elements.length }], selectedId: item.id, notice: 'Recurso añadido al borrador. Guarda la pared para conservarlo.' })
     } catch (cause) {
       if (this.alive && token === this.operation) this.update({ error: cause instanceof WallRequestError ? cause.message : 'No se pudo confirmar la importación. La composición anterior se conserva.' })
     } finally { clearTimeout(timeout); if (token === this.operation) this.update({ uploading: false }) }

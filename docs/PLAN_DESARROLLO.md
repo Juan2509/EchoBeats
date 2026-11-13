@@ -379,6 +379,11 @@ P15 añade transformaciones y P16 completa coordinación de guardados. Sin commi
 
 ### [ ] P15 — Rotar, redimensionar y ordenar elementos
 
+Implementado el 13 de noviembre de 2026; cierre visual pendiente. Controles de
+ancho/alto/giro, cuatro acciones de capas y selector de objetos tapados. 33 pruebas
+frontend y build aprobados. Ver VALIDACION_P15.md; revisar 360/768/1280 antes de
+marcar cerrado. Sin commit automático. P16 sigue como próxima implementación.
+
 **Depende de:** P14. **Commit:** `feat(wall-editor): transformar y ordenar elementos del muro`
 
 - Añadir rotación y redimensionamiento con mínimos/máximos y controles utilizables.
@@ -618,6 +623,20 @@ Una casilla marcada significa que se cumplió el criterio de cierre, no solo que
 se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 
 ### Estado actual
+
+**Directriz vigente del usuario — 13 de noviembre:** incorporar progresivamente
+`Requerimientos.md` al desarrollo. Antes de cada bloque, revisar su cobertura,
+ajustar los contratos afectados y documentar evidencia y diferencias pendientes.
+P18–P23 deben concretar procesamiento asíncrono, OpenAI Embeddings para el MVP,
+pgvector con modelos compatibles, recuperación híbrida y explicaciones con
+fuentes. Resolver la aplicación de Spring Boot, VPS/tenants y PDF/OCR antes de
+implementar cambios dependientes; no se cambia el stack por esta nota.
+
+Revisión académica del 13 de noviembre: temática libre confirmada por el usuario.
+`Requerimientos.md` se analizó completo; correspondencia con P17–P23 y diferencias
+de stack/despliegue/dominio en [REVISION_REQUERIMIENTOS.md](REVISION_REQUERIMIENTOS.md).
+No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
+Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
 - **Trabajo actual:** P14 implementado sin commit; ver VALIDACION_P14.md. P13 registrado en `655add4`. P12 registrado en `4c5c0d4`. P11 registrado en `12bd0e5`. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.

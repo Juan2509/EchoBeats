@@ -1,5 +1,10 @@
 # EchoBeats: contexto del proyecto
 
+P15 implementa tamaño, giro y capas con selector de objetos tapados; ver
+`docs/VALIDACION_P15.md`. Pruebas frontend y build aprobados; cierre visual
+360/768/1280 pendiente por bloqueo de identificación de URL en Computer Use.
+No marcar P15 cerrado sin esa revisión; próxima implementación P16.
+
 El usuario confirmó el 12 de noviembre de 2026 que el nombre definitivo es
 **EchoBeats**. «Dream Radio» es únicamente el nombre histórico del documento conceptual.
 
@@ -98,3 +103,12 @@ persistencia tras reinicio. Hasta 30 objetos, 5 MiB, 4096 por lado/16 MP; GIF
 hasta 200 fotogramas/32 MP decodificados totales. Quitar o descartar no elimina
 archivos registrados; conservar recursos compartidos. Sin migración nueva.
 Siguiente P15; P16 completará coordinación/guardados. Pendientes previos vigentes.
+
+Directriz expresa del usuario del 13 de noviembre: incorporar progresivamente
+lo descrito en `Requerimientos.md` en las próximas etapas de EchoBeats.
+Leer `docs/REVISION_REQUERIMIENTOS.md` y la directriz al inicio de la memoria.
+Orientar la fase IA a procesamiento asíncrono, OpenAI Embeddings, pgvector,
+búsqueda híbrida y respuestas con fuentes; registrar cobertura y evidencias.
+Adaptar al dominio musical y aclarar Java/Spring Boot, VPS/tenants y PDF/OCR
+antes de decisiones que dependan de ellos. No interpretar la fuente como orden
+de borrar audios, contratar servicios o migrar el stack automáticamente.

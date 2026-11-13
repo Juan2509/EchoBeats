@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ButtonHTMLAttributes, KeyboardEvent, PointerEvent } from 'react'
-import { initialWallState, isDirty, WallController } from './controller'
+import { initialWallState, isDirty, orderedElements, WallController } from './controller'
 import type { WallElement } from './controller'
 
 const kinds = { poster: 'Póster', sticker: 'Sticker', image: 'Imagen', gif: 'GIF' }
+function TransformField({ label, value, min, max, disabled, change }: { label: string; value: number; min: number; max: number; disabled: boolean; change: (value: number) => void }) {
+  const [draft, setDraft] = useState(String(value))
+  useEffect(() => setDraft(String(value)), [value])
+  return <label>{label}<input type="number" value={draft} min={min} max={max} step="any" disabled={disabled} onChange={event => {
+    const text = event.target.value; setDraft(text)
+    if (text !== '' && Number.isFinite(Number(text)) && Number(text) >= min && Number(text) <= max) change(Number(text))
+  }} onBlur={() => setDraft(String(value))} /></label>
+}
 function Decoration({ item, index, animated, editable, selected, handlers }: { item: WallElement; index: number; animated: boolean; editable: boolean; selected: boolean; handlers: ButtonHTMLAttributes<HTMLButtonElement> }) {
   const paused = item.kind === 'gif' && !animated
   const source = paused ? item.static_preview_url : item.content_url
@@ -71,6 +79,7 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
     if ((event.key === 'Delete' || event.key === 'Backspace') && !state.moving) { event.preventDefault(); remove(item.id) }
   }
   const wall = state.wall, selected = state.elements.find(item => item.id === state.selectedId)
+  const ordered = orderedElements(state.elements), layer = ordered.findIndex(item => item.id === state.selectedId)
   const status = state.loading ? 'Cargando pared…' : state.uploading ? 'Importando recurso…' : state.saving ? 'Guardando pared…' : state.moving ? 'Moviendo objeto…' : state.error ? 'No se pudo completar la operación' : dirty ? 'Cambios pendientes' : state.notice || 'Sin cambios'
   return <section className="wall-panel" onFocusCapture={event => {
     const target = event.target
@@ -87,7 +96,7 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
     {state.error && <div className="wall-error" role="alert"><p>{state.error}</p><button className="secondary" disabled={busy} onClick={reload}>Recargar pared guardada</button></div>}
     {wall && !state.loading && <>
       <div ref={canvas} className="wall-canvas" data-mode={state.editing ? 'editing' : 'locked'} style={{ backgroundColor: state.color }} role="group" aria-label={`Muro de ${title}, ${state.elements.length} elementos decorativos`} onPointerDown={event => { if (event.target === event.currentTarget || (event.target as HTMLElement).classList.contains('wall-elements')) controller.current?.select(null) }}>
-        <ul className="wall-elements" aria-label="Composición de la pared">{state.elements.map((item, index) => <Decoration key={`${item.id}-${item.content_url}`} item={item} index={index} animated={animated} editable={editable} selected={item.id === state.selectedId} handlers={{ onClick: () => controller.current?.select(item.id), onFocus: () => controller.current?.select(item.id), onPointerDown: event => down(item, event), onPointerMove: move, onPointerUp: finish, onPointerCancel: cancel, onLostPointerCapture: () => { if (drag.current) cancel() }, onKeyDown: event => keyboard(item, event) }} />)}</ul>
+        <ul className="wall-elements" aria-label="Composición de la pared">{ordered.map((item, index) => <Decoration key={`${item.id}-${item.content_url}`} item={item} index={index} animated={animated} editable={editable} selected={item.id === state.selectedId} handlers={{ onClick: () => controller.current?.select(item.id), onFocus: () => controller.current?.select(item.id), onPointerDown: event => down(item, event), onPointerMove: move, onPointerUp: finish, onPointerCancel: cancel, onLostPointerCapture: () => { if (drag.current) cancel() }, onKeyDown: event => keyboard(item, event) }} />)}</ul>
         {!state.elements.length && <p className="wall-empty">Un espacio para tus recuerdos musicales.</p>}
       </div>
       {state.elements.some(item => item.kind === 'gif') && <label className="wall-animation"><input type="checkbox" checked={animated} onChange={event => setAnimated(event.target.checked)} /> Animar GIF de esta pared</label>}
@@ -100,7 +109,17 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
           <label>Añadir recurso PNG, JPEG o GIF<input ref={upload} type="file" accept="image/png,image/jpeg,image/gif" disabled={!editable || state.moving || state.elements.length >= 30} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void controller.current?.addFile(file, kind) }} /></label>
           <p className="note">{state.elements.length}/30 objetos · Hasta 5 MiB por archivo, 4096 píxeles por lado. GIF: hasta 200 fotogramas y 32 millones de píxeles en total.</p>
         </div>
+        {!!ordered.length && <label>Seleccionar objeto (de atrás hacia delante)<select value={state.selectedId ?? ''} disabled={!editable || state.moving} onChange={event => controller.current?.select(event.target.value || null)}><option value="">Ninguno</option>{ordered.map((item, index) => <option key={item.id} value={item.id}>{index + 1}. {kinds[item.kind]} · {item.id.slice(0, 8)}</option>)}</select></label>}
         {selected && <div className="wall-selection"><h3>{kinds[selected.kind]} seleccionado</h3><p>Arrastra el objeto o usa las flechas. Mayús mueve más; Escape cancela un arrastre. También puedes usar estos botones.</p><p>Centro: {(selected.cx * 100).toFixed(1)} % horizontal · {(selected.cy * 100).toFixed(1)} % vertical</p>
+          <div className="wall-transforms" key={selected.id}>
+            <TransformField label="Ancho (% del lienzo)" value={Number((selected.width * 100).toFixed(3))} min={3} max={60} disabled={!editable || state.moving} change={value => controller.current?.transform(selected.id, { width: value / 100 })} />
+            <TransformField label="Alto (% del lienzo)" value={Number((selected.height * 100).toFixed(3))} min={3} max={60} disabled={!editable || state.moving} change={value => controller.current?.transform(selected.id, { height: value / 100 })} />
+            <TransformField label="Giro (grados)" value={Number(selected.rotation_deg.toFixed(3))} min={-180} max={180} disabled={!editable || state.moving} change={value => controller.current?.transform(selected.id, { rotation_deg: value })} />
+          </div>
+          <p className="note">Tamaño entre 3 y 60 %. Al girar o ampliar, el objeto se recoloca y, si es necesario, se reduce proporcionalmente para caber en la pared.</p>
+          <div className="wall-move-buttons" role="group" aria-label="Orden de superposición">
+            {(['back', 'backward', 'forward', 'front'] as const).map((direction, index) => <button key={direction} disabled={!editable || state.moving || (index < 2 ? layer === 0 : layer === ordered.length - 1)} onClick={() => controller.current?.reorder(selected.id, direction)}>{['Al fondo', 'Una capa atrás', 'Una capa delante', 'Al frente'][index]}</button>)}
+          </div><p>Capa {layer + 1} de {ordered.length}</p>
           <div className="wall-move-buttons">{[[-.01, 0, 'Izquierda'], [0, -.01, 'Arriba'], [0, .01, 'Abajo'], [.01, 0, 'Derecha']].map(([dx, dy, label]) => <button key={label} disabled={!editable || state.moving} aria-label={`Mover objeto: ${label}`} onClick={() => controller.current?.nudge(selected.id, Number(dx), Number(dy))}>{label}</button>)}
           <button disabled={!editable || state.moving} onClick={() => remove(selected.id)}>Quitar objeto</button></div>
         </div>}

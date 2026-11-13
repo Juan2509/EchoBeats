@@ -145,10 +145,17 @@ la evaluación de pertinencia de CA-11, no como una prueba ya superada.
 
 ## 7. Requisitos académicos y decisiones pendientes
 
+Actualización del 13 de noviembre de 2026: el usuario confirma temática libre
+usando los contenidos de clase; EchoBeats puede ser el producto elegido.
+Se recibió `Requerimientos.md`, con un caso RAG documental que debe contrastarse
+con las obligaciones universales de la evaluación. Ver
+[revisión y correspondencia](REVISION_REQUERIMIENTOS.md). Las notas históricas
+siguientes no reabren la libertad de temática ya confirmada.
+
 | Tema | Lo conocido | Pendiente y momento de resolución |
 | --- | --- | --- |
 | API de IA y BD vectorial | El concepto los exige y propone pgvector explícitamente. | Seleccionar modelos/proveedores y verificar capacidades en P20; demostrar API y BD reales en P21–P23. |
-| DevFlow frente a EchoBeats | El curso nombra DevFlow; el usuario eligió EchoBeats para este proyecto. | Confirmar con el docente si acepta el proyecto alternativo; registrar evidencia antes de cerrar la entrega académica. |
+| DevFlow frente a EchoBeats | El usuario confirma proyecto libre mientras se utilicen los contenidos de clase. | Temática EchoBeats confirmada; concretar tecnologías/entregables obligatorios del nuevo documento. |
 | n8n | Forma parte del currículo, con workflows e integraciones. | Confirmar obligatoriedad para EchoBeats; si se exige, incorporar O04 antes de P26. |
 | Agentes y LangGraph | El curso contempla agentes/RAG; el concepto deja LangGraph como ampliación. | Confirmar si exige agente o framework concreto; activar O05 si corresponde antes de P26. |
 | RAG | La recuperación de fichas y generación de explicaciones es una aplicación prevista. | Confirmar si la rúbrica exige además una base documental u otra demostración específica. |

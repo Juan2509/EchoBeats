@@ -185,3 +185,6 @@ a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-off
 .wall-selection p { font-size: .85rem; line-height: 1.5; }
 .wall-move-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .wall-move-buttons button { margin: 0; }
+.wall-transforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.wall-transforms label { display: grid; gap: 6px; min-width: 0; }
+.wall-transforms input { width: 100%; min-width: 0; box-sizing: border-box; }
