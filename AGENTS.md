@@ -66,3 +66,13 @@ rechaza medios de formatos nuevos en vez de borrarlos. MIME por contenido,
 etiquetas ID3/Vorbis Comments, portadas y avisos de compatibilidad del navegador.
 No se transcodifica. FFmpeg solo generó fixtures en contenedor temporal.
 La verificación de reproducción/seek en navegador de O06 sigue pendiente.
+O06 quedó registrado posteriormente en `e53aa4b`. Revisión documental del
+13 de noviembre de 2026: los adjuntos LangChain `(4)` y concepto coinciden con
+las referencias conservadas. Contexto vigente al inicio de MEMORIA_PROYECTO.md;
+siguiente implementación P11, conservando las validaciones manuales pendientes.
+
+P11 incorpora playlists versionadas, canciones ordenadas, imagen PNG/JPEG con
+apariencia vinilo/tarjeta y reproducción en orden guardado. Consultar
+`docs/VALIDACION_P11.md`. Tablas P05 reutilizadas, sin migración. Guardados de
+ficha y secuencia serializados con ETag; ante fallo parcial conservar borrador
+y comunicar el resultado incierto. Siguiente P12; pendientes anteriores vigentes.

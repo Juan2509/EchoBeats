@@ -6,7 +6,7 @@ pistas y álbumes, listas paginadas de selección, extracción y assets de porta
 P08 incorpora búsqueda textual, listados filtrados y búsqueda agrupada.
 P09 incorpora entrega de audio original y rangos de bytes.
 O06 amplía formatos a MP3, WAV PCM, FLAC y Ogg Vorbis/Opus (.ogg/.opus).
-La gestión de playlists, muros e IA sigue pendiente.
+P11 implementa playlists; muros e IA siguen pendientes.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -63,8 +63,8 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | `POST /albums` | `{title, artist_names}`; crea álbum explícito y devuelve 201 con ID. | P07. |
 | `GET /albums/{id}` | Resumen, datos, procedencia y ETag. Pistas se consultan paginadas en /tracks. | P07 implementado. |
 | `PATCH /albums/{id}` | title/artist_names/cover_asset_id con `If-Match`; no permite cambiar system_key ni renombrar el álbum de sistema. | P07 implementado. |
-| `GET /library/search` | q obligatoria no vacía; query y grupos tracks/albums/playlists con items/total/limit/offset/href, máximo 10 por grupo. href enlaza a biblioteca filtrada; playlists busca nombres existentes pero href=null hasta P11. | P08 implementado. |
-| `POST /assets` | multipart file y purpose=cover; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/playlist/GIF se incorporan después. | P07 para portadas; P11/P14 para otros usos. |
+| `GET /library/search` | q obligatoria no vacía; query y grupos tracks/albums/playlists con items/total/limit/offset/href, máximo 10 por grupo. href enlaza a biblioteca filtrada; playlists busca nombres y enlaza a vista=playlists. | P08 implementado. |
+| `POST /assets` | multipart file y purpose=cover o playlist; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/GIF se incorporan después. | P07/P11 implementado; P14 para muros. |
 | `GET /assets/{id}/content` | PNG/JPEG validado con nosniff y caché privada; sin rutas arbitrarias ni audio. GIF se incorpora después. | P07 para portadas. |
 | `GET` o `HEAD /tracks/{id}/audio` | MIME real (audio/mpeg, audio/wav, audio/flac, audio/ogg), inline. GET 200 completo o 206 con Content-Range para rangos válidos (también sufijos y rangos abiertos/múltiples); 416 fuera de tamaño, 400 sintaxis inválida. HEAD 200 describe el archivo completo sin cuerpo e ignora Range. If-Range compatible por ETag o Last-Modified; token distinto devuelve 200 completo. | P09/O06 implementado. |
 
@@ -110,6 +110,10 @@ Errores de rango los genera FileResponse: 400/416 pueden tener cuerpo de texto
 del framework; 416 incluye `Content-Range: bytes */tamaño`.
 
 ## 3. Playlists
+
+Implementado en P11, sin nueva migración. Máximo 1000 canciones por lista.
+Listado devuelve image_url y track_count sin items; detalle y escrituras devuelven
+items completos en orden. Ver [validación](VALIDACION_P11.md).
 
 | Método y ruta | Entrada / salida | Regla |
 | --- | --- | --- |

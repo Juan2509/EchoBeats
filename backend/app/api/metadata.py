@@ -120,7 +120,7 @@ def search_library(request: Request, q: SearchText = Query(..., min_length=1)):
         groups = {kind: library.page(connection, kind, 10, 0, q) for kind in ('tracks', 'albums', 'playlists')}
     for kind, view in [('tracks', 'canciones'), ('albums', 'albumes')]:
         groups[kind]['href'] = '/biblioteca?' + urlencode({'vista': view, 'q': q})
-    groups['playlists']['href'] = None  # navegación y gestión se incorporan en P11
+    groups['playlists']['href'] = '/biblioteca?' + urlencode({'vista': 'playlists', 'q': q})
     return {'query': q, **groups}
 
 
@@ -173,7 +173,7 @@ def upload_cover(engine, store, stream):
 @router.post("/assets", status_code=201, openapi_extra={
     "requestBody": {"required": True, "content": {"multipart/form-data": {"schema": {
         "type": "object", "required": ["file", "purpose"], "properties": {
-            "file": {"type": "string", "format": "binary"}, "purpose": {"type": "string", "enum": ["cover"]},
+            "file": {"type": "string", "format": "binary"}, "purpose": {"type": "string", "enum": ["cover", "playlist"]},
         },
     }}}},
 })
@@ -194,8 +194,8 @@ async def post_cover(request: Request):
     try:
         async with FormRequest(request.scope, receive=limited_receive).form(max_files=1, max_fields=1) as form:
             parts = form.multi_items()
-            if len(parts) != 2 or set(key for key, _ in parts) != {"file", "purpose"} or form.get("purpose") != "cover" or not isinstance(form.get("file"), UploadFile):
-                raise service.MetadataError("invalid_cover", "Envía un archivo file y purpose=cover.")
+            if len(parts) != 2 or set(key for key, _ in parts) != {"file", "purpose"} or form.get("purpose") not in {"cover", "playlist"} or not isinstance(form.get("file"), UploadFile):
+                raise service.MetadataError("invalid_cover", "Envía un archivo file y purpose=cover o playlist.")
             return await run_in_threadpool(upload_cover, engine, MediaStore(request.app.state.settings.media_root), form["file"].file)
     except HTTPException as exc:
         if exc.detail == "cover_body_too_large":

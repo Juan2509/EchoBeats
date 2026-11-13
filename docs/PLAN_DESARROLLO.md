@@ -1,7 +1,7 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P10 implementado; reproductor
-compartido disponible. Recorrido manual de audio y revisiones P08/P09 pendientes.
+Fecha inicial: 12 de noviembre de 2026. Estado: P11 implementado; playlists y reproductor
+compartido disponibles. Recorrido manual de audio y revisiones P08/P09 pendientes.
 O06 habilitado por el usuario: soporte multiformato implementado; navegador pendiente.
 
 ## 1. Propósito y fuentes
@@ -299,7 +299,7 @@ usuario en Brave: no se declara CA-01/CA-03 completa ni continuidad audible
 comprobada. Casilla pendiente del recorrido manual, teclado y tamaños. Ver
 [validación P10](VALIDACION_P10.md). Sin commit automático; siguiente implementación P11.
 
-### [ ] P11 — Gestionar playlists y su apariencia
+### [x] P11 — Gestionar playlists y su apariencia
 
 **Depende de:** P08, P10. **Commit:** `feat(playlists): gestionar listas e imagen de vinilo`
 
@@ -310,6 +310,12 @@ comprobada. Casilla pendiente del recorrido manual, teclado y tamaños. Ver
 
 **Cierre:** cerrar/reabrir conserva los cambios; editar playlists no cambia la
 pertenencia de pistas a álbumes. Cubrir CA-04, CA-05, RF-05 y RF-06.
+
+**Resultado P11:** API versionada, biblioteca de playlists, editor de canciones/orden,
+imagen vinilo/tarjeta y reproducción de la lista guardada. 76 pruebas backend,
+16 frontend, build, esquema y auditoría correctos. Recorrido Chrome headless y
+persistencia documentados en [VALIDACION_P11.md](VALIDACION_P11.md). Sin commit;
+no cierra las verificaciones manuales de P08/P09/P10/O06.
 
 ## 7. Fase 3 — Muros por álbum y personalización persistente
 
@@ -593,10 +599,10 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 
 ### Estado actual
 
-- **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** O06 implementado sin commit; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
+- **Última actualización:** 13 de noviembre de 2026.
+- **Trabajo actual:** P11 implementado sin commit; ver VALIDACION_P11.md. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes. Esta revisión no inicia P11.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P11, playlists. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
+- **Próximo bloque de implementación:** P12, muros por álbum. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
@@ -649,6 +655,19 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P10 | Implementado sin commit; recorrido manual pendiente | — | 13 pruebas frontend Windows/Docker con dobles, 57 backend y builds correctos. Control UI interrumpido por actividad del usuario; recorrido real y revisiones previas pendientes. Siguiente implementación P11. |
 | 2026-11-12 | Registro posterior P09/P10 | Registrados; revisiones manuales pendientes | `6e001a0` | El usuario registró entrega de audio y reproductor; no se consideran cerradas las comprobaciones de navegador. |
 | 2026-11-12 | O06 | Implementado sin commit; navegador pendiente | — | Formatos habilitados, migración segura, fixtures propias decodificadas y pruebas de importación/metadatos/rangos. Ver AUDIO_MULTIFORMATO.md. Siguiente implementación principal P11. |
+
+### Revisión de continuidad — 13 de noviembre de 2026
+
+Adjuntos LangChain `(4)` y concepto contrastados byte por byte con las copias
+conservadas; contexto confirmado en `MEMORIA_PROYECTO.md`. Git acredita O06 en
+`e53aa4b`; se conserva su validación manual pendiente, junto con las de P08–P10.
+Siguiente implementación principal: P11. Sin nuevas pruebas funcionales,
+instalaciones ni cambios de aplicación en esta revisión.
+
+### Entrega P11 — 13 de noviembre de 2026
+
+Implementado sin commit: playlists, canciones ordenadas, apariencia/imagen y cola.
+Ver VALIDACION_P11.md para evidencias, límites y entorno local. Próximo P12.
 
 ### Plantilla de cierre de sesión
 

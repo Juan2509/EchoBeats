@@ -22,6 +22,10 @@ O06 añade `0004_audio_formats`: amplía la restricción de storage_key para WAV
 FLAC, Ogg y Opus, sin columnas nuevas ni cambios en los medios existentes.
 El MIME ya persistido en media_asset se expone como audio_mime_type de pista.
 
+P11 implementa servicios de playlists sobre playlist/playlist_track ya existentes:
+reemplazo transaccional de secuencia, bloqueo de fila y revisión ETag, sin migración.
+No cambia pertenencia de pistas a álbumes ni elimina medios.
+
 ## 2. Entidades y relaciones
 
 ```mermaid

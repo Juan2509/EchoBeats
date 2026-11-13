@@ -43,8 +43,8 @@ def page(connection, kind, limit, offset, query='', album_id=None, include_empty
         ordering.insert(0, track.c.track_number.asc().nulls_last())
     ids = connection.scalars(statement.order_by(*ordering).limit(limit).offset(offset)).all()
     if kind == 'playlists':
-        items = [dict(connection.execute(select(playlist.c.id, playlist.c.name, playlist.c.appearance)
-                                        .where(playlist.c.id == value)).one()._mapping) for value in ids]
+        from app.services.playlists import data
+        items = [data(connection, value, include_items=False)[0] for value in ids]
     else:
         reader = metadata.track_data if kind == 'tracks' else metadata.album_data
         items = [reader(connection, value)[0] for value in ids]

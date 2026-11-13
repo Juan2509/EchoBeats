@@ -2,6 +2,66 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Contexto confirmado y estado vigente — 13 de noviembre de 2026
+
+El usuario pidió revisar nuevamente los dos adjuntos y el plan de desarrollo,
+comprenderlos y conservar el contexto. **EchoBeats** es el nombre definitivo;
+Dream Radio es el nombre histórico del concepto. Esta solicitud es de revisión
+y memoria documental; no inicia P11 ni autoriza ejecutar los laboratorios.
+
+Se revisó el contenido textual de los adjuntos de Descargas y el plan existente.
+Ambos adjuntos coinciden byte por byte con las referencias ya conservadas:
+
+- `LangChain_LangGraph2026 (4).md`: 6356 líneas; SHA-256
+  `d24a621f44fd9bb100c71f55434bec4780f43ff852932ce53848ea7f3879053f`.
+- `Dream_Radio_Documento_Concepto_y_Planificacion.md`: 691 líneas; SHA-256
+  `edd4a98148e01df1b75922831277b65b28489fd393e59b7a01bb30c600326416`.
+
+No se duplican ni reemplazan las fuentes. La guía académica es la referencia
+técnica aportada: prompts, contexto, HTTP/APIs, embeddings, recuperación/RAG,
+LangChain/LCEL, mensajes, validación estructurada y Streamlit, además del marco
+curricular de n8n/agentes. Sus ejemplos no sustituyen las decisiones vigentes
+del repositorio ni certifican versiones, precios o disponibilidad de servicios.
+Las imágenes externas enlazadas no forman parte de esta revisión textual.
+
+La prioridad del producto sigue siendo biblioteca propia y reproducción,
+playlists editables, muros independientes por álbum con persistencia real y
+exploración semántica explicable sobre canciones existentes. pgvector y una API
+de IA real son requisitos; embeddings textuales, análisis acústico e identificación
+de grabaciones se mantienen como capacidades distintas. Proveedor/modelos de IA,
+colección musical de evaluación y requisitos docentes concretos siguen pendientes.
+
+Git confirma O06 en `e53aa4b`, después de P09/P10 en `6e001a0` y P08 en
+`ddd5b20`. El próximo bloque de implementación es **P11: playlists**. P08 conserva
+la revisión visual de teclado y anchos 360/768/1280; P09/P10/O06 conservan sus
+recorridos manuales de reproducción, seek y continuidad según corresponda.
+Registrar un commit no acredita esas comprobaciones. Los estados «sin commit»
+de entregas anteriores son históricos y quedan supersedidos por este registro.
+
+Solo se actualizó documentación de continuidad; no se instalaron dependencias,
+iniciaron servicios ni ejecutaron pruebas funcionales en esta revisión.
+
+## Avance vigente: P11 — 13 de noviembre de 2026
+
+El usuario autorizó iniciar P11. Implementadas API con ETag/If-Match y bloqueo
+transaccional, pestaña de playlists, crear/renombrar, añadir/quitar/subir/bajar
+pistas, imagen PNG/JPEG y apariencia vinilo/tarjeta. Usa tablas de P05 sin migrar.
+El reproductor recupera la lista guardada en orden; editar no cambia álbumes.
+Guardados de ficha y secuencia se serializan; se informa un posible éxito parcial
+y se conserva el borrador ante error. No hay borrado de listas ni muro por lista.
+
+76 pruebas backend y 16 frontend, build, pip check y esquema correctos. Chrome
+headless permitió crear/editar/recargar, subir imagen, revisar anchos 360/768/1280
+y comprobar avance del audio sin acreditar escucha audible. Ver VALIDACION_P11.md.
+Los pendientes manuales de P08/P09/P10/O06 se conservan. Sin commit automático.
+Siguiente implementación: **P12, muros persistentes por álbum**.
+
+Este entorno no tenía .env ni recursos Docker EchoBeats; se generaron sin tocar
+otros proyectos. Se conservan dos pistas sintéticas y «Selección P11 verificada» con
+imagen sintética. Volumen, medios y configuración privada se mantienen. Recreación real de
+PostgreSQL/backend/frontend conservó la respuesta completa y la imagen; servicios
+activos al finalizar para revisión local.
+
 ## Solicitud y estado
 
 El usuario pidió revisar y comprender los dos documentos aportados y guardar el

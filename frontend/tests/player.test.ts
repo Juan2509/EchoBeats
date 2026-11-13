@@ -169,3 +169,24 @@ test('formato no anunciado por navegador no descarga audio y permite otra selecc
   player.start({ ...song('wav'), audio_mime_type: 'audio/wav' }, 'WAV'); await flush()
   assert.equal(player.state.error, ''); assert.equal(player.state.playing, true)
 })
+
+test('cola de playlist conserva orden guardado y no consulta el catálogo ni audio', async () => {
+  const path = '/playlists/00000000-0000-4000-8000-000000000001'
+  const requested: string[] = []
+  const queue = await loadQueue(path, new AbortController().signal, (async (url: string) => {
+    requested.push(url)
+    return new Response(JSON.stringify({ items: [song('b'), song('a')] }), { status: 200 })
+  }) as typeof fetch)
+  assert.deepEqual(requested, [`/api/v1${path}`])
+  assert.deepEqual(queue.map(item => item.id), ['b', 'a'])
+  const { player } = setup()
+  player.completeQueue(player.start(queue[0], 'Playlist'), queue)
+  player.next()
+  assert.equal(player.state.track?.id, 'a')
+})
+
+test('playlist vacía y fallo de lectura se distinguen', async () => {
+  const path = '/playlists/00000000-0000-4000-8000-000000000001'
+  assert.deepEqual(await loadQueue(path, new AbortController().signal, (async () => new Response(JSON.stringify({ items: [] }))) as typeof fetch), [])
+  await assert.rejects(loadQueue(path, new AbortController().signal, (async () => new Response('', { status: 503 })) as typeof fetch))
+})

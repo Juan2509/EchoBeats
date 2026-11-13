@@ -34,7 +34,7 @@ async def test_search_by_title_album_and_artist_without_duplicate_rows(client, c
         connection.execute(playlist.insert(), [{'name': f'Lluvia {index:02}'} for index in range(12)])
     groups = (await api.get('/api/v1/library/search', params={'q': 'lluvia'})).json()
     assert groups['playlists']['total'] == 12 and len(groups['playlists']['items']) == 10
-    assert groups['playlists']['href'] is None
+    assert 'vista=playlists' in groups['playlists']['href']
     assert 'vista=canciones' in groups['tracks']['href']
 
 

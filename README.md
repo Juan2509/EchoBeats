@@ -3,14 +3,14 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P10 y O06 implementados; validación manual de audio pendiente.** Inicio, navegación,
+**Estado actual: P11 y O06 implementados; validación manual de audio pendiente.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
 Las correcciones manuales se conservan al releer el original.
 Entrega de audio con su MIME real, GET/HEAD y rangos; reproductor compartido con selección,
-pausa, anterior/siguiente, avance y volumen. Gestión de playlists, muros e IA
-siguen pendientes.
+pausa, anterior/siguiente, avance y volumen. Playlists permiten crear, renombrar, añadir/quitar/ordenar pistas y guardar imagen
+con apariencia de vinilo o tarjeta. Muros e IA siguen pendientes.
 `health` y `ready` comprueban proceso y BD.
 
 ## Inicio con Docker
@@ -48,6 +48,12 @@ La lista sigue el álbum o la búsqueda seleccionados, incluso entre páginas.
 Al terminar avanza a la siguiente pista y se detiene al final; cerrar/recargar
 la página no restaura ni inicia audio automáticamente. Ver
 [validación P10](docs/VALIDACION_P10.md) para pruebas y revisión manual pendiente.
+P11 añade la pestaña «Playlists» y su editor. Guarda nombre, canciones y orden;
+Subir/Bajar también funcionan con teclado. Puedes elegir vinilo o tarjeta y una
+imagen PNG/JPEG de hasta 5 MiB. Elegir imagen guarda los cambios actuales.
+Guarda el borrador antes de reproducir la lista en su nuevo orden. Si otra pestaña
+modificó la playlist, recarga los datos guardados para revisar el conflicto.
+Ver [validación P11](docs/VALIDACION_P11.md).
 La ampliación O06 admite WAV PCM entero, FLAC nativo y Ogg con Vorbis/Opus.
 El navegador debe poder decodificar el códec; se muestra un aviso si no anuncia
 compatibilidad. No hay conversión automática. Límites, formatos exactos y
