@@ -13,6 +13,7 @@ from app.api.imports import error_response
 from app.api.metadata import router as metadata_router
 from app.api.audio import router as audio_router
 from app.api.playlists import router as playlists_router
+from app.api.walls import router as walls_router
 from app.services.metadata import MetadataError
 from app.config import Settings
 from app.database import make_database_engine
@@ -41,8 +42,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(playlists_router, prefix="/api/v1", tags=["Playlists"])
 
+    app.include_router(walls_router, prefix="/api/v1", tags=["Muros"])
+
     @app.exception_handler(MetadataError)
     async def metadata_error(request, exc):
+        if exc.current_revision is not None:
+            return JSONResponse(status_code=exc.status, content={"error": {
+                "code": exc.code, "message": exc.message,
+                "current_revision": exc.current_revision, "current_etag": exc.current_etag,
+            }}, headers={"ETag": exc.current_etag, "Cache-Control": "no-store"})
         return error_response(exc.code, exc.message, exc.status)
 
     @app.exception_handler(RequestValidationError)

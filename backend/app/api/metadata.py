@@ -145,7 +145,7 @@ def patch_album(album_id: UUID, changes: AlbumPatch, request: Request, if_match:
 def cover_content(asset_id: UUID, request: Request):
     with engine_for(request).connect() as connection:
         resource = connection.execute(select(media_asset).where(media_asset.c.id == asset_id)).first()
-    if resource is None or resource.kind not in {"cover", "image"} or resource.mime_type not in {"image/png", "image/jpeg"}:
+    if resource is None or not ((resource.kind in {"cover", "image"} and resource.mime_type in {"image/png", "image/jpeg"}) or (resource.kind == "gif" and resource.mime_type == "image/gif")):
         raise service.MetadataError("cover_not_found", "No existe esa portada.", 404)
     try:
         path = MediaStore(request.app.state.settings.media_root).path_for(resource.storage_key)

@@ -2,6 +2,27 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P12 — 13 de noviembre de 2026
+
+El usuario autorizó P12; P11 ya estaba registrado en `12bd0e5`. Migración
+`0005_album_walls`: wall/wall_element, backfill de álbumes existentes y creación
+transaccional de muro en álbumes manuales o importados. Fondo inicial #242038,
+formato/revisión 1. GET/PUT/reset con ETag/If-Match, validación de geometría
+rotada/recursos y reemplazo atómico. No se eliminan archivos al quitar elementos.
+Los conflictos versionados informan revisión y ETag actuales. Downgrade de 0005
+rechaza diseños guardados para evitar pérdida; solo se probó en bases aisladas.
+
+102 pruebas backend superadas, esquema sin diferencias, dependencias/OpenAPI y
+auditoría correctos. Respaldo previo local con hash conservado. Comparación HTTP
+antes/después confirma catálogo intacto; dos muros de demostración A/B conservan
+composición y ETag tras reiniciar backend. Álbumes de demostración vacíos e imagen
+sintética; canciones del usuario intactas. Servicios activos y volumen/medios/.env
+conservados. Ver VALIDACION_P12.md para evidencias y límites.
+
+P12 implementa backend y persistencia; no hay editor visual todavía. No cierra
+CA-06/CA-07 visuales ni los pendientes P08/P09/P10/O06. Sin commit automático.
+Siguiente implementación: **P13, vista del muro y modos de edición/bloqueo**.
+
 ## Contexto confirmado y estado vigente — 13 de noviembre de 2026
 
 El usuario pidió revisar nuevamente los dos adjuntos y el plan de desarrollo,

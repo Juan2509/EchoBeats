@@ -2,7 +2,7 @@
 
 P02 · 12 de noviembre de 2026. P05/P06 implementan catálogo y recursos; P07
 añade procedencia de álbum, agrupación de importación y portada individual;
-muros, preferencias e IA siguen siendo diseño para migraciones posteriores.
+P12 añade muros/elementos; preferencias e IA siguen siendo diseño para migraciones posteriores.
 Complementa [decisiones](DECISIONES.md) y [contrato API](CONTRATO_API.md).
 
 ## 1. Convenciones
@@ -16,7 +16,7 @@ Los campos enumerados son el mínimo inicial. Relaciones y restricciones se
 aplican en BD y validación de API, no solo en componentes de interfaz.
 Estado actual: SQLAlchemy Core en `backend/app/models/catalog.py` y migración
 `0002_catalog` y `0003_metadata`. Hay extracción local de etiquetas;
-los muros siguen pendientes.
+los muros se incorporan con P12.
 
 O06 añade `0004_audio_formats`: amplía la restricción de storage_key para WAV,
 FLAC, Ogg y Opus, sin columnas nuevas ni cambios en los medios existentes.
@@ -25,6 +25,12 @@ El MIME ya persistido en media_asset se expone como audio_mime_type de pista.
 P11 implementa servicios de playlists sobre playlist/playlist_track ya existentes:
 reemplazo transaccional de secuencia, bloqueo de fila y revisión ETag, sin migración.
 No cambia pertenencia de pistas a álbumes ni elimina medios.
+
+P12 implementa `wall` y `wall_element` en `0005_album_walls`: backfill de todos
+los álbumes y creación de muro en la transacción de álbum nuevo. Fondo #242038,
+formato/revisión 1; relaciones RESTRICT. El esquema limita valores escalares;
+API valida límites rotados, máximo 30 elementos y compatibilidad de recursos.
+Ver VALIDACION_P12.md. El editor visual se construye desde P13.
 
 ## 2. Entidades y relaciones
 
@@ -112,8 +118,8 @@ by ≤ cy × H ≤ H − by
 
 No basta con limitar el centro a [0,1]. Si una transformación no cabe, el cliente
 la limita o conserva la última válida; el servidor devuelve error de validación
-en vez de corregir silenciosamente. Se define una tolerancia numérica pequeña
-y común al implementar P15 para evitar diferencias por redondeo.
+en vez de corregir silenciosamente. P12 fija tolerancia de `1e-7` unidades del lienzo de referencia; P15 debe
+reutilizar ese valor en el cliente para evitar diferencias por redondeo.
 
 Guardar fondo y todos los elementos en una transacción con revisión esperada.
 Actualizar solo si coincide `revision`; incrementar una vez por composición

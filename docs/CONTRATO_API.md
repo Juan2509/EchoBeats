@@ -6,7 +6,7 @@ pistas y álbumes, listas paginadas de selección, extracción y assets de porta
 P08 incorpora búsqueda textual, listados filtrados y búsqueda agrupada.
 P09 incorpora entrega de audio original y rangos de bytes.
 O06 amplía formatos a MP3, WAV PCM, FLAC y Ogg Vorbis/Opus (.ogg/.opus).
-P11 implementa playlists; muros e IA siguen pendientes.
+P11 implementa playlists y P12 la API de muros; editor visual e IA siguen pendientes.
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
@@ -131,6 +131,15 @@ quitar y reordenar usando el reemplazo de secuencia. No se borra la pista origin
 
 ## 4. Muro por álbum y concurrencia
 
+Implementado en P12 con `0005_album_walls`; ver [validación](VALIDACION_P12.md).
+Fondo inicial #242038, esquema/revisión 1 y elements vacíos. Colores se devuelven
+en mayúsculas; rotación normalizada a [−180,180), valores finitos. Comprobación
+rotada sobre lienzo 1000 × 700 con tolerancia `1e-7` unidades. Orden por z_index/UUID.
+Referencias visuales PNG/JPEG existentes; GIF requiere recurso gestionado GIF con
+máximo 200 fotogramas (subida en P14). GET de contenido admite ese recurso GIF.
+Campos adicionales o recursos incompatibles/ausentes: 422 sin reemplazo parcial.
+No se modifica frontend en P12; renderizado y edición desde P13.
+
 | Método y ruta | Función |
 | --- | --- |
 | `GET /albums/{id}/wall` | Devuelve composición persistida y ETag; un álbum tiene muro inicial creado en P12. |
@@ -140,7 +149,8 @@ quitar y reordenar usando el reemplazo de secuencia. No se borra la pista origin
 Regla compartida para recursos versionados: GET devuelve ETag opaco con tipo,
 ID y revisión, por ejemplo `"wall-22222222-2222-4222-8222-222222222222-3"`.
 La escritura manda ese valor en `If-Match`. Sin cabecera, 428; si no coincide,
-412 con code `revision_conflict` y revisión actual para recargar. Comprobación
+412 con code `revision_conflict`, `current_revision` y `current_etag`, además
+de cabecera ETag actual, para recargar. Comprobación
 e incremento deben ser atómicos en BD. No se admite `If-Match: *` para saltar
 el control. La misma regla aplica a tracks, álbumes, playlists y fichas con sus prefijos.
 

@@ -13,8 +13,9 @@ from app.services.covers import publications, save_cover
 
 
 class MetadataError(Exception):
-    def __init__(self, code, message, status=422):
+    def __init__(self, code, message, status=422, *, current_revision=None, current_etag=None):
         self.code, self.message, self.status = code, message, status
+        self.current_revision, self.current_etag = current_revision, current_etag
 
 
 def etag(kind, row):
@@ -25,7 +26,7 @@ def check_revision(kind, row, expected):
     if expected is None:
         raise MetadataError("revision_required", "Falta la revisión del recurso. Recarga los datos antes de guardar.", 428)
     if expected != etag(kind, row):
-        raise MetadataError("revision_conflict", "Los datos cambiaron en otra pestaña. Recarga para revisar tus cambios.", 412)
+        raise MetadataError("revision_conflict", "Los datos cambiaron en otra pestaña. Recarga para revisar tus cambios.", 412, current_revision=row.revision, current_etag=etag(kind, row))
 
 
 def artist_ids(connection, names):
@@ -68,6 +69,8 @@ def album_for_tags(connection, tags):
     found = connection.scalar(album.insert().values(
         title=tags.album_title, import_key=key, metadata_sources={"title": "file", "artists": "file", "cover": "fallback"},
     ).returning(album.c.id))
+    from app.services.walls import create_initial
+    create_initial(connection, found)
     replace_credits(connection, album_artist, album_artist.c.album_id, found, artist_ids(connection, tags.album_artists))
     return found
 
@@ -220,6 +223,8 @@ def create_album(engine, title, names):
         album_id = connection.scalar(album.insert().values(
             title=title, metadata_sources={"title": "manual", "artists": "manual", "cover": "fallback"},
         ).returning(album.c.id))
+        from app.services.walls import create_initial
+        create_initial(connection, album_id)
         replace_credits(connection, album_artist, album_artist.c.album_id, album_id, artist_ids(connection, names))
         return album_data(connection, album_id)
 

@@ -160,3 +160,16 @@ Fuentes oficiales consultadas:
 [pgvector](https://github.com/pgvector/pgvector),
 [Alembic](https://alembic.sqlalchemy.org/en/latest/tutorial.html),
 [respaldo PostgreSQL](https://www.postgresql.org/docs/17/backup-dump.html).
+
+## Actualización P12 — Muros por álbum
+
+`0005_album_walls` crea wall/wall_element y rellena muros iniciales para todos los
+álbumes existentes sin modificar pistas, playlists, metadatos ni medios. El
+servicio crea los muros de álbumes nuevos en su misma transacción. Aplicar con
+el servicio migrate o `alembic upgrade head`, conservando volumen y respaldos.
+
+Antes de aplicar P12 se creó un respaldo local con manifiesto/hash; comprobar
+MEDIA_ROOT por separado. No probar downgrade en la principal: 0005 rechaza la
+reversión si hay elementos, fondo personalizado o revisión > 1 para conservar
+los diseños. Las pruebas de reversión usan exclusivamente bases aisladas.
+Evidencias de migración y persistencia A/B: [VALIDACION_P12.md](VALIDACION_P12.md).

@@ -3,7 +3,7 @@
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
-    BigInteger, CheckConstraint, Column, DateTime, ForeignKey, Integer,
+    BigInteger, CheckConstraint, Column, DateTime, Double, ForeignKey, Integer,
     MetaData, String, Table, UniqueConstraint, Uuid, func, text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -111,4 +111,32 @@ playlist_track = Table(
     Column("track_id", Uuid, ForeignKey("track.id", ondelete="RESTRICT"), primary_key=True),
     Column("position", Integer, nullable=False),
     UniqueConstraint("playlist_id", "position"), CheckConstraint("position >= 0", name="position"),
+)
+
+
+WALL_DEFAULT_BACKGROUND = "#242038"
+wall = Table(
+    "wall", metadata, identity(),
+    Column("album_id", Uuid, ForeignKey("album.id", ondelete="RESTRICT"), nullable=False, unique=True),
+    Column("schema_version", Integer, nullable=False, server_default="1"),
+    Column("revision", Integer, nullable=False, server_default="1"),
+    Column("background_color", String(7), nullable=False, server_default=WALL_DEFAULT_BACKGROUND),
+    *timestamps(),
+    CheckConstraint("schema_version = 1", name="schema_version"),
+    CheckConstraint("revision > 0", name="revision"),
+    CheckConstraint("background_color ~ '^#[0-9A-Fa-f]{6}$'", name="background_color"),
+)
+wall_element = Table(
+    "wall_element", metadata, identity(),
+    Column("wall_id", Uuid, ForeignKey("wall.id", ondelete="RESTRICT"), nullable=False, index=True),
+    Column("asset_id", Uuid, ForeignKey("media_asset.id", ondelete="RESTRICT"), nullable=False),
+    Column("kind", String(16), nullable=False),
+    Column("cx", Double, nullable=False), Column("cy", Double, nullable=False),
+    Column("width", Double, nullable=False), Column("height", Double, nullable=False),
+    Column("rotation_deg", Double, nullable=False), Column("z_index", Integer, nullable=False),
+    CheckConstraint("kind IN ('poster','sticker','image','gif')", name="kind"),
+    CheckConstraint("cx >= 0 AND cx <= 1 AND cy >= 0 AND cy <= 1", name="center"),
+    CheckConstraint("width >= 0.03 AND width <= 0.60 AND height >= 0.03 AND height <= 0.60", name="size"),
+    CheckConstraint("rotation_deg >= -180 AND rotation_deg < 180", name="rotation"),
+    CheckConstraint("z_index >= 0 AND z_index <= 29", name="z_index"),
 )

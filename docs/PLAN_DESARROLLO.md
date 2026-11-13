@@ -1,6 +1,6 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P11 implementado; playlists y reproductor
+Fecha inicial: 12 de noviembre de 2026. Estado: P12 implementado; persistencia/API de muros, playlists y reproductor
 compartido disponibles. Recorrido manual de audio y revisiones P08/P09 pendientes.
 O06 habilitado por el usuario: soporte multiformato implementado; navegador pendiente.
 
@@ -321,7 +321,7 @@ no cierra las verificaciones manuales de P08/P09/P10/O06.
 
 **Entrega de fase:** cada álbum recupera su composición después de reiniciar.
 
-### [ ] P12 — Persistir un muro independiente por álbum
+### [x] P12 — Persistir un muro independiente por álbum
 
 **Depende de:** P05, P08. **Commit:** `feat(walls): crear muros persistentes por álbum`
 
@@ -333,6 +333,12 @@ no cierra las verificaciones manuales de P08/P09/P10/O06.
 
 **Cierre:** guardar y recuperar A no altera B, incluso al reiniciar el backend.
 Añadir comprobación de integración de aislamiento y persistencia.
+
+**Resultado P12:** migración 0005, muro inicial para álbumes previos/nuevos,
+GET/PUT/reset versionados, validación de recursos y geometría, guardado atómico.
+102 pruebas backend correctas; catálogo conservado y muros A/B recuperados tras
+reiniciar backend por HTTP real. Ver [VALIDACION_P12.md](VALIDACION_P12.md).
+Sin frontend nuevo; editor visual en P13–P16. Sin commit automático.
 
 ### [ ] P13 — Mostrar el muro y sus modos de edición
 
@@ -600,9 +606,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P11 implementado sin commit; ver VALIDACION_P11.md. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes. Esta revisión no inicia P11.
+- **Trabajo actual:** P12 implementado sin commit; ver VALIDACION_P12.md. P11 registrado en `12bd0e5`. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P12, muros por álbum. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
+- **Próximo bloque de implementación:** P13, vista del muro y modos de edición/bloqueo. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
@@ -668,6 +674,13 @@ instalaciones ni cambios de aplicación en esta revisión.
 
 Implementado sin commit: playlists, canciones ordenadas, apariencia/imagen y cola.
 Ver VALIDACION_P11.md para evidencias, límites y entorno local. Próximo P12.
+
+### Entrega P12 — 13 de noviembre de 2026
+
+P11 registrado por el usuario en `12bd0e5`. P12 implementado sin commit: esquema,
+API, muros iniciales y persistencia A/B tras reinicio. 102 pruebas backend,
+esquema, OpenAPI y auditoría correctos. Respaldo previo local conservado.
+Siguiente P13; pendientes manuales anteriores vigentes.
 
 ### Plantilla de cierre de sesión
 

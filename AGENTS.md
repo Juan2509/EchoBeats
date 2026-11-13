@@ -76,3 +76,10 @@ apariencia vinilo/tarjeta y reproducción en orden guardado. Consultar
 `docs/VALIDACION_P11.md`. Tablas P05 reutilizadas, sin migración. Guardados de
 ficha y secuencia serializados con ETag; ante fallo parcial conservar borrador
 y comunicar el resultado incierto. Siguiente P12; pendientes anteriores vigentes.
+
+P11 quedó registrado en `12bd0e5`. P12 añade `0005_album_walls`, muro inicial
+por álbum (incluidos preexistentes), GET/PUT/reset versionados, geometría y
+recursos validados, guardado atómico. Ver `docs/VALIDACION_P12.md`: 102 pruebas
+y recuperación A/B tras reiniciar backend. Downgrade rechaza diseños guardados;
+nunca probarlo en la principal. No hay editor visual aún; siguiente P13.
+Se conservan los pendientes manuales anteriores y todos los medios/volúmenes.

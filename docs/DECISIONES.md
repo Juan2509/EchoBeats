@@ -173,6 +173,13 @@ aplican al muro/petición que las originó. No se confía en guardar al cerrar p
 Salir de un muro con guardado pendiente ofrece esperar/reintentar o descartar
 explícitamente. Un conflicto de revisión obliga a recargar o revisar el borrador.
 
+Actualización P12: formato persistido en 0005, fondo inicial #242038, GET/PUT/reset
+con revisión y reemplazo atómico. Muros previos creados por migración; nuevos en
+la transacción de creación del álbum. Validación rotada con tolerancia de `1e-7`
+unidades del lienzo 1000 × 700; cliente P15 debe compartirla. El backend admite
+referencias visuales ya gestionadas; editor/carga decorativa siguen en P13/P14.
+Downgrade protegido si hay diseños guardados; detalle en VALIDACION_P12.md.
+
 ## D08 — Límites iniciales configurables
 
 Son límites de producto para empezar a implementar y probar, no rendimientos medidos.
