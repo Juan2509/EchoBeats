@@ -416,7 +416,13 @@ Probar respuesta de red tardía y fallo de escritura; completar RF-07 a RF-10.
 **Entrega de fase:** búsqueda musical semántica completa con evidencia de API real
 y consultas vectoriales sobre canciones existentes.
 
-### [ ] P17 — Definir casos de búsqueda y evaluación
+### [x] P17 — Definir casos de búsqueda y evaluación
+
+Completado el 13 de noviembre de 2026. Corpus original de cinco fragmentos WAV,
+18 consultas y diez escenarios de fallo fijados antes de prompts/recuperación.
+Protocolo de relevancia, explicaciones/citas, particiones y métricas en
+EVALUACION_BUSQUEDA.md; evidencia en VALIDACION_P17.md. No se implementó ni se
+evaluó IA todavía. Próxima implementación P18; sin commit automático.
 
 **Depende de:** P01, P07. **Commit:** `docs(ai): definir consultas y criterios de recuperación musical`
 
@@ -645,9 +651,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P16 implementado con recorrido visual pendiente; ver VALIDACION_P16.md. P15 registrado en 97f797a con revisión visual pendiente. Conservar los pendientes de P08 y audio.
+- **Trabajo actual:** P17 completado: corpus y protocolo de evaluación preparados; ver VALIDACION_P17.md. IA/embeddings todavía sin implementar.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P17, casos de búsqueda y evaluación musical. P15/P16 conservan sus revisiones manuales de cierre pendientes.
+- **Próximo bloque de implementación:** P18, estados y reintentos de procesamiento musical. Se mantienen pendientes visuales P08/P15/P16 y audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

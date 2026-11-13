@@ -143,6 +143,14 @@ documentada. Por cada pista registrar origen, autor, permiso/licencia, archivo,
 permisos de terceros confirmados en esta sesión. Esto queda como dependencia de
 la evaluación de pertinencia de CA-11, no como una prueba ya superada.
 
+Actualización P17: se prepararon cinco fragmentos musicales originales de síntesis
+en [pruebas/semantica](../pruebas/semantica/README.md), con archivo/hash, autor,
+procedencia/uso y descripciones verificables por construcción. El
+[protocolo](EVALUACION_BUSQUEDA.md) fija 18 consultas y diez escenarios de fallo.
+Las emociones editoriales siguen pendientes de escucha humana. Esto completa
+la preparación controlada de P17, sin acreditar CA-10/CA-11 ni calidad en música
+externa; ampliar con música autorizada antes de generalizar los resultados.
+
 ## 7. Requisitos académicos y decisiones pendientes
 
 Actualización del 13 de noviembre de 2026: el usuario confirma temática libre

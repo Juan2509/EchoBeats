@@ -3,6 +3,10 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
+P17 prepara [casos y criterios de evaluación musical](docs/EVALUACION_BUSQUEDA.md)
+con cinco fragmentos sintéticos originales y 18 consultas. Aún no hay búsqueda
+semántica ni API de IA integrada. Ver [validación P17](docs/VALIDACION_P17.md).
+
 **Estado actual: P16 implementado con recorrido visual pendiente; P15 y audio conservan sus validaciones manuales pendientes.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas

@@ -50,6 +50,11 @@ Los MP3 ya generados permiten usar la colección sin ejecutar el script.
 
 ## Límites de validación
 
+P17 añadió una [colección musical sintética independiente](../semantica/README.md)
+con notas/timbres y expectativas controladas. Los tonos de esta carpeta conservan
+su uso técnico; no se les asignan géneros ni emociones. Ver
+[protocolo P17](../../docs/EVALUACION_BUSQUEDA.md) para evidencia y límites actuales.
+
 Esta colección permite comprobar mecánica de importación, etiquetas, reproducción,
 duplicados y archivos inválidos. No demuestra la pertinencia de recomendaciones
 por nostalgia, lluvia, género o instrumentos musicales.

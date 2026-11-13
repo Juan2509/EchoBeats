@@ -1,5 +1,12 @@
 # EchoBeats: contexto del proyecto
 
+P17 completó casos y protocolo de evaluación, no recuperación ni IA. Leer
+`docs/EVALUACION_BUSQUEDA.md`, `docs/VALIDACION_P17.md` y `pruebas/semantica/` antes
+de trabajar P18–P23. Cinco WAV originales, 18 consultas y diez fallos; verificar con
+`node scripts/validar_coleccion_semantica.mjs`. Reservadas no sirven para ajustar
+prompts. Emociones editoriales pendientes de escucha no son hechos verificados.
+No importar ni indexar por leer documentos. Próxima implementación P18.
+
 P16 añade autoguardado agrupado y serializado, conserva ediciones nuevas durante
 una escritura y ofrece restauración/reset versionado con confirmación. Ver
 `docs/VALIDACION_P16.md`. 42 pruebas frontend aprobadas; recorrido visual y reinicio

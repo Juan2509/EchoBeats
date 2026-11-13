@@ -2,6 +2,18 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P17 — 13 de noviembre de 2026
+
+El usuario autorizó P17. Completada preparación de evaluación: cinco fragmentos
+musicales originales de síntesis en pruebas/semantica, manifiesto/hash/procedencia,
+18 consultas y diez casos de fallo. Protocolo en EVALUACION_BUSQUEDA.md; evidencia
+en VALIDACION_P17.md. Se verificaron WAV, hashes y coherencia de casos sin APIs.
+No confundir anotaciones emocionales editoriales pendientes de escucha con hechos
+verificados del generador. Las reservadas no se usan para ajustar prompts/modelos.
+No se importó corpus ni se crearon fichas/embeddings. P19 vinculará Mxx con UUID
+por hash; siguiente implementación P18. No hay evidencia de IA ni CA-10/CA-11
+superados todavía. P08/P15/P16/audio conservan sus recorridos manuales pendientes.
+
 ## Avance vigente: P16 — 13 de noviembre de 2026
 
 El usuario autorizó P16. Implementado autoguardado a 700 ms, cola de composición
