@@ -1,5 +1,13 @@
 # EchoBeats: contexto del proyecto
 
+P18 implementa cola durable PostgreSQL, trabajador local y API/controles de
+preparación de metadatos. Ver `docs/PROCESAMIENTO.md` y `docs/VALIDACION_P18.md`.
+0006_processing_jobs aplicada tras respaldo; no usar la principal para downgrades.
+No llamar recover fuera del dueño del bloqueo de trabajador; conservar CAS por
+intento/revisión. No anunciar fichas, embeddings ni análisis acústico por completed.
+120 pruebas backend y 42 frontend aprobadas; interacción visual pendiente.
+Próxima implementación P19. P08/P15/P16/audio conservan pendientes.
+
 P17 completó casos y protocolo de evaluación, no recuperación ni IA. Leer
 `docs/EVALUACION_BUSQUEDA.md`, `docs/VALIDACION_P17.md` y `pruebas/semantica/` antes
 de trabajar P18–P23. Cinco WAV originales, 18 consultas y diez fallos; verificar con

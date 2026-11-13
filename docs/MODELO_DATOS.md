@@ -151,6 +151,15 @@ exacta y justificar índices aproximados con mediciones posteriores.
 
 ## 6. Etapas de creación y conservación
 
+P18 efectivo (`0006_processing_jobs`): processing_job incluye id, track_id,
+operation=prepare_metadata, input_version (revisión de pista), status, attempts
+(0–3), error_code, result JSONB y created_at/updated_at/started_at/finished_at.
+Unicidad pista/operación/versión e índice parcial de pendientes. No almacena
+model_key todavía: index_description, versiones de ficha y modelo pertenecen a
+P19–P21 y requerirán ampliación explícita del esquema. result es resumen de
+metadatos, no una ficha ni un vector. FK RESTRICT conserva pista e historial.
+Downgrade se rechaza si hay trabajos. Ver PROCESAMIENTO.md para transiciones.
+
 P05 crea catálogo, recursos y playlists; P12 añade muros/elementos; P18 trabajos;
 P19 fichas; P21 embeddings. Crear el muro al crear un álbum se incorpora al
 servicio de álbumes en P12, incluyendo migración para álbumes preexistentes.

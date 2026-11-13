@@ -1,5 +1,10 @@
 # PostgreSQL y pgvector — Operación local
 
+P18 añade `0006_processing_jobs`, sin modificar catálogo/medios. Se aplicó tras
+respaldo privado y se comprobó readiness. Conserva historial de trabajos y rechaza
+downgrade si hay filas; probar reversión solo en bases aisladas. Detalles de
+operación, respaldo y evidencia en [VALIDACION_P18.md](VALIDACION_P18.md).
+
 Entregable P04, 12 de noviembre de 2026. Configuración para una instalación local
 de un usuario. PostgreSQL 17 con pgvector, imagen fijada por digest en Compose.
 El esquema musical se crea en P05; no hay aún tabla de embeddings de canciones.

@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import (
     BigInteger, CheckConstraint, Column, DateTime, Double, ForeignKey, Integer,
-    MetaData, String, Table, UniqueConstraint, Uuid, func, text,
+    Index, MetaData, String, Table, UniqueConstraint, Uuid, func, text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -140,3 +140,21 @@ wall_element = Table(
     CheckConstraint("rotation_deg >= -180 AND rotation_deg < 180", name="rotation"),
     CheckConstraint("z_index >= 0 AND z_index <= 29", name="z_index"),
 )
+
+processing_job = Table(
+    'processing_job', metadata, identity(),
+    Column('track_id', Uuid, ForeignKey('track.id', ondelete='RESTRICT'), nullable=False),
+    Column('operation', String(32), nullable=False),
+    Column('input_version', Integer, nullable=False),
+    Column('status', String(16), nullable=False, server_default='pending'),
+    Column('attempts', Integer, nullable=False, server_default='0'),
+    Column('error_code', String(40)), Column('result', JSONB),
+    Column('started_at', DateTime(timezone=True)), Column('finished_at', DateTime(timezone=True)),
+    *timestamps(),
+    UniqueConstraint('track_id', 'operation', 'input_version'),
+    CheckConstraint("operation = 'prepare_metadata'", name='operation'),
+    CheckConstraint("status IN ('pending','processing','completed','error','stale')", name='status'),
+    CheckConstraint('input_version > 0', name='version'),
+    CheckConstraint('attempts >= 0 AND attempts <= 3', name='attempts'),
+)
+Index('ix_processing_job_pending', processing_job.c.created_at, processing_job.c.id, postgresql_where=processing_job.c.status == 'pending')

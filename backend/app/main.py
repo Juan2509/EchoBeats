@@ -14,6 +14,8 @@ from app.api.metadata import router as metadata_router
 from app.api.audio import router as audio_router
 from app.api.playlists import router as playlists_router
 from app.api.walls import router as walls_router
+from app.api.processing import router as processing_router
+from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
 from app.config import Settings
 from app.database import make_database_engine
@@ -25,9 +27,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        worker = ProcessingWorker(app.state.database_engine) if config.processing_worker_enabled and app.state.database_engine is not None else None
+        if worker is not None:
+            worker.start()
         try:
             yield
         finally:
+            if worker is not None:
+                from starlette.concurrency import run_in_threadpool
+                await run_in_threadpool(worker.stop)
             if engine is not None:
                 engine.dispose()
 
@@ -43,6 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(playlists_router, prefix="/api/v1", tags=["Playlists"])
 
     app.include_router(walls_router, prefix="/api/v1", tags=["Muros"])
+    app.include_router(processing_router, prefix="/api/v1", tags=["Procesamiento"])
 
     @app.exception_handler(MetadataError)
     async def metadata_error(request, exc):

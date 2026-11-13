@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     import_max_files: int = Field(default=20, ge=1, le=20)
     import_max_file_bytes: int = Field(default=50 * 1024 * 1024, ge=1)
     import_max_request_bytes: int = Field(default=200 * 1024 * 1024, ge=1)
+    processing_worker_enabled: bool = True
 
     def hosts(self) -> list[str]:
         return [value.strip() for value in self.allowed_hosts.split(",") if value.strip()]

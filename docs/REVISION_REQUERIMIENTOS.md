@@ -24,6 +24,12 @@ pertenecen al caso documental usado para explicar la arquitectura.
 
 ## Relación con EchoBeats
 
+Actualización P18: ya existe procesamiento asíncrono durable local para preparar
+metadatos, con estados, revisión de entrada, reintento e historial. Ver
+PROCESAMIENTO.md. Esto incorpora el patrón de asincronía/trazabilidad; sigue sin
+OCR/PDF, proveedor de IA, fichas/embeddings ni recuperación híbrida. La tabla
+siguiente conserva el diagnóstico recibido inicialmente donde no se indique actualización.
+
 | Elemento de la fuente | Situación en EchoBeats | Adaptación o decisión pendiente |
 | --- | --- | --- |
 | Cliente web y API | React/TypeScript y FastAPI; aplicación funcional hasta P14. | Base ya disponible para la experiencia de exploración de P23. |

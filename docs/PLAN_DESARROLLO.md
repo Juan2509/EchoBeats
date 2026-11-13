@@ -434,7 +434,14 @@ evaluó IA todavía. Próxima implementación P18; sin commit automático.
 **Cierre:** existe un conjunto reproducible de consultas sobre la biblioteca de
 prueba, antes de ajustar los prompts o elegir resultados favorables.
 
-### [ ] P18 — Incorporar estados de procesamiento musical
+### [x] P18 — Incorporar estados de procesamiento musical
+
+Implementado y verificado el 13 de noviembre de 2026: trabajos durables y trabajador
+local exclusivo, recuperación/reintentos/versiones, API y controles por canción.
+La operación prepare_metadata es real y no implica análisis acústico ni IA.
+120 pruebas backend, ocho P18 y 42 frontend aprobadas; build aprobado. Migración
+0006 aplicada tras respaldo. Interacción visual pendiente por host de navegador
+no disponible; ver VALIDACION_P18.md. Próxima implementación P19; sin commit automático.
 
 **Depende de:** P07. **Commit:** `feat(analysis): registrar estados y reintentos de procesamiento`
 
@@ -651,9 +658,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P17 completado: corpus y protocolo de evaluación preparados; ver VALIDACION_P17.md. IA/embeddings todavía sin implementar.
+- **Trabajo actual:** P18 implementado y comprobado; cola durable, trabajador y controles de preparación. Ver VALIDACION_P18.md. Fichas y embeddings pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P18, estados y reintentos de procesamiento musical. Se mantienen pendientes visuales P08/P15/P16 y audio.
+- **Próximo bloque de implementación:** P19, fichas musicales estructuradas y trazables. Conservar revisiones manuales pendientes de P18, P08/P15/P16 y audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

@@ -199,6 +199,33 @@ reintentar. No reenviar escrituras de forma ciega tras timeout.
 
 ## 5. Fichas, trabajos e IA
 
+### P18 implementado: preparación de metadatos
+
+P18 usa `prepare_metadata`, sin análisis acústico, ficha ni embedding. No confundir
+«completed» con indexación semántica. Migración `0006_processing_jobs`.
+
+| Método y ruta | Contrato efectivo P18 |
+| --- | --- |
+| `POST /tracks/{id}/processing-jobs` | JSON `{}` o `{ "operation": "prepare_metadata" }`; 202 con trabajo completo. Campos adicionales/otra operación: 422. Captura revisión de pista en servidor. Reutiliza la misma fila de pista/operación/versión, incluso si está terminada o fallida. |
+| `GET /tracks/{id}/processing-jobs` | `{items, limit:10}`, diez trabajos más recientes; no-store. No devuelve un listado completo paginado. |
+| `GET /jobs/{id}` | Trabajo con id, track_id, operation, input_version, status, attempts, error_code/error_message, result, is_current, status_url y fechas. 404 si no existe. |
+| `POST /jobs/{id}/retry` | 202, reutiliza fila. Solo error/stale, entrada actual y menos de tres adquisiciones; de otro modo 409. No requiere reimportar audio. |
+
+Estados: pending/processing/completed/error/stale. attempts aumenta al adquirir,
+no al solicitar. Un reinicio convierte processing en error/interrupted sin
+reintento automático; pending permanece en cola. is_current compara versión
+histórica con revisión de pista actual, incluso después de completar.
+result solo aparece en completados y contiene metadatos ya existentes, hash y aviso
+de alcance; errores no publican excepciones, rutas privadas ni credenciales.
+No modifica pista ni su ETag. El trabajador local serializa ejecución y la API
+no espera su resultado. Ver PROCESAMIENTO.md y VALIDACION_P18.md.
+
+### Diseño posterior: fichas, embeddings y exploración
+
+La tabla siguiente y `index_status` son diseño para P19–P23; no están implementados
+por P18. GET /jobs y retry ya existen con el contrato efectivo anterior; se
+extenderán al habilitar nuevas operaciones y versiones de entrada.
+
 Contratos reservados para P18–P23; no requieren elegir proveedor en P02.
 
 | Método y ruta | Entrada / salida | Condición |

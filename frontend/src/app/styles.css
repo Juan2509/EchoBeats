@@ -188,3 +188,9 @@ a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-off
 .wall-transforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
 .wall-transforms label { display: grid; gap: 6px; min-width: 0; }
 .wall-transforms input { width: 100%; min-width: 0; box-sizing: border-box; }
+.processing-panel { margin-top: 10px; font-size: .85rem; overflow-wrap: anywhere; }
+.processing-panel summary { cursor: pointer; padding: 8px 0; }
+.processing-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.processing-actions button { margin: 0; }
+.track-list .processing-panel ul { padding-left: 18px; }
+.track-list .processing-panel li { display: list-item; border: 0; padding: 4px 0; }

@@ -2,6 +2,19 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P18 — 13 de noviembre de 2026
+
+El usuario autorizó P18. Implementados trabajos PostgreSQL y trabajador local
+exclusivo, estados/versiones, adquisición/CAS, recuperación tras interrupción,
+reintentos explícitos hasta tres intentos, API y controles por canción. Operación
+prepare_metadata prepara datos existentes con procedencia; no es análisis acústico,
+ficha ni embedding. Leer PROCESAMIENTO.md y VALIDACION_P18.md antes de P19–P21.
+120 pruebas backend aprobadas; ocho P18 repetidas tras ajuste final; 42 frontend
+y build aprobados. Respaldo privado previo; 0006_processing_jobs aplicada y backend
+reiniciado. Ready y rutas comprobados por HTTP; bloqueo exclusivo confirmado.
+UI pendiente por host de navegador no disponible. Mantener pendientes anteriores.
+Próxima implementación P19: fichas musicales estructuradas y trazables.
+
 ## Avance vigente: P17 — 13 de noviembre de 2026
 
 El usuario autorizó P17. Completada preparación de evaluación: cinco fragmentos

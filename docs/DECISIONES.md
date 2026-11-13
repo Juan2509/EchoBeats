@@ -231,12 +231,20 @@ Mantener adaptadores para generación y embeddings, sin instalar LangChain por
 defecto en P03. Su incorporación se decide por utilidad en P20, no por el nombre
 de la guía. LangGraph y n8n siguen condicionados a los requisitos docentes.
 
-P18 implementará trabajos persistidos en BD, ejecutados por un trabajador local
+P18 implementa trabajos persistidos en BD, ejecutados por un trabajador local
 del único proceso backend, con bloqueo de adquisición, estados y reintentos.
 Al reiniciar, los trabajos que quedaron `processing` pasan a error recuperable;
 no se reintentan automáticamente llamadas de coste incierto. Cada tarea captura
 la versión de entrada y descarta resultados obsoletos. Sesión de BD propia por
 trabajo; ninguna llamada de red mantiene abierta una transacción larga.
+
+La operación P18 es prepare_metadata, sin proveedor externo: resume metadatos y
+procedencia, sin inventar rasgos acústicos. Exclusión de trabajador mediante
+advisory lock de sesión en autocommit; adquisición/finalización transaccionales
+con CAS por intento y revisión. Historial durable, hasta tres intentos explícitos;
+completado de versión anterior se identifica como histórico. API y panel de pista
+implementados. Index_description/model_key se amplían en P19–P21, no se simulan
+antes. Ver PROCESAMIENTO.md y VALIDACION_P18.md.
 
 No considerar una tarea de fondo en memoria como cola durable. FastAPI presenta
 sus tareas de fondo como mecanismo de ejecución, distinto de la persistencia de
