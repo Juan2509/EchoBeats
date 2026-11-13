@@ -2,6 +2,21 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P19 — 13 de noviembre de 2026
+
+El usuario autorizó P19. Fichas actuales/historial, editor por pista, ETag de
+creación/edición, evidencia por atributo y fuentes manual/verified/metadata.
+Emoción/energía/contexto son interpretaciones manuales; no source=model público.
+Ficha incompleta no impide audio. Si deriva de metadatos, cambios de revisión
+la señalan metadata_stale sin sobrescribirla. Versión/hash preparan reindexación,
+pero no hay embeddings. P18 nunca sobrescribe fichas. Leer FICHAS_MUSICALES.md
+y VALIDACION_P19.md. Cinco propuestas P17 verificables por generador, sin emociones
+provisionales; cargador por hash simula por defecto y conserva fichas existentes.
+135 pruebas backend y 45 frontend aprobadas; build aprobado. 0007 aplicada tras
+respaldo privado; API lista. Corpus probado solo en bases aisladas, sin importarlo
+a biblioteca personal. UI pendiente por host de navegador no disponible; mantener
+pendientes anteriores. Próxima implementación P20, proveedor/configuración de IA.
+
 ## Avance vigente: P18 — 13 de noviembre de 2026
 
 El usuario autorizó P18. Implementados trabajos PostgreSQL y trabajador local

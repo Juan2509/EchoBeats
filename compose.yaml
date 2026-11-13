@@ -20,6 +20,7 @@ x-backend: &backend-base
     - ./backend/pyproject.toml:/app/backend/pyproject.toml:ro
     - ./data:/app/data
     - ./pruebas/coleccion:/app/fixtures:ro
+    - ./pruebas/semantica:/app/semantic-fixtures:ro
 
 services:
   postgres:

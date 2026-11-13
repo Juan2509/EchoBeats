@@ -23,6 +23,7 @@ export function App() {
   const playlist = /^\/playlists\/([0-9a-f-]{36})$/i.exec(path)
   function navigate(destination: string) {
     if (destination === location) return
+    if (!window.dispatchEvent(new Event('echobeats:before-navigation', { cancelable: true }))) return
     if (wallDirty && !window.confirm('La pared tiene cambios pendientes u operaciones en curso. Puedes cancelar para esperar o guardar. Si sales, se descartan los cambios aún no enviados; un guardado ya enviado puede completarse. ¿Salir?')) return
     if (playlistDirty && !window.confirm('Hay cambios sin guardar en la playlist. ¿Salir y descartarlos?')) return
     window.history.pushState(null, '', destination)
@@ -30,6 +31,7 @@ export function App() {
   }
   useEffect(() => {
     const pop = () => {
+      if (!window.dispatchEvent(new Event('echobeats:before-navigation', { cancelable: true }))) { window.history.pushState(null, '', location); return }
       if (wallDirty && !window.confirm('La pared tiene cambios pendientes u operaciones en curso. Puedes cancelar para esperar o guardar. Si sales, se descartan los cambios aún no enviados; un guardado ya enviado puede completarse. ¿Salir?')) { window.history.pushState(null, '', location); return }
       if (playlistDirty && !window.confirm('Hay cambios sin guardar en la playlist. ¿Salir y descartarlos?')) { window.history.pushState(null, '', location); return }
       setLocation(window.location.pathname + window.location.search)

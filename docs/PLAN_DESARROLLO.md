@@ -453,7 +453,14 @@ no disponible; ver VALIDACION_P18.md. Próxima implementación P19; sin commit a
 **Cierre:** una tarea interrumpida o fallida no deja la canción inaccesible ni
 requiere volver a importar el archivo para reintentar.
 
-### [ ] P19 — Crear fichas musicales estructuradas y trazables
+### [x] P19 — Crear fichas musicales estructuradas y trazables
+
+Implementado el 13 de noviembre de 2026: fichas con evidencia e interpretaciones,
+editor, versiones/historial/ETag, obsolescencia de derivados de metadatos y corpus
+P17 preparado por hash. 135 pruebas backend y 45 frontend aprobadas; build aprobado.
+0007 aplicada con respaldo previo. Sin embeddings/IA; revisión visual del editor
+pendiente por host no disponible. Ver VALIDACION_P19.md. Próxima implementación
+P20; sin commit automático.
 
 **Depende de:** P17, P18. **Commit:** `feat(descriptions): guardar fichas musicales con procedencia`
 
@@ -658,9 +665,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P18 implementado y comprobado; cola durable, trabajador y controles de preparación. Ver VALIDACION_P18.md. Fichas y embeddings pendientes.
+- **Trabajo actual:** P19 implementado y comprobado: fichas trazables y versionadas, editor y corpus preparado. Ver VALIDACION_P19.md.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P19, fichas musicales estructuradas y trazables. Conservar revisiones manuales pendientes de P18, P08/P15/P16 y audio.
+- **Próximo bloque de implementación:** P20, proveedor/configuración de IA. Embeddings e integración real todavía pendientes. Mantener revisiones visuales y audio registradas.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

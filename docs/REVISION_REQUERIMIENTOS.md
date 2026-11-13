@@ -24,6 +24,12 @@ pertenecen al caso documental usado para explicar la arquitectura.
 
 ## Relación con EchoBeats
 
+Actualización P19: fichas musicales con fuente/evidencia por atributo, historial
+versionado y separación explícita de interpretaciones ya implementadas. Se preparó
+el corpus controlado por hash sin emociones provisionales. Es una base trazable
+para RAG futuro; no equivale a proveedor, embeddings, recuperación híbrida ni citas
+generadas. Ver FICHAS_MUSICALES.md y VALIDACION_P19.md.
+
 Actualización P18: ya existe procesamiento asíncrono durable local para preparar
 metadatos, con estados, revisión de entrada, reintento e historial. Ver
 PROCESAMIENTO.md. Esto incorpora el patrón de asincronía/trazabilidad; sigue sin

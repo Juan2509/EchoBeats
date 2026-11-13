@@ -1,5 +1,9 @@
 # PostgreSQL y pgvector — Operación local
 
+P19 añade `0007_track_descriptions`: fichas actuales e historial versionado. Se
+aplicó con respaldo privado previo desde 0006, sin modificar medios. El downgrade
+rechaza retirar fichas existentes. Ver VALIDACION_P19.md para evidencia y respaldo.
+
 P18 añade `0006_processing_jobs`, sin modificar catálogo/medios. Se aplicó tras
 respaldo privado y se comprobó readiness. Conserva historial de trabajos y rechaza
 downgrade si hay filas; probar reversión solo en bases aisladas. Detalles de

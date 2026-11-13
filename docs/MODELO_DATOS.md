@@ -151,6 +151,16 @@ exacta y justificar índices aproximados con mediciones posteriores.
 
 ## 6. Etapas de creación y conservación
 
+P19 efectivo (`0007_track_descriptions`): track_description tiene UUID estable,
+track_id único, version, text, features JSONB, source, source_details, content_hash
+y created_at/updated_at. description_revision usa PK(description_id,version),
+snapshot JSONB y fecha; el snapshot captura también input_track_revision.
+Se conserva cada versión, incluida procedencia por atributo. Las revisiones de
+pista detectan obsolescencia de campos derivados de metadatos sin sobrescribirlos.
+La ficha manual/verificada independiente no se reescribe al cambiar etiquetas.
+No hay aún tabla de embeddings; elegibilidad y necesidad de indexar son estados
+derivados, no vectores existentes. Ver FICHAS_MUSICALES.md.
+
 P18 efectivo (`0006_processing_jobs`): processing_job incluye id, track_id,
 operation=prepare_metadata, input_version (revisión de pista), status, attempts
 (0–3), error_code, result JSONB y created_at/updated_at/started_at/finished_at.

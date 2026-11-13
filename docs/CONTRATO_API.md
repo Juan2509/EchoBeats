@@ -222,6 +222,23 @@ no espera su resultado. Ver PROCESAMIENTO.md y VALIDACION_P18.md.
 
 ### Diseño posterior: fichas, embeddings y exploración
 
+**Actualización P19:** GET/PUT /tracks/{id}/description ya están implementados.
+GET devuelve 404 description_missing si no existe, o ficha con ETag. PUT devuelve
+200, exige If-None-Match:* al crear e If-Match al actualizar; 428 si falta condición,
+412 si hay conflicto, 422 si son inválidos el cuerpo/condiciones simultáneas.
+Admite source manual/verified/metadata y source_details obligatorio. text puede
+ser vacío; features es lista de {name,value,source,evidence,interpretation} con
+atributos permitidos y límites en FICHAS_MUSICALES.md. model no es admisible.
+Version/content_hash cambian al corregir contenido; no-op conserva versión/ETag.
+Respuesta añade can_index, needs_indexing, index_status=not_indexed,
+input_track_revision, metadata_stale e index_notice. No son pruebas de embeddings.
+GET /tracks/{id}/description/versions/{version} consulta snapshot con historical=true
+o 404 description_version_missing. GET de pista añade content_sha256 de solo lectura
+para vincular corpus por hash; no cambia su revisión por crear/corregir ficha.
+Las rutas index-jobs/explore/search y el estado compuesto de indexación de pista
+siguen siendo diseño P20–P23. El contrato efectivo P19 tiene prioridad sobre las
+propuestas de la tabla histórica siguiente. Ver VALIDACION_P19.md.
+
 La tabla siguiente y `index_status` son diseño para P19–P23; no están implementados
 por P18. GET /jobs y retry ya existen con el contrato efectivo anterior; se
 extenderán al habilitar nuevas operaciones y versiones de entrada.

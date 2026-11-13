@@ -158,3 +158,21 @@ processing_job = Table(
     CheckConstraint('attempts >= 0 AND attempts <= 3', name='attempts'),
 )
 Index('ix_processing_job_pending', processing_job.c.created_at, processing_job.c.id, postgresql_where=processing_job.c.status == 'pending')
+
+track_description = Table(
+    'track_description', metadata, identity(),
+    Column('track_id', Uuid, ForeignKey('track.id', ondelete='RESTRICT'), nullable=False, unique=True),
+    Column('version', Integer, nullable=False), Column('text', String(6000), nullable=False),
+    Column('features', JSONB, nullable=False), Column('source', String(16), nullable=False),
+    Column('source_details', String(2000), nullable=False),
+    Column('content_hash', String(64), nullable=False), *timestamps(),
+    CheckConstraint('version > 0', name='version'),
+    CheckConstraint("source IN ('manual','verified','metadata')", name='source'),
+)
+description_revision = Table(
+    'description_revision', metadata,
+    Column('description_id', Uuid, ForeignKey('track_description.id', ondelete='RESTRICT'), primary_key=True),
+    Column('version', Integer, primary_key=True),
+    Column('snapshot', JSONB, nullable=False),
+    Column('created_at', DateTime(timezone=True), nullable=False, server_default=func.now()),
+)

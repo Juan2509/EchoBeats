@@ -15,6 +15,7 @@ from app.api.audio import router as audio_router
 from app.api.playlists import router as playlists_router
 from app.api.walls import router as walls_router
 from app.api.processing import router as processing_router
+from app.api.descriptions import router as descriptions_router
 from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
 from app.config import Settings
@@ -52,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(walls_router, prefix="/api/v1", tags=["Muros"])
     app.include_router(processing_router, prefix="/api/v1", tags=["Procesamiento"])
+    app.include_router(descriptions_router, prefix="/api/v1", tags=["Fichas musicales"])
 
     @app.exception_handler(MetadataError)
     async def metadata_error(request, exc):

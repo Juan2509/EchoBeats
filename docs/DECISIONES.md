@@ -224,6 +224,14 @@ Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 
+P19 implementa fichas explícitas versionadas con historial y evidencia por atributo.
+Fuentes manual/verified/metadata; emoción/energía/contexto son interpretaciones
+manuales. P18 no sobrescribe fichas. Los datos derivados de metadatos conservan
+revisión de pista de entrada y se señalan obsoletos si esta cambia. Guardar no
+genera embeddings: se prepara hash/versión para P21. Propuestas P17 por SHA-256,
+sin emociones provisionales, y cargador local con simulación predeterminada que
+conserva fichas existentes. Ver FICHAS_MUSICALES.md y VALIDACION_P19.md.
+
 Descripciones manuales/verificadas como primera fuente. Al indexar, el servidor
 genera embeddings y los guarda en pgvector; las explicaciones se apoyan en las
 fichas recuperadas. Modelo, dimensiones y proveedor siguen abiertos hasta P20.

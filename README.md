@@ -7,7 +7,7 @@ P17 prepara [casos y criterios de evaluación musical](docs/EVALUACION_BUSQUEDA.
 con cinco fragmentos sintéticos originales y 18 consultas. Aún no hay búsqueda
 semántica ni API de IA integrada. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P18 implementado; revisión visual del panel y pendientes de pared/audio registrados.** Inicio, navegación,
+**Estado actual: P19 implementado; revisiones visuales y de audio pendientes registradas.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
@@ -25,6 +25,11 @@ nuevos durante un guardado y permite restaurar lo guardado o restablecer el dise
 con confirmación. Ver [validación P16](docs/VALIDACION_P16.md).
 
 ## Inicio con Docker
+
+P19 permite crear y corregir la «Ficha musical» de cada pista, con fuentes,
+evidencias, interpretaciones y versiones conservadas. Una ficha incompleta no
+impide escuchar. Todavía no genera embeddings ni usa un proveedor de IA. Ver
+[fichas musicales](docs/FICHAS_MUSICALES.md) y [validación P19](docs/VALIDACION_P19.md).
 
 P18 permite preparar metadatos en segundo plano desde «Preparación de información»
 en cada canción, consultar estado e historial y reintentar errores sin reimportar.

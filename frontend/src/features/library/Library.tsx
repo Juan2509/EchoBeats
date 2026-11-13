@@ -5,6 +5,7 @@ import { PlaylistLibrary } from '../playlists/Playlists'
 import { WallView } from '../walls/WallView'
 import { usePlayer } from '../player/Player'
 import { ProcessingPanel } from '../processing/ProcessingPanel'
+import { DescriptionEditor } from '../descriptions/DescriptionEditor'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 type Navigate = (path: string) => void
@@ -56,7 +57,8 @@ function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[
     <Cover url={item.cover_url} title={item.title} />
     <div><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><span>{artists(item)}</span>
       <a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a>
-      <ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} /></div>
+      <ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} />
+      <DescriptionEditor trackId={item.id} title={item.title} /></div>
     <time aria-label={`Duración ${duration(item.duration_ms)}`}>{duration(item.duration_ms)}</time>
   </li>)}</ul>
 }

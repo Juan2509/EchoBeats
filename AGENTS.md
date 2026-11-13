@@ -1,5 +1,14 @@
 # EchoBeats: contexto del proyecto
 
+P19 implementa fichas con procedencia/atributos, versiones e historial, editor y
+precondiciones. Leer `docs/FICHAS_MUSICALES.md` y `docs/VALIDACION_P19.md` antes de
+P20/P21. 0007 aplicada tras respaldo. No sobrescribir manuales desde P18 ni anunciar
+embeddings existentes. Derivados de metadatos conservan revisión y metadata_stale;
+emociones/energía/contexto son interpretaciones manuales. Corpus P17 preparado en
+fichas.json sin emociones provisionales; cargador local simula por defecto y solo
+crea ausentes por hash exacto con --apply. 135 pruebas backend/45 frontend y build
+aprobados. UI pendiente; conservar pendientes anteriores. Próxima implementación P20.
+
 P18 implementa cola durable PostgreSQL, trabajador local y API/controles de
 preparación de metadatos. Ver `docs/PROCESAMIENTO.md` y `docs/VALIDACION_P18.md`.
 0006_processing_jobs aplicada tras respaldo; no usar la principal para downgrades.

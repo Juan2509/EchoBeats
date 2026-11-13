@@ -1,5 +1,10 @@
 # Colección musical controlada P17
 
+Actualización P19: `fichas.json` contiene cinco entradas API verificables por el
+generador, sin anotaciones emocionales provisionales. Preparación/carga por hash
+y conservación de fichas existentes en [FICHAS_MUSICALES.md](../../docs/FICHAS_MUSICALES.md).
+Estas propuestas no cambian el conjunto de consultas ni acreditan embeddings.
+
 Cinco fragmentos musicales originales, generados sin muestras ni grabaciones de
 terceros. Son patrones de notas con timbres de síntesis; no se presentan como
 grabaciones de piano, guitarra o artistas reales. Uso previsto: pruebas,

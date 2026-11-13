@@ -194,3 +194,10 @@ a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-off
 .processing-actions button { margin: 0; }
 .track-list .processing-panel ul { padding-left: 18px; }
 .track-list .processing-panel li { display: list-item; border: 0; padding: 4px 0; }
+.description-dialog { width: min(720px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow: auto; box-sizing: border-box; color: inherit; background: #20281b; border: 1px solid #687354; border-radius: 12px; padding: 20px; }
+.description-dialog::backdrop { background: rgb(0 0 0 / .75); }
+.description-dialog fieldset { min-width: 0; border: 0; padding: 0; }
+.description-dialog label { display: grid; gap: 6px; margin-bottom: 14px; }
+.description-dialog textarea { min-height: 90px; resize: vertical; }
+.description-dialog input:not([type=checkbox]), .description-dialog textarea, .description-dialog select { width: 100%; box-sizing: border-box; min-width: 0; }
+.description-dialog .description-feature { border: 1px solid #687354; padding: 12px; margin: 12px 0; }
