@@ -180,6 +180,13 @@ unidades del lienzo 1000 × 700; cliente P15 debe compartirla. El backend admite
 referencias visuales ya gestionadas; editor/carga decorativa siguen en P13/P14.
 Downgrade protegido si hay diseños guardados; detalle en VALIDACION_P12.md.
 
+Actualización P13: el cliente muestra composición con CSS dentro del lienzo
+proporcional aislado; portada, pistas y barra de audio quedan fuera. Edición
+inicial de color, guardado manual o al bloquear, con una petición en vuelo.
+Conflicto/resultado incierto exige releer y confirmar descarte antes de reescribir;
+P16 ampliará coordinación y recuperación de todas las transformaciones. Los GIF
+se pausan por preferencia de movimiento reducido y pueden activarse explícitamente.
+
 ## D08 — Límites iniciales configurables
 
 Son límites de producto para empezar a implementar y probar, no rendimientos medidos.

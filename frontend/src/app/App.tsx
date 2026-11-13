@@ -15,6 +15,7 @@ export function App() {
   const [refresh, setRefresh] = useState(0)
   const [configuration, setConfiguration] = useState(false)
   const [playlistDirty, setPlaylistDirty] = useState(false)
+  const [wallDirty, setWallDirty] = useState(false)
   const heading = useRef<HTMLElement>(null)
   const path = location.split('?')[0]
   const search = location.includes('?') ? location.slice(location.indexOf('?')) : ''
@@ -22,18 +23,20 @@ export function App() {
   const playlist = /^\/playlists\/([0-9a-f-]{36})$/i.exec(path)
   function navigate(destination: string) {
     if (destination === location) return
+    if (wallDirty && !window.confirm('Hay cambios pendientes en la pared. ¿Salir y descartar el borrador?')) return
     if (playlistDirty && !window.confirm('Hay cambios sin guardar en la playlist. ¿Salir y descartarlos?')) return
     window.history.pushState(null, '', destination)
     setLocation(destination)
   }
   useEffect(() => {
     const pop = () => {
+      if (wallDirty && !window.confirm('Hay cambios pendientes en la pared. ¿Salir y descartar el borrador?')) { window.history.pushState(null, '', location); return }
       if (playlistDirty && !window.confirm('Hay cambios sin guardar en la playlist. ¿Salir y descartarlos?')) { window.history.pushState(null, '', location); return }
       setLocation(window.location.pathname + window.location.search)
     }
     window.addEventListener('popstate', pop)
     return () => window.removeEventListener('popstate', pop)
-  }, [playlistDirty, location])
+  }, [playlistDirty, wallDirty, location])
   useEffect(() => { heading.current?.focus(); window.scrollTo(0, 0) }, [path])
   useEffect(() => {
     const controller = new AbortController()
@@ -57,7 +60,7 @@ export function App() {
       {path === '/' && <section className="hero"><p className="eyebrow">Una colección que se siente tuya</p><h1>Tu música.<br /><em>Tu espacio.</em></h1><p className="intro">Redescubre los discos que te acompañan. Reúne tu música y empieza a construir tu propio rincón para escucharla.</p><a className="button-link" href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Abrir mi biblioteca <span aria-hidden="true">↗</span></a><div className="pillars"><div><span>01</span><h2>Música propia</h2><p>Importa tus archivos de audio y conserva tu colección.</p></div><div><span>02</span><h2>Un lugar por álbum</h2><p>Consulta sus portadas, artistas y canciones.</p></div><div><span>03</span><h2>Nuevas conexiones</h2><p>Más adelante, explora tu música por sensaciones.</p></div></div></section>}
       {path === '/biblioteca' && <Library refresh={refresh} navigate={navigate} search={search} />}
       {playlist && <PlaylistView key={playlist[1]} id={playlist[1]} navigate={navigate} onSaved={changed} onDirty={setPlaylistDirty} />}
-      {album && <AlbumView key={album[1]} id={album[1]} refresh={refresh} navigate={navigate} />}
+      {album && <AlbumView key={album[1]} id={album[1]} refresh={refresh} navigate={navigate} onDirty={setWallDirty} />}
       {path === '/explorar' && <section className="hero"><p className="eyebrow">Próximamente</p><h1>¿A qué suena<br />este momento?</h1><p className="intro">La exploración por sensaciones se incorporará cuando estén conectadas las fichas musicales, la API de IA y la búsqueda vectorial. Puedes seguir organizando tu biblioteca.</p><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Ir a mi música →</a></section>}
       {!['/', '/biblioteca', '/explorar'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
       <div hidden={path !== '/biblioteca'}>

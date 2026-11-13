@@ -83,3 +83,10 @@ recursos validados, guardado atómico. Ver `docs/VALIDACION_P12.md`: 102 pruebas
 y recuperación A/B tras reiniciar backend. Downgrade rechaza diseños guardados;
 nunca probarlo en la principal. No hay editor visual aún; siguiente P13.
 Se conservan los pendientes manuales anteriores y todos los medios/volúmenes.
+
+P12 registrado en `4c5c0d4`. P13 muestra el muro en la vista de álbum, arranca
+bloqueado y permite editar/guardar color sin perder elementos ni reiniciar audio.
+Ver `docs/VALIDACION_P13.md`: 25 pruebas frontend y recorrido Chrome en
+360/768/1280, teclado, aislamiento y conflictos. Solo se cambió el fondo del
+álbum de demostración A. No hay aún arrastre/carga/borrado de objetos: siguiente
+P14. Pendientes de audio/revisión anteriores vigentes; P16 ampliará el guardado.

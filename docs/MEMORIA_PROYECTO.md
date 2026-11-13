@@ -2,6 +2,30 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P13 — 13 de noviembre de 2026
+
+El usuario autorizó P13; P12 ya estaba registrado en `4c5c0d4`. La vista de álbum
+muestra portada/datos/pistas y muro proporcional con fondo/elementos persistidos,
+separado del reproductor compartido. Arranca bloqueado; editar permite cambiar
+color y guardar, y bloquear guarda el borrador antes de cerrar la edición.
+PUT versionado conserva elementos; cargas/respuestas antiguas se descartan.
+Conflicto/resultado incierto conserva el color y requiere recargar antes de
+reescribir. Advertencia básica al salir con pendientes; P16 ampliará guardados.
+
+25 pruebas frontend, TypeScript/build y recorrido Chrome headless correctos.
+Anchos 360/768/1280, teclado, bloqueo de arrastre, persistencia/aislamiento A/B,
+foco móvil visible y audio avanzando al navegar/alternar modos. Fallo simulado,
+conflicto real y recurso ausente comprobados. GIF/movimiento reducido probado
+con fixture de respuesta temporal, sin GIF insertado en la colección real.
+No se acredita escucha audible ni se cierran revisiones manuales anteriores.
+Auditoría sin faltantes/huérfanos/staging; solo se cambió el color del muro de
+«Demostración P12 A». Servicios activos, Chrome temporal cerrado.
+
+Sin cambios de backend, dependencias ni migraciones. No hay manipulación de
+objetos todavía: P14 añadirá carga/movimiento/borrado; P15 transformaciones;
+P16 guardado integral. Ver VALIDACION_P13.md. Sin commit automático.
+Siguiente implementación: **P14, añadir/mover/eliminar recursos visuales**.
+
 ## Avance vigente: P12 — 13 de noviembre de 2026
 
 El usuario autorizó P12; P11 ya estaba registrado en `12bd0e5`. Migración

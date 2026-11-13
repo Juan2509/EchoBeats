@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { Album, Track } from '../../shared/api/metadata'
 import defaultCover from '../../shared/assets/default-cover.svg'
 import { PlaylistLibrary } from '../playlists/Playlists'
+import { WallView } from '../walls/WallView'
 import { usePlayer } from '../player/Player'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
@@ -92,14 +93,14 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
   </section>
 }
 
-export function AlbumView({ id, refresh, navigate }: { id: string; refresh: number; navigate: Navigate }) {
+export function AlbumView({ id, refresh, navigate, onDirty }: { id: string; refresh: number; navigate: Navigate; onDirty: (dirty: boolean) => void }) {
   const [offset, setOffset] = useState(0)
   const info = useRead<Album>(`/albums/${encodeURIComponent(id)}`, refresh)
   const songs = useRead<Page<Track>>(`/tracks?album_id=${encodeURIComponent(id)}&limit=24&offset=${offset}`, refresh)
   return <section><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a>
-    <ReadState {...info} />{info.data && <><div className="album-heading"><Cover url={info.data.cover_url} title={info.data.title} /><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
+    <ReadState {...info} />{info.data && <div className="album-room"><aside className="album-sidebar"><div className="album-heading"><Cover url={info.data.cover_url} title={info.data.title} /><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
       <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
-      <p className="note">La pared personalizable llegará en los próximos pasos. Abrir este álbum no cambia la canción que está sonando.</p>
-    </>}
+      <p className="note">Abrir este álbum no cambia la canción que está sonando.</p>
+    </aside><WallView key={id} albumId={id} title={info.data.title} onDirty={onDirty} /></div>}
   </section>
 }

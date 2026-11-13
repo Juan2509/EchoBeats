@@ -1,6 +1,6 @@
 # Plan de desarrollo de EchoBeats
 
-Fecha inicial: 12 de noviembre de 2026. Estado: P12 implementado; persistencia/API de muros, playlists y reproductor
+Fecha inicial: 12 de noviembre de 2026. Estado: P13 implementado; vista de muros con edición/bloqueo, playlists y reproductor
 compartido disponibles. Recorrido manual de audio y revisiones P08/P09 pendientes.
 O06 habilitado por el usuario: soporte multiformato implementado; navegador pendiente.
 
@@ -340,7 +340,7 @@ GET/PUT/reset versionados, validación de recursos y geometría, guardado atómi
 reiniciar backend por HTTP real. Ver [VALIDACION_P12.md](VALIDACION_P12.md).
 Sin frontend nuevo; editor visual en P13–P16. Sin commit automático.
 
-### [ ] P13 — Mostrar el muro y sus modos de edición
+### [x] P13 — Mostrar el muro y sus modos de edición
 
 **Depende de:** P10, P12. **Commit:** `feat(wall-editor): mostrar composición y modos de edición`
 
@@ -351,6 +351,13 @@ Sin frontend nuevo; editor visual en P13–P16. Sin commit automático.
 
 **Cierre:** abrir álbumes muestra el fondo correcto y en modo bloqueado los
 objetos no se desplazan. Cubrir CA-08.
+
+**Resultado P13:** vista de álbum con panel de pistas y lienzo proporcional,
+fondo/elementos persistidos, edición/bloqueo y guardado versionado del color.
+25 pruebas frontend y build correctos; Chrome en 360/768/1280, teclado, bloqueo,
+aislamiento A/B, conflictos y continuidad del audio. Ver
+[VALIDACION_P13.md](VALIDACION_P13.md). CA-08 cubierto en este incremento;
+revalidar al añadir manipulación en P14/P15. Sin commit automático.
 
 ### [ ] P14 — Añadir, mover y eliminar recursos visuales
 
@@ -606,9 +613,9 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P12 implementado sin commit; ver VALIDACION_P12.md. P11 registrado en `12bd0e5`. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
+- **Trabajo actual:** P13 implementado sin commit; ver VALIDACION_P13.md. P12 registrado en `4c5c0d4`. P11 registrado en `12bd0e5`. O06 registrado en `e53aa4b`; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P13, vista del muro y modos de edición/bloqueo. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
+- **Próximo bloque de implementación:** P14, añadir/mover/eliminar recursos visuales. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
@@ -681,6 +688,15 @@ P11 registrado por el usuario en `12bd0e5`. P12 implementado sin commit: esquema
 API, muros iniciales y persistencia A/B tras reinicio. 102 pruebas backend,
 esquema, OpenAPI y auditoría correctos. Respaldo previo local conservado.
 Siguiente P13; pendientes manuales anteriores vigentes.
+
+### Entrega P13 — 13 de noviembre de 2026
+
+P12 registrado en `4c5c0d4`. P13 implementado sin commit: composición visual,
+color y modos de edición/bloqueo; sin arrastre todavía. 25 pruebas frontend,
+build y recorrido Chrome con datos reales correctos. Fallo 503 y movimiento
+reducido usan simulación/fixture explícitas; conflicto 412 comprobado contra BD.
+Servicios activos, sin cambios de backend ni dependencias. Siguiente P14;
+pendientes manuales anteriores vigentes.
 
 ### Plantilla de cierre de sesión
 

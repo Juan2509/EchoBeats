@@ -3,15 +3,15 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P12 y O06 implementados; validación manual de audio pendiente.** Inicio, navegación,
+**Estado actual: P13 y O06 implementados; validación manual de audio pendiente.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
 Las correcciones manuales se conservan al releer el original.
 Entrega de audio con su MIME real, GET/HEAD y rangos; reproductor compartido con selección,
 pausa, anterior/siguiente, avance y volumen. Playlists permiten crear, renombrar, añadir/quitar/ordenar pistas y guardar imagen
-con apariencia de vinilo o tarjeta. P12 incorpora persistencia y API de muros independientes por álbum. El editor
-visual de muros y la IA siguen pendientes.
+con apariencia de vinilo o tarjeta. P12 incorpora persistencia y API de muros independientes por álbum. P13 muestra la pared y permite cambiar su fondo con modos de edición/bloqueo.
+La manipulación de objetos y la IA siguen pendientes.
 `health` y `ready` comprueban proceso y BD.
 
 ## Inicio con Docker
@@ -57,9 +57,14 @@ modificó la playlist, recarga los datos guardados para revisar el conflicto.
 Ver [validación P11](docs/VALIDACION_P11.md).
 P12 crea un muro inicial por álbum y permite leer/guardar/restablecer su composición
 mediante la API con revisión. La migración conserva el catálogo y los recursos;
-la vista y los controles del muro se incorporan desde P13. Ver
+P13 muestra la vista y los controles de fondo del muro. Ver
 [validación P12](docs/VALIDACION_P12.md). No ejecutar downgrade sobre la biblioteca
 principal: la reversión rechaza muros guardados para conservar los diseños.
+Al abrir un álbum, la pared aparece bloqueada. Pulsa «Editar pared» para elegir
+color y «Guardar fondo», o «Bloquear diseño» para guardar y bloquear. Los objetos
+guardados se muestran en su posición; añadir/mover/eliminar se incorpora en P14.
+Si aparece un conflicto o el resultado es incierto, recarga la pared guardada
+antes de volver a editar. Ver [validación P13](docs/VALIDACION_P13.md).
 La ampliación O06 admite WAV PCM entero, FLAC nativo y Ogg con Vorbis/Opus.
 El navegador debe poder decodificar el códec; se muestra un aviso si no anuncia
 compatibilidad. No hay conversión automática. Límites, formatos exactos y

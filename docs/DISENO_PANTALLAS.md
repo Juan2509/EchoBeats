@@ -123,6 +123,13 @@ cambios intenta guardar; si falla, mantiene el borrador y el aviso. Navegar con
 pendientes ofrece «Esperar o reintentar», «Descartar cambios» o «Permanecer».
 No se asume que cerrar el navegador terminará una petición pendiente.
 
+Actualización P13: panel de álbum/pistas y lienzo proporcionales implementados,
+con apilado en ventanas pequeñas. Se renderiza la composición guardada; editar
+habilita color y Guardar fondo, y bloquear confirma el color pendiente. Objetos
+inmóviles en este incremento; gestos/herramientas se añaden en P14/P15. Se
+advierten pendientes al salir y se conserva borrador ante error; coordinación
+completa y restablecimiento desde interfaz siguen en P16. Ver VALIDACION_P13.md.
+
 ## 5. Playlist
 
 ```text
