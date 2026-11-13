@@ -32,6 +32,11 @@ formato/revisión 1; relaciones RESTRICT. El esquema limita valores escalares;
 API valida límites rotados, máximo 30 elementos y compatibilidad de recursos.
 Ver VALIDACION_P12.md. El editor visual se construye desde P13.
 
+P14 reutiliza kind=image/gif y static_preview_id de media_asset: el GIF y su
+preview se publican juntos; wall GET resuelve static_preview_url. No hay cambio
+de esquema. PNG/JPEG se normalizan; GIF conserva bytes verificados. Retirar
+objetos no retira assets ni archivos, incluso si quedan registrados sin uso.
+
 ## 2. Entidades y relaciones
 
 ```mermaid

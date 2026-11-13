@@ -64,7 +64,7 @@ en español; code estable para decisiones del cliente. 404 recurso inexistente;
 | `GET /albums/{id}` | Resumen, datos, procedencia y ETag. Pistas se consultan paginadas en /tracks. | P07 implementado. |
 | `PATCH /albums/{id}` | title/artist_names/cover_asset_id con `If-Match`; no permite cambiar system_key ni renombrar el álbum de sistema. | P07 implementado. |
 | `GET /library/search` | q obligatoria no vacía; query y grupos tracks/albums/playlists con items/total/limit/offset/href, máximo 10 por grupo. href enlaza a biblioteca filtrada; playlists busca nombres y enlaza a vista=playlists. | P08 implementado. |
-| `POST /assets` | multipart file y purpose=cover o playlist; PNG/JPEG verificado, normalizado a PNG, devuelve 201. wall/GIF se incorporan después. | P07/P11 implementado; P14 para muros. |
+| `POST /assets` | multipart file y purpose=cover, playlist o wall; cover/playlist admiten PNG/JPEG, wall añade GIF verificado y preview. Devuelve 201, content_url y para wall static_preview_url/frame_count. | P07/P11/P14 implementado. |
 | `GET /assets/{id}/content` | PNG/JPEG validado con nosniff y caché privada; sin rutas arbitrarias ni audio. GIF se incorpora después. | P07 para portadas. |
 | `GET` o `HEAD /tracks/{id}/audio` | MIME real (audio/mpeg, audio/wav, audio/flac, audio/ogg), inline. GET 200 completo o 206 con Content-Range para rangos válidos (también sufijos y rangos abiertos/múltiples); 416 fuera de tamaño, 400 sintaxis inválida. HEAD 200 describe el archivo completo sin cuerpo e ignora Range. If-Range compatible por ETag o Last-Modified; token distinto devuelve 200 completo. | P09/O06 implementado. |
 
@@ -129,6 +129,15 @@ Cada éxito devuelve playlist completa y nuevo ETag. Lista vacía válida;
 una pista por lista como máximo. Operaciones de usuario en P11 incluyen añadir,
 quitar y reordenar usando el reemplazo de secuencia. No se borra la pista original.
 
+Actualización P14 de recursos: purpose=wall acepta PNG/JPEG (normalizados sin
+reducir dimensiones dentro del límite) y GIF de hasta 5 MiB, 4096 por lado/16 MP,
+200 fotogramas y 32 MP decodificados totales. Verifica todos los fotogramas y
+crea preview PNG del primero. SVG y APNG no admitidos. Respuesta de wall:
+`id`, `mime_type`, `width_px`, `height_px`, `frame_count`, `content_url` y
+`static_preview_url` (null para estáticos). GIF conserva bytes verificados;
+estáticos se normalizan a PNG y deben seguir cabiendo en 5 MiB. Repetir carga
+idéntica recupera el asset existente. Quitar objetos no borra estos recursos.
+
 ## 4. Muro por álbum y concurrencia
 
 Implementado en P12 con `0005_album_walls`; ver [validación](VALIDACION_P12.md).
@@ -136,9 +145,9 @@ Fondo inicial #242038, esquema/revisión 1 y elements vacíos. Colores se devuel
 en mayúsculas; rotación normalizada a [−180,180), valores finitos. Comprobación
 rotada sobre lienzo 1000 × 700 con tolerancia `1e-7` unidades. Orden por z_index/UUID.
 Referencias visuales PNG/JPEG existentes; GIF requiere recurso gestionado GIF con
-máximo 200 fotogramas (subida en P14). GET de contenido admite ese recurso GIF.
+máximo 200 fotogramas (subida implementada en P14). GET de contenido admite ese recurso GIF.
 Campos adicionales o recursos incompatibles/ausentes: 422 sin reemplazo parcial.
-No se modifica frontend en P12; renderizado y edición desde P13.
+P13/P14 implementan renderizado, edición de fondo y carga/movimiento/borrado.
 
 | Método y ruta | Función |
 | --- | --- |
@@ -177,7 +186,7 @@ Ejemplo de PUT; UUIDs y datos ilustrativos, sin correspondencia con una BD real:
 ```
 
 La respuesta añade `id` del muro, `album_id`, `revision`, `updated_at` y URLs
-de visualización resueltas para los assets; solo los campos del ejemplo se
+de visualización resueltas para los assets (content_url y static_preview_url); solo los campos del ejemplo se
 envían al guardar. UUID de elemento nuevo puede generarse en cliente y debe ser
 único. No se aceptan IDs de otro muro, assets de audio ni posiciones fuera de los
 límites rotados del modelo. Máximo 30 elementos, sin IDs repetidos; validación

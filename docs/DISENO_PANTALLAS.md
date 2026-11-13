@@ -130,6 +130,12 @@ inmóviles en este incremento; gestos/herramientas se añaden en P14/P15. Se
 advierten pendientes al salir y se conserva borrador ante error; coordinación
 completa y restablecimiento desde interfaz siguen en P16. Ver VALIDACION_P13.md.
 
+Actualización P14: carga PNG/JPEG/GIF, selección, arrastre, flechas/botones y
+quitar implementados. Escape cancela el gesto, Supr/Retroceso quita el objeto y
+restaura foco al campo de carga. Movimiento solo en edición; «Guardar pared» y
+bloquear confirman el borrador. Tamaño/giro/orden siguen en P15. GIF pausado usa
+preview estática real, con checkbox para animarlo. Ver VALIDACION_P14.md.
+
 ## 5. Playlist
 
 ```text

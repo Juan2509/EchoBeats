@@ -195,7 +195,7 @@ Son límites de producto para empezar a implementar y probar, no rendimientos me
 | --- | --- |
 | Audio | MP3, WAV PCM, FLAC nativo, Ogg Vorbis y Ogg Opus (O06); hasta 50 MiB por archivo; 20 archivos y 200 MiB por solicitud. |
 | Visuales | JPEG, PNG y GIF; 5 MiB por archivo; dimensiones hasta 4096 × 4096, máximo 16 millones de píxeles. SVG externo y otros tipos no admitidos. |
-| GIF | Además del tamaño/píxeles: hasta 200 fotogramas; animación desactivable con movimiento reducido. |
+| GIF | Además del tamaño/píxeles: hasta 200 fotogramas y 32 millones de píxeles decodificados en total; animación desactivable con movimiento reducido. |
 | Muro | Hasta 30 objetos; ancho y alto relativos entre 0.03 y 0.60; rectángulo rotado completo dentro del lienzo. |
 | Consultas | Texto de búsqueda ordinaria hasta 200 caracteres; IA hasta 1000; Top K de 1 a 20, por defecto 5. |
 | Listados | 24 resultados por defecto, máximo 100; orden determinista y paginación. |
@@ -205,6 +205,15 @@ Límites de API externa, tiempo, coste y concurrencia se fijan al elegir proveed
 en P20. Siempre habrá timeout y reintentos finitos; no se envía audio a proveedores
 en el flujo textual del MVP. Validar streams y dimensiones antes de decodificar
 imágenes completas, sin confiar solo en extensión o cabecera del cliente.
+
+Actualización P14: carga purpose=wall verificada por contenido. Estáticos PNG/JPEG
+normalizados a PNG dentro de los límites; GIF completo verificado y conservado,
+con preview PNG del primer fotograma. Dimensiones estables entre fotogramas;
+APNG/SVG no admitidos. El presupuesto adicional de 32 MP decodificados limita
+trabajo/memoria de GIF. Recursos y preview se publican juntos y se conservan al
+quitar objetos; una carga abandonada puede quedar registrada sin objetos.
+Movimiento conserva UUID y limita el rectángulo rotado; ratón, flechas y botones.
+Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 

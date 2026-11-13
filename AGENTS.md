@@ -90,3 +90,11 @@ Ver `docs/VALIDACION_P13.md`: 25 pruebas frontend y recorrido Chrome en
 360/768/1280, teclado, aislamiento y conflictos. Solo se cambió el fondo del
 álbum de demostración A. No hay aún arrastre/carga/borrado de objetos: siguiente
 P14. Pendientes de audio/revisión anteriores vigentes; P16 ampliará el guardado.
+
+P13 registrado en `655add4`. P14 añade purpose=wall para PNG/JPEG/GIF con
+preview estática; selección/arrastre/flechas/botones/quitar solo en edición.
+Ver `docs/VALIDACION_P14.md`: 112 pruebas backend, 29 frontend, GIF real y
+persistencia tras reinicio. Hasta 30 objetos, 5 MiB, 4096 por lado/16 MP; GIF
+hasta 200 fotogramas/32 MP decodificados totales. Quitar o descartar no elimina
+archivos registrados; conservar recursos compartidos. Sin migración nueva.
+Siguiente P15; P16 completará coordinación/guardados. Pendientes previos vigentes.

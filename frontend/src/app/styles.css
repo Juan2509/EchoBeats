@@ -171,3 +171,17 @@ a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-off
 .wall-error { color: #ffc4b7; margin: 12px 0; }
 .wall-error button { margin: 0; }
 @media (max-width: 900px) { .album-room { grid-template-columns: minmax(0, 1fr); gap: 24px; } .album-sidebar .album-heading { flex-direction: row; flex-wrap: wrap; } .album-sidebar .album-heading .cover { width: 140px; } }
+
+.wall-canvas[data-mode=editing] .wall-element { pointer-events: auto; }
+.wall-element .wall-object { display: block; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; touch-action: none; cursor: grab; }
+.wall-element .wall-object:disabled { opacity: 1; cursor: default; pointer-events: none; }
+.wall-element .wall-object[aria-pressed=true] { outline: 2px dashed #fff; outline-offset: 3px; }
+.wall-element .wall-object:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.wall-element .wall-object:active { cursor: grabbing; }
+.wall-add { display: grid; gap: 12px; margin-top: 20px; }
+.wall-add label { display: grid; gap: 8px; }
+.wall-add select, .wall-add input { font: inherit; color: inherit; padding: 10px; background: #141b11; border: 1px solid #626b55; border-radius: 8px; min-width: 0; width: 100%; }
+.wall-selection { border-top: 1px solid #626b55; margin-top: 16px; padding-top: 8px; }
+.wall-selection p { font-size: .85rem; line-height: 1.5; }
+.wall-move-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.wall-move-buttons button { margin: 0; }

@@ -23,8 +23,9 @@ def data(connection, album_id):
     row = require_wall(connection, album_id)
     fields = ('id', 'asset_id', 'kind', 'cx', 'cy', 'width', 'height', 'rotation_deg', 'z_index')
     elements = [{**{key: getattr(element, key) for key in fields},
-                 'content_url': f'/api/v1/assets/{element.asset_id}/content'}
-                for element in connection.execute(select(wall_element).where(wall_element.c.wall_id == row.id)
+                 'content_url': f'/api/v1/assets/{element.asset_id}/content',
+                 'static_preview_url': f'/api/v1/assets/{element.static_preview_id}/content' if element.static_preview_id else None}
+                for element in connection.execute(select(wall_element, media_asset.c.static_preview_id).join(media_asset, media_asset.c.id == wall_element.c.asset_id).where(wall_element.c.wall_id == row.id)
                                                   .order_by(wall_element.c.z_index, wall_element.c.id))]
     return {**{key: getattr(row, key) for key in ('id', 'album_id', 'schema_version', 'revision', 'background_color', 'updated_at')},
             'elements': elements}, etag('wall', row)

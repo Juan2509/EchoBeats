@@ -23,7 +23,7 @@ test('carga bloqueada y guarda color sin perder elementos ni enviar campos de so
   assert.equal(isDirty(controller.state), true)
   await controller.toggleEditing()
   assert.equal(controller.state.editing, false); assert.equal(isDirty(controller.state), false)
-  assert.equal(controller.state.notice, 'Fondo guardado.')
+  assert.equal(controller.state.notice, 'Pared guardada.')
   assert.equal(calls[1].etag, '"wall-1"')
   assert.deepEqual(calls[1].body, composition(original.wall, '#193A55'))
   assert.equal('content_url' in (calls[1].body as ReturnType<typeof composition>).elements[0], false)
@@ -115,4 +115,65 @@ test('gateway exige ETag, álbum correcto y envía If-Match y composición al gu
     globalThis.fetch = (async () => new Response(JSON.stringify(initial().wall))) as typeof fetch
     await assert.rejects(requestWall('album-a', new AbortController().signal))
   } finally { globalThis.fetch = original }
+})
+
+test('añadir, mover y quitar solo actúan al editar; el guardado conserva IDs y el rollback de gesto', async () => {
+  const original = initial()
+  const controller = new WallController('album-a', async (_id, _signal, write) => write ? { wall: { ...original.wall, ...write.body, elements: write.body.elements.map(item => ({ ...item, content_url: '/image' })), revision: 2 }, etag: '"wall-2"' } : original,
+    async () => ({ id: 'image-2', mime_type: 'image/png', width_px: 100, height_px: 50, content_url: '/image-2' }))
+  await controller.load()
+  controller.remove('element-1'); controller.nudge('element-1', .1, .1)
+  assert.deepEqual(controller.state.elements, original.wall.elements)
+  await controller.toggleEditing(); await controller.addFile(new File(['image'], 'image.png'), 'sticker')
+  const added = controller.state.elements[1]
+  assert.equal(added.kind, 'sticker'); assert.equal(added.asset_id, 'image-2'); assert.ok(added.id)
+  assert.equal(controller.beginMove(added.id), true)
+  controller.move(added.id, .8, .7); assert.equal(controller.state.elements[1].cx, .8)
+  controller.cancelMove(); assert.equal(controller.state.elements[1].cx, .5)
+  controller.nudge(added.id, .1, -.1)
+  assert.equal(controller.state.elements[1].cx, .6)
+  controller.remove('element-1'); assert.equal(controller.state.elements.length, 1)
+  assert.equal(await controller.save(), true)
+  assert.equal(controller.state.elements[0].id, added.id)
+  assert.equal(controller.state.elements[0].cx, .6)
+  assert.equal(isDirty(controller.state), false)
+  assert.equal(original.wall.elements.length, 1)
+})
+
+test('límites rotados mantienen el rectángulo entero dentro del lienzo', async () => {
+  const { moveWithinWall } = await import('../src/features/walls/controller.ts')
+  const item = { ...initial().wall.elements[0], width: .5, height: .5, rotation_deg: 45 }
+  const moved = moveWithinWall(item, -20, 20)
+  const angle = Math.PI / 4
+  const bx = (500 * Math.cos(angle) + 350 * Math.sin(angle)) / 2
+  const by = (500 * Math.sin(angle) + 350 * Math.cos(angle)) / 2
+  assert.ok(moved.cx * 1000 >= bx - 1e-7)
+  assert.ok(moved.cy * 700 <= 700 - by + 1e-7)
+  assert.deepEqual(moveWithinWall(item, NaN, 0), item)
+})
+
+test('GIF conserva preview y tipo real; límite de objetos evita subir otro archivo', async () => {
+  let uploads = 0
+  const controller = new WallController('album-a', async () => initial(), async () => { uploads++; return { id: 'gif-1', mime_type: 'image/gif', width_px: 80, height_px: 50, content_url: '/gif', static_preview_url: '/preview' } })
+  await controller.load(); await controller.toggleEditing()
+  for (let index = 0; index < 29; index++) await controller.addFile(new File(['gif'], 'x.gif'), 'poster')
+  assert.equal(controller.state.elements.length, 30)
+  assert.equal(controller.state.elements[1].kind, 'gif'); assert.equal(controller.state.elements[1].static_preview_url, '/preview')
+  await controller.addFile(new File(['gif'], 'x.gif'), 'poster')
+  assert.equal(uploads, 29); assert.match(controller.state.error, /30/)
+})
+
+test('subida inválida o tardía no cambia la composición de otro álbum', async () => {
+  const pending = deferred<{ id: string; mime_type: string; width_px: number; height_px: number; content_url: string }>()
+  let uploads = 0
+  const controller = new WallController('album-a', async () => initial(), async () => { uploads++; return pending.promise })
+  await controller.load(); await controller.toggleEditing()
+  await controller.addFile(new File([], 'empty.png'), 'poster')
+  assert.equal(uploads, 0); assert.equal(controller.state.elements.length, 1)
+  const adding = controller.addFile(new File(['image'], 'image.png'), 'poster')
+  assert.equal(controller.state.uploading, true); assert.equal(await controller.save(), false)
+  controller.dispose()
+  const other = new WallController('album-b', async () => initial('album-b')); await other.load()
+  pending.resolve({ id: 'image-2', mime_type: 'image/png', width_px: 10, height_px: 10, content_url: '/image-2' }); await adding
+  assert.equal(other.state.elements.length, 1); assert.equal(other.state.wall?.album_id, 'album-b')
 })

@@ -2,6 +2,33 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P14 — 13 de noviembre de 2026
+
+El usuario autorizó P14; P13 registrado en `655add4`. Se añade carga visual con
+purpose=wall (PNG/JPEG normalizados y GIF verificado con preview PNG estática),
+selección, arrastre, flechas/botones, Escape y quitar. Movimiento solo en edición,
+limitado al rectángulo rotado; guardado completo manual o al bloquear conserva
+IDs/recursos. Quitar no borra archivos compartidos. P15 añadirá giro/tamaño/orden;
+P16 completará autosave/restablecimiento/coordinación integral.
+
+Límites: 5 MiB, 4096 por lado/16 millones de píxeles, GIF hasta 200 fotogramas y
+32 millones de píxeles decodificados totales. Lectura añade static_preview_url.
+Sin dependencias ni migraciones nuevas. Carga y composición son transacciones
+separadas: un recurso importado de un borrador descartado puede quedar registrado
+sin uso; conservarlo y no limpiar automáticamente.
+
+112 pruebas backend y 29 frontend, build, esquema y dependencias correctos.
+Chrome verificó GIF local real, preview/movimiento reducido, carga inválida,
+arrastre, Escape, teclado, quitar, bloqueo y anchos 360/768/1280. Reinicio backend
+conservó composición y ETag; B y recursos retirados intactos. Audio siguió
+avanzando al mover/guardar/bloquear, sin acreditar escucha audible. Auditoría
+correcta; 2 originales de audio conservan SHA-256. Ver VALIDACION_P14.md.
+
+Solo álbumes «Demostración P14 A/B» y recursos sintéticos nuevos; no se alteraron
+canciones del usuario. Servicios activos, Chrome cerrado, datos/configuración/
+respaldos conservados. Pendientes anteriores vigentes. Sin commit automático.
+Siguiente implementación: **P15, rotar, redimensionar y ordenar elementos**.
+
 ## Avance vigente: P13 — 13 de noviembre de 2026
 
 El usuario autorizó P13; P12 ya estaba registrado en `4c5c0d4`. La vista de álbum

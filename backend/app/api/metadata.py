@@ -20,6 +20,7 @@ from app.models.catalog import media_asset
 from app.services import metadata as service
 from app.services import library
 from app.services.covers import publications, save_cover
+from app.services.visuals import upload_visual
 
 router = APIRouter()
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
@@ -173,7 +174,7 @@ def upload_cover(engine, store, stream):
 @router.post("/assets", status_code=201, openapi_extra={
     "requestBody": {"required": True, "content": {"multipart/form-data": {"schema": {
         "type": "object", "required": ["file", "purpose"], "properties": {
-            "file": {"type": "string", "format": "binary"}, "purpose": {"type": "string", "enum": ["cover", "playlist"]},
+            "file": {"type": "string", "format": "binary"}, "purpose": {"type": "string", "enum": ["cover", "playlist", "wall"]},
         },
     }}}},
 })
@@ -190,13 +191,14 @@ async def post_cover(request: Request):
         return message
 
     if request.headers.get("content-type", "").split(";", 1)[0].lower() != "multipart/form-data":
-        raise service.MetadataError("invalid_multipart", "Envía una portada PNG o JPEG como formulario multipart.", 415)
+        raise service.MetadataError("invalid_multipart", "Envía una imagen como formulario multipart.", 415)
     try:
         async with FormRequest(request.scope, receive=limited_receive).form(max_files=1, max_fields=1) as form:
             parts = form.multi_items()
-            if len(parts) != 2 or set(key for key, _ in parts) != {"file", "purpose"} or form.get("purpose") not in {"cover", "playlist"} or not isinstance(form.get("file"), UploadFile):
-                raise service.MetadataError("invalid_cover", "Envía un archivo file y purpose=cover o playlist.")
-            return await run_in_threadpool(upload_cover, engine, MediaStore(request.app.state.settings.media_root), form["file"].file)
+            if len(parts) != 2 or set(key for key, _ in parts) != {"file", "purpose"} or form.get("purpose") not in {"cover", "playlist", "wall"} or not isinstance(form.get("file"), UploadFile):
+                raise service.MetadataError("invalid_cover", "Envía un archivo file y purpose=cover, playlist o wall.")
+            uploader = upload_visual if form["purpose"] == "wall" else upload_cover
+            return await run_in_threadpool(uploader, engine, MediaStore(request.app.state.settings.media_root), form["file"].file)
     except HTTPException as exc:
         if exc.detail == "cover_body_too_large":
             raise service.MetadataError("request_too_large", "La solicitud de portada supera el límite permitido.", 413) from None

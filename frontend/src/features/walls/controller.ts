@@ -1,12 +1,21 @@
 export type WallElement = {
   id: string; asset_id: string; kind: 'poster' | 'sticker' | 'image' | 'gif'
-  cx: number; cy: number; width: number; height: number; rotation_deg: number; z_index: number; content_url: string
+  cx: number; cy: number; width: number; height: number; rotation_deg: number; z_index: number; content_url: string; static_preview_url?: string | null
 }
+/** Mismos límites rotados que P12, sobre el lienzo de referencia 1000 × 700. */
+export function moveWithinWall(item: WallElement, cx: number, cy: number): WallElement {
+  if (!Number.isFinite(cx) || !Number.isFinite(cy)) return item
+  const angle = item.rotation_deg * Math.PI / 180
+  const bx = (Math.abs(item.width * 1000 * Math.cos(angle)) + Math.abs(item.height * 700 * Math.sin(angle))) / 2000
+  const by = (Math.abs(item.width * 1000 * Math.sin(angle)) + Math.abs(item.height * 700 * Math.cos(angle))) / 1400
+  return { ...item, cx: Math.max(bx, Math.min(1 - bx, cx)), cy: Math.max(by, Math.min(1 - by, cy)) }
+}
+
 export type Wall = { id: string; album_id: string; schema_version: 1; revision: number; background_color: string; updated_at: string; elements: WallElement[] }
 export type WallResult = { wall: Wall; etag: string }
 export type Composition = ReturnType<typeof composition>
-export function composition(wall: Wall, color: string) {
-  return { schema_version: wall.schema_version, background_color: color, elements: wall.elements.map(({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index }) =>
+export function composition(wall: Wall, color: string, elements: WallElement[] = wall.elements) {
+  return { schema_version: wall.schema_version, background_color: color, elements: elements.map(({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index }) =>
     ({ id, asset_id, kind, cx, cy, width, height, rotation_deg, z_index })) }
 }
 export class WallRequestError extends Error {
@@ -24,9 +33,19 @@ export const requestWall: WallGateway = async (id, signal, write) => {
   if (data.album_id !== id || data.schema_version !== 1 || !Array.isArray(data.elements) || !/^#[0-9a-f]{6}$/i.test(data.background_color) || !etag) throw new Error('invalid_wall_response')
   return { wall: data as Wall, etag }
 }
-export type WallState = { wall: Wall | null; etag: string; color: string; editing: boolean; loading: boolean; saving: boolean; error: string; needsReload: boolean; notice: string }
-export const initialWallState: WallState = { wall: null, etag: '', color: '#242038', editing: false, loading: true, saving: false, error: '', needsReload: false, notice: '' }
-export const isDirty = (state: WallState) => !!state.wall && state.color !== state.wall.background_color
+export type VisualAsset = { id: string; mime_type: string; width_px: number; height_px: number; content_url: string; static_preview_url?: string | null }
+export type VisualUploader = (file: File, signal: AbortSignal) => Promise<VisualAsset>
+export const uploadVisual: VisualUploader = async (file, signal) => {
+  const body = new FormData(); body.append('purpose', 'wall'); body.append('file', file)
+  const response = await fetch('/api/v1/assets', { method: 'POST', body, signal })
+  const data = await response.json()
+  if (!response.ok) throw new WallRequestError(data.error?.message ?? 'No se pudo importar la imagen.', response.status)
+  if (!data.id || !data.content_url || !['image/png', 'image/jpeg', 'image/gif'].includes(data.mime_type) || !(data.width_px > 0 && data.height_px > 0)) throw new Error('invalid_visual_response')
+  return data
+}
+export type WallState = { wall: Wall | null; elements: WallElement[]; selectedId: string | null; uploading: boolean; moving: boolean; etag: string; color: string; editing: boolean; loading: boolean; saving: boolean; error: string; needsReload: boolean; notice: string }
+export const initialWallState: WallState = { wall: null, elements: [], selectedId: null, uploading: false, moving: false, etag: '', color: '#242038', editing: false, loading: true, saving: false, error: '', needsReload: false, notice: '' }
+export const isDirty = (state: WallState) => !!state.wall && JSON.stringify(composition(state.wall, state.color, state.elements)) !== JSON.stringify(composition(state.wall, state.wall.background_color))
 
 /** Una composición confirmada por álbum; no hay escrituras concurrentes ni reintentos ciegos. */
 export class WallController {
@@ -37,12 +56,15 @@ export class WallController {
   private listeners = new Set<() => void>()
   private albumId: string
   private gateway: WallGateway
-  constructor(albumId: string, gateway: WallGateway = requestWall) { this.albumId = albumId; this.gateway = gateway }
+  private uploader: VisualUploader
+  private gesture: WallElement | null = null
+  constructor(albumId: string, gateway: WallGateway = requestWall, uploader: VisualUploader = uploadVisual) { this.albumId = albumId; this.gateway = gateway; this.uploader = uploader }
+  private editable() { return this.alive && !!this.state.wall && this.state.editing && !this.state.loading && !this.state.saving && !this.state.uploading && !this.state.needsReload }
   subscribe(listener: () => void) { this.listeners.add(listener); return () => { this.listeners.delete(listener) } }
   private update(changes: Partial<WallState>) { if (!this.alive) return; this.state = { ...this.state, ...changes }; this.listeners.forEach(listener => listener()) }
-  private accept(result: WallResult) { this.update({ wall: result.wall, etag: result.etag, color: result.wall.background_color, loading: false, error: '', needsReload: false }) }
+  private accept(result: WallResult) { this.update({ wall: result.wall, elements: result.wall.elements.map(item => ({ ...item })), selectedId: null, etag: result.etag, color: result.wall.background_color, loading: false, error: '', needsReload: false }) }
   async load() {
-    if (!this.alive || this.state.saving) return
+    if (!this.alive || this.state.saving || this.state.uploading || this.state.moving) return
     this.pending?.abort()
     const abort = new AbortController(); this.pending = abort
     const token = ++this.operation, timeout = setTimeout(() => abort.abort(), 15000)
@@ -58,19 +80,19 @@ export class WallController {
     } finally { clearTimeout(timeout) }
   }
   setColor(value: string) {
-    if (!this.state.editing || this.state.saving || this.state.loading || !/^#[0-9a-f]{6}$/i.test(value)) return
+    if (!this.editable() || this.state.moving || !/^#[0-9a-f]{6}$/i.test(value)) return
     this.update({ color: value.toUpperCase(), notice: '' })
   }
   async toggleEditing() {
-    if (!this.state.wall || this.state.loading || this.state.saving) return
+    if (!this.state.wall || this.state.loading || this.state.saving || this.state.uploading || this.state.moving) return
     if (!this.state.editing) { this.update({ editing: true }); return }
     if (isDirty(this.state) && !await this.save()) return
-    this.update({ editing: false })
+    this.update({ editing: false, selectedId: null })
   }
   async save(): Promise<boolean> {
-    if (!this.alive || !this.state.wall || this.state.loading || this.state.saving || this.state.needsReload) return false
+    if (!this.alive || !this.state.wall || this.state.loading || this.state.saving || this.state.uploading || this.state.moving || this.state.needsReload) return false
     if (!isDirty(this.state)) return true
-    const wanted = composition(this.state.wall, this.state.color), token = ++this.operation
+    const wanted = composition(this.state.wall, this.state.color, this.state.elements), token = ++this.operation
     const abort = new AbortController(); this.pending = abort
     const timeout = setTimeout(() => abort.abort(), 15000)
     this.update({ saving: true, error: '', notice: '' })
@@ -78,14 +100,59 @@ export class WallController {
       const result = await this.gateway(this.albumId, abort.signal, { body: wanted, etag: this.state.etag })
       if (!this.alive || token !== this.operation) return false
       if (abort.signal.aborted) throw new Error('wall_request_aborted')
-      this.accept(result); this.update({ notice: 'Fondo guardado.' }); return true
+      this.accept(result); this.update({ notice: 'Pared guardada.' }); return true
     } catch (cause) {
       if (token !== this.operation || !this.alive) return false
       const conflict = cause instanceof WallRequestError && cause.status === 412
       const uncertain = !(cause instanceof WallRequestError) || cause.status >= 500
-      this.update({ needsReload: conflict || uncertain, error: conflict ? 'El diseño cambió en otra pestaña. Tu color sigue en el borrador; recarga la pared guardada para revisar el cambio.' : uncertain ? 'No se pudo confirmar el guardado. Tu color sigue en el borrador; recarga la pared guardada para comprobar el resultado antes de volver a editar.' : cause instanceof Error ? cause.message : 'No se pudo guardar el fondo.' })
+      this.update({ needsReload: conflict || uncertain, error: conflict ? 'El diseño cambió en otra pestaña. Tu diseño sigue en el borrador; recarga la pared guardada para revisar el cambio.' : uncertain ? 'No se pudo confirmar el guardado. Tu diseño sigue en el borrador; recarga la pared guardada para comprobar el resultado antes de volver a editar.' : cause instanceof Error ? cause.message : 'No se pudo guardar la pared.' })
       return false
     } finally { clearTimeout(timeout); if (token === this.operation) this.update({ saving: false }) }
+  }
+  select(id: string | null) { if (this.editable() && !this.state.moving) this.update({ selectedId: id && this.state.elements.some(item => item.id === id) ? id : null }) }
+  move(id: string, cx: number, cy: number) {
+    if (!this.editable()) return
+    this.update({ elements: this.state.elements.map(item => item.id === id ? moveWithinWall(item, cx, cy) : item), selectedId: id, notice: '' })
+  }
+  nudge(id: string, dx: number, dy: number) {
+    if (this.state.moving) return
+    const item = this.state.elements.find(value => value.id === id)
+    if (item) this.move(id, item.cx + dx, item.cy + dy)
+  }
+  beginMove(id: string) {
+    if (!this.editable() || this.state.moving) return false
+    this.gesture = this.state.elements.find(item => item.id === id) ?? null
+    if (!this.gesture) return false
+    this.update({ selectedId: id, moving: true }); return true
+  }
+  finishMove() { this.gesture = null; this.update({ moving: false }) }
+  cancelMove() {
+    if (!this.gesture) return
+    const original = this.gesture; this.gesture = null
+    this.update({ elements: this.state.elements.map(item => item.id === original.id ? original : item), moving: false })
+  }
+  remove(id: string) {
+    if (!this.editable() || this.state.moving) return
+    this.update({ elements: this.state.elements.filter(item => item.id !== id), selectedId: null, notice: '' })
+  }
+  async addFile(file: File, kind: 'poster' | 'sticker' | 'image') {
+    if (!this.editable() || this.state.moving) return
+    if (this.state.elements.length >= 30) { this.update({ error: 'La pared admite hasta 30 objetos.' }); return }
+    if (!file.size || file.size > 5 * 1024 * 1024) { this.update({ error: 'El recurso está vacío o supera 5 MiB.' }); return }
+    const token = ++this.operation, abort = new AbortController(); this.pending = abort
+    const timeout = setTimeout(() => abort.abort(), 15000)
+    this.update({ uploading: true, error: '', notice: '' })
+    try {
+      const asset = await this.uploader(file, abort.signal)
+      if (!this.alive || token !== this.operation) return
+      if (abort.signal.aborted) throw new Error('upload_aborted')
+      const item: WallElement = { id: crypto.randomUUID(), asset_id: asset.id, kind: asset.mime_type === 'image/gif' ? 'gif' : kind,
+        cx: .5, cy: .5, width: .25, height: Math.max(.03, Math.min(.6, .25 * 1000 / 700 * asset.height_px / asset.width_px)), rotation_deg: 0,
+        z_index: Math.min(29, Math.max(-1, ...this.state.elements.map(value => value.z_index)) + 1), content_url: asset.content_url, static_preview_url: asset.static_preview_url }
+      this.update({ elements: [...this.state.elements, item], selectedId: item.id, notice: 'Recurso añadido al borrador. Guarda la pared para conservarlo.' })
+    } catch (cause) {
+      if (this.alive && token === this.operation) this.update({ error: cause instanceof WallRequestError ? cause.message : 'No se pudo confirmar la importación. La composición anterior se conserva.' })
+    } finally { clearTimeout(timeout); if (token === this.operation) this.update({ uploading: false }) }
   }
   dispose() { this.alive = false; ++this.operation; this.pending?.abort(); this.listeners.clear() }
 }
