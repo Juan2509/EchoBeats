@@ -2,6 +2,11 @@
 
 Fecha: 12 de noviembre de 2026. Entregable de P01.
 Estado: alcance de trabajo definido a partir del concepto; validación docente pendiente.
+Actualización O06 por solicitud posterior del usuario: RF-01 se amplía a MP3,
+WAV PCM, FLAC nativo, Ogg Vorbis y Ogg Opus (.ogg/.opus). Aplican los mismos
+límites, procedencia, edición y conservación de originales. La reproducción
+depende del navegador; no se promete soporte de cualquier códec/contenedor.
+Ver [ampliación y validación](AUDIO_MULTIFORMATO.md).
 P03 incorporó el entorno y una pantalla de conexión; las funciones musicales
 y las pruebas de aceptación de este alcance todavía no se han implementado/ejecutado.
 
@@ -45,7 +50,7 @@ trabajo previsto que no condiciona su aceptación. Los IDs conservan los del con
 
 | ID | Decisión de alcance | Resultado observable de aceptación | Trabajo / pruebas |
 | --- | --- | --- | --- |
-| RF-01 | Incluido: MP3 individual y múltiple. | Se almacenan pistas válidas con resultados por archivo; inválidos se rechazan sin perder las otras importaciones. Copias de bytes idénticos devuelven la pista existente, según D05. | P06; CA-01, AC-01. |
+| RF-01 | Incluido: audio individual/múltiple; MP3 y ampliación O06 (WAV PCM, FLAC, Ogg Vorbis/Opus). | Se almacenan pistas válidas con resultados por archivo; inválidos se rechazan sin perder las otras importaciones. Copias de bytes idénticos devuelven la pista existente, según D05. | P06, O06; CA-01, AC-01 y pruebas multiformato. |
 | RF-02 | Incluido: biblioteca visual. | Álbumes, pistas y playlists reflejan datos persistidos; hay estados de vacío, carga y error. | P08, P11; CA-01, AC-02. |
 | RF-03 | Incluido: reproducción básica. | Play/pausa, avance, volumen y anterior/siguiente funcionan con audio real y mantienen coherente la pista activa. | P09–P10; CA-03. |
 | RF-04 | Incluido: buscador textual. | Encontrar por título, artista y álbum; consulta sin coincidencias muestra estado vacío útil. | P08; CA-09. |

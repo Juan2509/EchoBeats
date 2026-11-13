@@ -110,6 +110,7 @@ def track_data(connection, track_id):
         "id": row.id, "title": row.title, "artists": credits(connection, track_artist, track_artist.c.track_id, row.id),
         "album_id": row.album_id, "album_title": collection.title, "duration_ms": row.duration_ms,
         "audio_url": f"/api/v1/tracks/{row.id}/audio",
+        "audio_mime_type": connection.scalar(select(media_asset.c.mime_type).where(media_asset.c.id == row.audio_asset_id)),
         "track_number": row.track_number, "cover_asset_id": row.cover_asset_id,
         "cover_url": f"/api/v1/assets/{cover}/content" if cover else None,
         "cover_source": cover_source,

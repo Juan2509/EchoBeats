@@ -58,3 +58,11 @@ cola completa del álbum/búsqueda, controles y errores de audio. Consultar
 no acreditan escucha real ni continuidad visual. La revisión manual quedó
 pendiente por actividad del usuario en Brave; P08/P09 mantienen sus pendientes.
 Siguiente implementación P11. No iniciar audio automáticamente al recargar.
+P09/P10 quedaron registrados posteriormente en `6e001a0`, con los recorridos
+manuales aún pendientes. El usuario habilitó O06 expresamente: MP3, WAV PCM,
+FLAC nativo y Ogg Vorbis/Opus (.ogg/.opus). Ver `docs/AUDIO_MULTIFORMATO.md`.
+Migración 0004_audio_formats amplía claves sin reescribir originales; downgrade
+rechaza medios de formatos nuevos en vez de borrarlos. MIME por contenido,
+etiquetas ID3/Vorbis Comments, portadas y avisos de compatibilidad del navegador.
+No se transcodifica. FFmpeg solo generó fixtures en contenedor temporal.
+La verificación de reproducción/seek en navegador de O06 sigue pendiente.

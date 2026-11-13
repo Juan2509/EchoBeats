@@ -1,15 +1,15 @@
 """Importación por archivo: validar, deduplicar y confirmar archivo + catálogo."""
 
-import math
 from pathlib import Path
+import wave
 from uuid import uuid4
 
 from mutagen import MutagenError
-from mutagen.mp3 import MP3
 from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.integrations.storage import FileTooLarge, MediaStore
+from app.integrations.audio_formats import AUDIO_MIME_TYPES, SUPPORTED_AUDIO, inspect_audio
 from app.models.catalog import UNKNOWN_ALBUM_ID, media_asset, track
 
 
@@ -25,29 +25,27 @@ def rejected(filename, code, message):
 
 def import_file(engine, store: MediaStore, stream, filename: str | None, max_bytes: int):
     name = safe_filename(filename)
-    if Path(name).suffix.lower() != ".mp3":
-        return rejected(name, "unsupported_format", "Solo se admiten archivos con extensión MP3 y audio MP3 válido.")
+    extension = Path(name).suffix.lower()
+    if extension not in AUDIO_MIME_TYPES:
+        return rejected(name, "unsupported_format", f"Formatos admitidos: {SUPPORTED_AUDIO} (.mp3, .wav, .flac, .ogg, .opus).")
     try:
         with store.stage(stream, max_bytes) as (staged, digest, size):
             try:
-                info = MP3(staged).info
-                if info.layer != 3 or info.sketchy or not math.isfinite(info.length) or info.length <= 0:
-                    raise ValueError
-                duration_ms = max(1, round(info.length * 1000))
-            except (MutagenError, ValueError, EOFError):
-                return rejected(name, "invalid_audio", "El archivo no contiene audio MP3 válido o está incompleto.")
-            return persist_file(engine, store, staged, digest, size, duration_ms, name)
+                info = inspect_audio(staged, extension)
+            except (MutagenError, ValueError, EOFError, wave.Error):
+                return rejected(name, "invalid_audio", f"Audio no válido, incompleto o extensión/códec incompatible. Se admite {SUPPORTED_AUDIO}.")
+            return persist_file(engine, store, staged, digest, size, info.duration_ms, name, info.extension, info.mime_type)
     except FileTooLarge:
-        return rejected(name, "file_too_large", "El MP3 supera el tamaño máximo permitido.")
+        return rejected(name, "file_too_large", "El audio supera el tamaño máximo permitido.")
     except (OSError, ValueError):
         return rejected(name, "storage_unavailable", "No se pudo guardar el archivo. Puedes reintentar la importación.")
     except SQLAlchemyError:
         return rejected(name, "database_unavailable", "No se pudo confirmar el registro. Reintenta cuando la base esté disponible.")
 
 
-def persist_file(engine, store, staged, digest, size, duration_ms, name):
+def persist_file(engine, store, staged, digest, size, duration_ms, name, extension='.mp3', mime_type='audio/mpeg'):
     asset_id, track_id = uuid4(), uuid4()
-    key = f"audio/{asset_id.hex}.mp3"
+    key = f"audio/{asset_id.hex}{extension}"
     published = False
     try:
         with engine.begin() as connection:
@@ -66,7 +64,7 @@ def persist_file(engine, store, staged, digest, size, duration_ms, name):
                 return {"file_name": name, "status": "duplicate", "track_id": str(existing.id)}
             connection.execute(media_asset.insert().values(
                 id=asset_id, kind="audio", storage_key=key, sha256=digest,
-                original_name=name, mime_type="audio/mpeg", byte_size=size,
+                original_name=name, mime_type=mime_type, byte_size=size,
             ))
             store.publish(staged, key)
             published = True

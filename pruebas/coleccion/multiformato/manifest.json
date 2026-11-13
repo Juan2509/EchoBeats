@@ -1,0 +1,39 @@
+{
+  "origin": "Señal sinusoidal original 440 Hz, estéreo, 2.5 s; sin música de terceros.",
+  "generator": "scripts/generar_audio_multiformato.py",
+  "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "files": [
+    {
+      "file": "tono.wav",
+      "title": "Prueba WAV",
+      "mime_type": "audio/wav",
+      "duration_seconds": 2.5,
+      "bytes": 442358,
+      "sha256": "51b8a1dd7477a7b9ad36ccd641416b2fa6834b0e589a986eff065d414020d787"
+    },
+    {
+      "file": "tono.flac",
+      "title": "Prueba FLAC",
+      "mime_type": "audio/flac",
+      "duration_seconds": 2.5,
+      "bytes": 38301,
+      "sha256": "009859f3d119641e77d6e4340dee23a3caf3c5545d673244a4b6d415582a5e78"
+    },
+    {
+      "file": "tono.ogg",
+      "title": "Prueba Vorbis",
+      "mime_type": "audio/ogg",
+      "duration_seconds": 2.5,
+      "bytes": 12301,
+      "sha256": "5d3677850204d718a7d4e5022a30b403ac0ae1ab9139c07cf77ae53098bd1378"
+    },
+    {
+      "file": "tono.opus",
+      "title": "Prueba Opus",
+      "mime_type": "audio/ogg",
+      "duration_seconds": 2.5,
+      "bytes": 36291,
+      "sha256": "6256ec84bcf887ed327c2e5d19a948c10a7ca0bdce41d9859cbdbd15702da1bd"
+    }
+  ]
+}

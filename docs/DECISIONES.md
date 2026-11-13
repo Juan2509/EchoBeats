@@ -121,7 +121,7 @@ Una pista importada se deduplica por hash de bytes del audio original: una copia
 idéntica devuelve `duplicate` y el ID existente, sin otra pista ni otro álbum.
 Dos codificaciones distintas no se consideran duplicadas solo por su título.
 Una restricción única y manejo de conflicto cubren importaciones simultáneas.
-Editar etiquetas en la aplicación cambia datos de BD, no reescribe el MP3 original.
+Editar etiquetas en la aplicación cambia datos de BD, no reescribe el audio original.
 
 Los visuales de portadas, playlists y muros usan recursos gestionados compartibles.
 Quitar un objeto no borra el archivo si sigue referenciado. Borrado de pistas,
@@ -179,7 +179,7 @@ Son límites de producto para empezar a implementar y probar, no rendimientos me
 
 | Recurso | Valor inicial |
 | --- | --- |
-| Audio | MP3; hasta 50 MiB por archivo; 20 archivos y 200 MiB por solicitud. |
+| Audio | MP3, WAV PCM, FLAC nativo, Ogg Vorbis y Ogg Opus (O06); hasta 50 MiB por archivo; 20 archivos y 200 MiB por solicitud. |
 | Visuales | JPEG, PNG y GIF; 5 MiB por archivo; dimensiones hasta 4096 × 4096, máximo 16 millones de píxeles. SVG externo y otros tipos no admitidos. |
 | GIF | Además del tamaño/píxeles: hasta 200 fotogramas; animación desactivable con movimiento reducido. |
 | Muro | Hasta 30 objetos; ancho y alto relativos entre 0.03 y 0.60; rectángulo rotado completo dentro del lienzo. |

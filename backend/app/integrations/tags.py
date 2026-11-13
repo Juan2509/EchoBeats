@@ -1,11 +1,17 @@
-"""Lectura local de ID3. Nunca identifica grabaciones ni consulta internet."""
+"""Lectura local de ID3 y Vorbis Comments; sin reescribir originales."""
 
 from dataclasses import dataclass, field
 from io import BytesIO
 import unicodedata
+import base64
+import binascii
 
 from mutagen.mp3 import MP3
+from mutagen import MutagenError
+from mutagen.wave import WAVE
+from mutagen.flac import Picture
 from PIL import Image, UnidentifiedImageError
+from app.integrations.audio_formats import load_audio
 
 
 def clean_text(value: str) -> str:
@@ -59,14 +65,17 @@ class Tags:
 
 
 def read_tags(path) -> Tags:
-    tags = MP3(path).tags
+    audio = load_audio(path)
+    tags = audio.tags
     result = Tags()
-    if not tags:
+    if not tags and not getattr(audio, 'pictures', []):
         return result
 
+    id3 = isinstance(audio, (MP3, WAVE))
+
     def values(frame):
-        text_frame = tags.get(frame)
-        raw = getattr(text_frame, "text", [])
+        text_frame = tags.get(frame) if tags is not None else None
+        raw = getattr(text_frame, "text", []) if id3 else (text_frame or [])
         output = []
         seen = set()
         for item in raw[:20]:
@@ -77,14 +86,23 @@ def read_tags(path) -> Tags:
                 seen.add(key)
         return output
 
-    result.title = next(iter(values("TIT2")), None)
-    result.artists = values("TPE1")
-    result.album_title = next(iter(values("TALB")), None)
-    result.album_artists = values("TPE2") or result.artists
-    number = next(iter(values("TRCK")), "").split("/", 1)[0]
+    result.title = next(iter(values('TIT2' if id3 else 'title')), None)
+    result.artists = values('TPE1' if id3 else 'artist')
+    result.album_title = next(iter(values('TALB' if id3 else 'album')), None)
+    result.album_artists = (values('TPE2') if id3 else values('albumartist') or values('album artist')) or result.artists
+    number = next(iter(values('TRCK' if id3 else 'tracknumber')), '').split('/', 1)[0]
     if number.isdecimal() and 0 < int(number) <= 2_147_483_647:
         result.track_number = int(number)
-    pictures = tags.getall("APIC")
+    pictures = tags.getall('APIC') if id3 and tags else list(getattr(audio, 'pictures', []))
+    if not id3 and tags:
+        for encoded in tags.get('metadata_block_picture', [])[:5]:
+            try:
+                if len(encoded) > 7 * 1024 * 1024:
+                    raise ValueError('Portada demasiado grande.')
+                pictures.append(Picture(base64.b64decode(encoded, validate=True)))
+            except (ValueError, binascii.Error, MutagenError):
+                if 'cover_ignored' not in result.warnings:
+                    result.warnings.append('cover_ignored')
     pictures.sort(key=lambda picture: int(picture.type) != 3)
     for picture in pictures[:5]:
         try:

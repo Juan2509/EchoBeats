@@ -10,6 +10,7 @@ class AudioDouble extends EventTarget {
   volume = 1; paused = true; ended = false; error: { code: number } | null = null
   calls = 0
   playHook = () => Promise.resolve()
+  canPlayType(_type: string): CanPlayTypeResult { return 'probably' }
   play() { this.calls += 1; this.paused = false; return this.playHook() }
   pause() { this.paused = true; this.dispatchEvent(new Event('pause')) }
   load() { this.currentSrc = this.src; this.currentTime = 0; this.readyState = 0; this.duration = NaN; this.error = null; this.ended = false }
@@ -156,4 +157,15 @@ test('fallo al cargar cola se propaga y permite alternativa visible', async () =
   const { player } = setup(); const token = player.start(song('b'), 'B')
   player.completeQueue(token, [song('a'), song('b')], 'Solo página actual')
   assert.equal(player.state.index, 1); assert.equal(player.state.notice, 'Solo página actual')
+})
+
+test('formato no anunciado por navegador no descarga audio y permite otra selección', async () => {
+  const { audio, player } = setup()
+  audio.canPlayType = type => type === 'audio/flac' ? '' : 'probably'
+  player.start({ ...song('flac'), audio_mime_type: 'audio/flac' }, 'FLAC')
+  assert.equal(audio.calls, 0); assert.equal(audio.src, '')
+  assert.match(player.state.error, /navegador/)
+  player.play(); assert.equal(audio.calls, 0)
+  player.start({ ...song('wav'), audio_mime_type: 'audio/wav' }, 'WAV'); await flush()
+  assert.equal(player.state.error, ''); assert.equal(player.state.playing, true)
 })

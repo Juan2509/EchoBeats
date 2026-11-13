@@ -2,6 +2,7 @@
 
 Fecha inicial: 12 de noviembre de 2026. Estado: P10 implementado; reproductor
 compartido disponible. Recorrido manual de audio y revisiones P08/P09 pendientes.
+O06 habilitado por el usuario: soporte multiformato implementado; navegador pendiente.
 
 ## 1. Propósito y fuentes
 
@@ -558,7 +559,7 @@ sus dependencias y criterios igual que los bloques principales.
 | O03 | Estaciones temáticas. `feat(stations): crear listas desde una intención musical` | Solo canciones existentes, selección ordenada reproducible y opción de guardado definida. |
 | O04 | Automatización con n8n. `feat(automation): automatizar enriquecimiento musical con n8n` | Caso útil definido, webhook validado, tareas idempotentes, reintentos y workflow exportado sin secretos. |
 | O05 | Orquestación con LangGraph. `feat(agent): coordinar herramientas musicales mediante un grafo` | Herramientas delimitadas, estado y persistencia definidos, límites de ejecución y evaluación de decisiones/fallos. |
-| O06 | Formatos adicionales. `feat(import): admitir formatos de audio adicionales verificados` | Validación, metadatos, reproducción y avance probados por cada formato anunciado. |
+| O06 | Formatos adicionales. `feat(import): admitir formatos de audio adicionales verificados` | Habilitado por el usuario e implementado: MP3, WAV PCM, FLAC y Ogg Vorbis/Opus; importación/metadatos/bytes/rangos probados, reproducción y seek en navegador pendientes. Ver AUDIO_MULTIFORMATO.md. |
 | O07 | Fondo de imagen y decoración del dashboard. `feat(customization): ampliar fondos y decoración de biblioteca` | Persistencia y límites visuales sin interferir con navegación; recursos compatibles validados. |
 | O08 | Aleatorio, repetición y cola avanzada. `feat(player): ampliar modos y cola de reproducción` | Comportamiento definido en fin de lista, cambios de vista y cambios manuales de canción. |
 | O09 | Locutor de IA. `feat(narration): presentar canciones mediante voz generada` | Contenido basado en datos y controles/costes definidos; no bloquea el reproductor. |
@@ -593,14 +594,14 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 ### Estado actual
 
 - **Última actualización:** 12 de noviembre de 2026.
-- **Trabajo actual:** P10 implementado sin commit; recorrido manual de audio pendiente. P09 sigue sin commit; P08 registrado en `ddd5b20`.
+- **Trabajo actual:** O06 implementado sin commit; revisión de navegador pendiente. P09/P10 registrados en `6e001a0` y P08 en `ddd5b20`, con sus revisiones manuales pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
 - **Próximo bloque de implementación:** P11, playlists. Conservar revisión visual P08 y reproducción/seek/continuidad manual P09/P10 pendientes.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,
   selección musical autorizada y requisitos docentes; ver `DECISIONES.md`.
-- **Ampliaciones habilitadas:** ninguna por ahora.
+- **Ampliaciones habilitadas:** O06 por solicitud expresa del usuario: MP3, WAV PCM, FLAC y Ogg Vorbis/Opus; implementación y pruebas automatizadas listas, reproducción/seek en navegador por verificar.
 - **Estado de Git al iniciar P07:** sin cambios pendientes; P05/P06 registrados
   en `a316e29`. P07 quedó registrado posteriormente en `1e24870`.
 - **Alcance concretado:** RF-01 a RF-16 incluidos; RF-17 posterior recomendado;
@@ -646,6 +647,8 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 | 2026-11-12 | P08 | Registrado; revisión visual pendiente | `ddd5b20` | 42 pruebas aisladas, build Windows/Docker y búsqueda real correctos. Revisión visual pendiente; usuario autorizó continuar P09. |
 | 2026-11-12 | P09 | Implementado sin commit; reproducción/seek manual pendientes | — | 57 pruebas, build, OpenAPI y rangos reales por proxy correctos; navegador reconoce MP3/duración, actividad del usuario interrumpe interacción. Siguiente implementación P10. |
 | 2026-11-12 | P10 | Implementado sin commit; recorrido manual pendiente | — | 13 pruebas frontend Windows/Docker con dobles, 57 backend y builds correctos. Control UI interrumpido por actividad del usuario; recorrido real y revisiones previas pendientes. Siguiente implementación P11. |
+| 2026-11-12 | Registro posterior P09/P10 | Registrados; revisiones manuales pendientes | `6e001a0` | El usuario registró entrega de audio y reproductor; no se consideran cerradas las comprobaciones de navegador. |
+| 2026-11-12 | O06 | Implementado sin commit; navegador pendiente | — | Formatos habilitados, migración segura, fixtures propias decodificadas y pruebas de importación/metadatos/rangos. Ver AUDIO_MULTIFORMATO.md. Siguiente implementación principal P11. |
 
 ### Plantilla de cierre de sesión
 

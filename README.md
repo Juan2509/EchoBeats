@@ -3,12 +3,12 @@
 Reproductor musical con biblioteca propia, muros por álbum y exploración mediante
 IA y pgvector. Proyecto académico en desarrollo.
 
-**Estado actual: P10 implementado; validación manual de audio pendiente.** Inicio, navegación,
+**Estado actual: P10 y O06 implementados; validación manual de audio pendiente.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
-Importación real de MP3, extracción de etiquetas/portadas
+Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
 Las correcciones manuales se conservan al releer el original.
-Entrega de MP3 con GET/HEAD y rangos; reproductor compartido con selección,
+Entrega de audio con su MIME real, GET/HEAD y rangos; reproductor compartido con selección,
 pausa, anterior/siguiente, avance y volumen. Gestión de playlists, muros e IA
 siguen pendientes.
 `health` y `ready` comprueban proceso y BD.
@@ -26,10 +26,11 @@ docker compose up --build
 
 Abrir [EchoBeats](http://localhost:5173) y entrar en «Biblioteca».
 «Configuración» permite comprobar la conexión con el servidor.
-Seleccionar MP3 en «Añade tu música» para importar: hasta 20 archivos, 50 MiB
+Seleccionar archivos `.mp3`, `.wav`, `.flac`, `.ogg` o `.opus` en «Añade tu música»
+para importar: hasta 20 archivos, 50 MiB
 por archivo y 200 MiB por solicitud completa. Los originales quedan copiados en
 MEDIA_ROOT. Se leen las etiquetas disponibles; si faltan, se usan datos provisionales
-y álbum «Sin álbum». El editor permite corregirlos sin reescribir el MP3.
+y álbum «Sin álbum». El editor permite corregirlos sin reescribir el audio original.
 Ver [importación y consistencia](docs/IMPORTACION_MP3.md).
 Ver [metadatos y portadas](docs/METADATOS.md) para edición y relectura segura.
 Buscar por título, artista o álbum y alternar «Álbumes» / «Canciones».
@@ -47,6 +48,10 @@ La lista sigue el álbum o la búsqueda seleccionados, incluso entre páginas.
 Al terminar avanza a la siguiente pista y se detiene al final; cerrar/recargar
 la página no restaura ni inicia audio automáticamente. Ver
 [validación P10](docs/VALIDACION_P10.md) para pruebas y revisión manual pendiente.
+La ampliación O06 admite WAV PCM entero, FLAC nativo y Ogg con Vorbis/Opus.
+El navegador debe poder decodificar el códec; se muestra un aviso si no anuncia
+compatibilidad. No hay conversión automática. Límites, formatos exactos y
+evidencias en [audio multiformato](docs/AUDIO_MULTIFORMATO.md).
 La comprobación pública del proceso es
 [health](http://localhost:8000/api/v1/health) y la documentación de API está en
 [docs](http://localhost:8000/docs).

@@ -17,7 +17,7 @@ class MediaStore:
         self.root = root.resolve()
 
     def path_for(self, key: str) -> Path:
-        if not re.fullmatch(r"(audio|images)/[0-9a-f]{32}\.(mp3|png|jpg|jpeg|gif)", key):
+        if not re.fullmatch(r"(audio|images)/[0-9a-f]{32}\.(mp3|wav|flac|ogg|opus|png|jpg|jpeg|gif)", key):
             raise ValueError("Referencia de recurso no válida.")
         path = self.root / key
         if not path.resolve().is_relative_to(self.root) or path.is_symlink():

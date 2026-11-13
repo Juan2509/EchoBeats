@@ -1,5 +1,10 @@
 # Importación de MP3 — P06
 
+Actualización O06: también se admiten WAV PCM, FLAC nativo y Ogg Vorbis/Opus
+(.ogg/.opus), con los mismos límites y conservación de originales. Ver
+[audio multiformato](AUDIO_MULTIFORMATO.md). Los apartados históricos siguientes
+describen la entrega inicial de P06.
+
 12 de noviembre de 2026. P06 incluye la base de P05, que todavía no existía al
 solicitar este paso. P07 amplió esta importación con etiquetas y portadas;
 la biblioteca visual y reproducción siguen pendientes de P08–P10.

@@ -18,6 +18,10 @@ Estado actual: SQLAlchemy Core en `backend/app/models/catalog.py` y migración
 `0002_catalog` y `0003_metadata`. Hay extracción local de etiquetas;
 los muros siguen pendientes.
 
+O06 añade `0004_audio_formats`: amplía la restricción de storage_key para WAV,
+FLAC, Ogg y Opus, sin columnas nuevas ni cambios en los medios existentes.
+El MIME ya persistido en media_asset se expone como audio_mime_type de pista.
+
 ## 2. Entidades y relaciones
 
 ```mermaid

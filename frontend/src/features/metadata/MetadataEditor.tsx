@@ -121,10 +121,10 @@ export function MetadataEditor({ refresh, onSaved }: { refresh: number; onSaved?
 
   return <section className="metadata-editor" aria-labelledby="metadata-title">
     <h2 id="metadata-title">Revisa los datos de tu música</h2>
-    <p className="note">Corrige los datos de tu biblioteca. No se cambia el contenido del archivo MP3.</p>
+    <p className="note">Corrige los datos de tu biblioteca. No se cambia el contenido del archivo de audio.</p>
     <button type="button" disabled={busy} onClick={async () => { setBusy(true); setError(''); try { await loadLists() } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo recargar la lista.') } finally { setBusy(false) } }}>Recargar lista de canciones y álbumes</button>
     {loading && <p role="status">Cargando canciones…</p>}
-    {!loading && !tracks.length && <p>Importa un MP3 para revisar sus datos aquí.</p>}
+    {!loading && !tracks.length && <p>Importa un archivo de audio para revisar sus datos aquí.</p>}
     <label>Canción<select disabled={busy || !tracks.length} value={selected} onChange={event => { if (discard()) setSelected(event.target.value) }}>
       {!tracks.length && <option value="">Sin canciones</option>}
       {tracks.map(item => <option key={item.id} value={item.id}>{item.title} · {item.artists.map(credit => credit.name).join(', ') || 'Artista desconocido'}</option>)}

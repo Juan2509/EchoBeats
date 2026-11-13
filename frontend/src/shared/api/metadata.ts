@@ -1,7 +1,7 @@
 export type Artist = { id: string; name: string }
 export type Track = {
   id: string; title: string; artists: Artist[]; album_id: string; album_title: string
-  duration_ms: number; audio_url: string; track_number: number | null; cover_asset_id: string | null; cover_url: string | null
+  duration_ms: number; audio_url: string; audio_mime_type?: string; track_number: number | null; cover_asset_id: string | null; cover_url: string | null
   cover_source: string
   metadata_sources: Record<string, string>; revision: number; metadata_warnings?: string[]
 }

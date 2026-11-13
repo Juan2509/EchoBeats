@@ -423,3 +423,39 @@ la prueba. No se acredita escucha real, seek manual, continuidad audible ni
 validación de teclado/tamaños. CA-01/CA-03 y los cierres visuales P08/P09/P10
 permanecen pendientes de su recorrido manual; ver `VALIDACION_P10.md`.
 P09/P10 siguen sin commit. Siguiente implementación P11; no se crean commits.
+
+## Avance posterior: O06 — Audio multiformato
+
+El usuario solicitó admitir WAV, FLAC, Ogg y otros formatos además de MP3.
+Esto habilita O06 expresamente, sin esperar a P11. P09/P10 ya habían quedado
+registrados por el usuario en `6e001a0`; sus revisiones manuales siguen pendientes.
+
+Se admiten MP3, WAV PCM entero (8/16/24/32 bits), FLAC nativo, Ogg Vorbis y Ogg
+Opus (.ogg o .opus). Mutagen identifica contenido y etiquetas; extensión y contenido
+deben concordar. Ogg Opus se guarda con extensión interna .opus, sin cambiar
+bytes. No se habilitan AAC/M4A, AIFF, WMA ni otros códecs no comprobados.
+
+ID3 en MP3/WAV; Vorbis Comments, Picture y METADATA_BLOCK_PICTURE en FLAC/Ogg.
+Persisten correcciones manuales y originales. MIME real en GET/HEAD y rangos;
+audio_mime_type en fichas para avisos canPlayType y errores de decodificación.
+Sin conversión automática ni nuevas dependencias de la aplicación.
+
+Migración 0004_audio_formats amplía solo la restricción de claves de medios.
+El downgrade se niega si existen medios de formatos nuevos, sin borrar datos.
+FFmpeg se usó únicamente en un contenedor temporal para generar y decodificar
+cuatro señales propias de 440 Hz/2,5 s con portada y etiquetas; manifiesto y
+generador conservados. Quedan importadas como demostración en «Colección
+multiformato», sin modificar canciones existentes del usuario.
+
+Pruebas backend aisladas de importación, formatos falsos, bytes/MIME/HEAD/rangos,
+metadatos, portadas, duplicados y downgrade seguro; frontend cubre aviso de
+formato no anunciado. Build y esquema correctos. Ver `AUDIO_MULTIFORMATO.md`
+para los resultados finales y tamaños/MIME. La herramienta de control de Brave
+se detuvo al no poder identificar la URL con confianza: no se afirma reproducción
+ni seek manual de los nuevos formatos. O06 implementado sin commit, con esa
+comprobación pendiente; siguiente implementación principal P11.
+
+Cierre técnico O06: 72 pruebas backend y 14 frontend superadas, build correcto
+en Windows/Docker y esquema sin diferencias. Tras recrear servicios, las cuatro
+pistas multiformato y el MP3 previo conservan ID, MIME y rangos. Auditoría sin
+faltantes/huérfanos/staging. Servicios detenidos, con volumen/.env/medios conservados.

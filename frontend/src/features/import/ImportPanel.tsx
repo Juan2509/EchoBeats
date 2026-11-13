@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { audioFileAccept, audioFormatsLabel } from '../../shared/audioFormats'
 
 type ImportResult = {
   index: number
@@ -49,10 +50,10 @@ export function ImportPanel({ onImported }: { onImported: () => void }) {
   return (
     <section className="import-panel" aria-labelledby="import-title">
       <h2 id="import-title">Añade tu música</h2>
-      <p id="import-help" className="note">MP3 · hasta 50 MiB por archivo · 20 archivos y 200 MiB por solicitud, incluido el formulario.</p>
+      <p id="import-help" className="note">{audioFormatsLabel} · hasta 50 MiB por archivo · 20 archivos y 200 MiB por solicitud, incluido el formulario. La reproducción depende de los códecs del navegador.</p>
       <form onSubmit={submit}>
-        <label htmlFor="music-files">Seleccionar archivos MP3</label>
-        <input id="music-files" name="files" type="file" accept=".mp3,audio/mpeg" multiple
+        <label htmlFor="music-files">Seleccionar archivos de audio</label>
+        <input id="music-files" name="files" type="file" accept={audioFileAccept} multiple
           aria-describedby="import-help" disabled={busy}
           onChange={event => { setFiles(Array.from(event.target.files ?? [])); setResults([]); setError('') }} />
         <p className="note">{files.length ? `${files.length} archivo(s) seleccionado(s)` : 'Todavía no has seleccionado archivos.'}</p>

@@ -11,7 +11,7 @@ export const initialPlayer: PlayerState = {
 }
 export type AudioPort = Pick<HTMLAudioElement, 'src' | 'currentSrc' | 'currentTime' | 'duration' |
   'volume' | 'paused' | 'ended' | 'readyState' | 'error' | 'play' | 'pause' | 'load' |
-  'addEventListener' | 'removeEventListener' | 'removeAttribute'>
+  'addEventListener' | 'removeEventListener' | 'removeAttribute' | 'canPlayType'>
 
 /** Un único audio; las promesas antiguas nunca actualizan la pista nueva. */
 export class PlayerController {
@@ -51,6 +51,7 @@ export class PlayerController {
       this.wantsPlay = false; this.intent += 1
       this.patch({ playing: false, loading: false, error: audio.error?.code === 2
         ? 'Se interrumpió la conexión con el audio. Puedes reintentar.'
+        : audio.error?.code === 4 ? 'El navegador no pudo decodificar este formato. Prueba un navegador compatible o revisa el archivo.'
         : 'No se pudo reproducir esta canción. Comprueba que su archivo esté disponible.' })
     })
     const volume = () => this.patch({ volume: audio.volume })
@@ -84,6 +85,10 @@ export class PlayerController {
     this.audio.pause()
     this.patch({ track, playing: false, loading: true, ready: false, position: 0,
       duration: track.duration_ms / 1000, error: '' })
+    if (!this.supportsFormat()) {
+      this.audio.removeAttribute('src'); this.audio.load()
+      return
+    }
     this.audio.src = track.audio_url
     this.audio.load()
     this.play()
@@ -98,6 +103,7 @@ export class PlayerController {
   }
   play() {
     if (!this.state.track || this.disposed) return
+    if (!this.supportsFormat()) return
     if (this.state.error) { this.audio.load(); this.patch({ ready: false }) }
     if (this.state.ready && this.audio.currentTime >= this.state.duration) this.audio.currentTime = 0
     const ticket = ++this.intent
@@ -113,6 +119,15 @@ export class PlayerController {
         ? 'El navegador necesita que pulses Reproducir para iniciar el audio.'
         : 'No se pudo iniciar el audio. Puedes reintentar o elegir otra canción.' })
     })
+  }
+  private supportsFormat() {
+    const type = this.state.track?.audio_mime_type
+    if (type && !this.audio.canPlayType(type)) {
+      this.wantsPlay = false
+      this.patch({ playing: false, loading: false, error: 'Este navegador no anuncia compatibilidad con el formato de esta canción. Prueba otro navegador compatible.' })
+      return false
+    }
+    return true
   }
   pause() {
     this.intent += 1; this.wantsPlay = false; this.endedPending = false

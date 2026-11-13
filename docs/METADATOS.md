@@ -1,5 +1,9 @@
 # Metadatos, álbumes y portadas — P07
 
+Desde O06 se leen ID3 de MP3/WAV y Vorbis Comments/portadas de FLAC y Ogg
+Vorbis/Opus. La procedencia y protección de ediciones manuales no cambian.
+Ver [audio multiformato](AUDIO_MULTIFORMATO.md) para formatos y límites precisos.
+
 12 de noviembre de 2026. Leer y corregir información de música ya importada.
 No se consulta internet ni se utiliza IA para identificar una canción.
 
