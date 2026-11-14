@@ -24,6 +24,12 @@ pertenecen al caso documental usado para explicar la arquitectura.
 
 ## Relación con EchoBeats
 
+Actualización P20: adaptador OpenAI para embeddings/generación, configuración
+privada, validación y manejo de fallos preparados. 167 pruebas backend, 45 frontend
+y build aprobados; intentos reales rechazados por credit_balance_exhausted, sin
+respuestas validadas. No declarar cumplida la API real ni el RAG hasta cerrar esta
+prueba y P21–P23. Ver INTEGRACION_IA.md y VALIDACION_P20.md.
+
 Actualización P19: fichas musicales con fuente/evidencia por atributo, historial
 versionado y separación explícita de interpretaciones ya implementadas. Se preparó
 el corpus controlado por hash sin emociones provisionales. Es una base trazable

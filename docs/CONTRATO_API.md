@@ -294,6 +294,14 @@ eliminada/cambiada durante la consulta se excluye o se vuelve a recuperar.
 
 ## 6. Cambios futuros y comprobación
 
+P20 efectivo: GET /ai/status (200, no-store) devuelve provider, enabled, configured,
+available, embedding_model, dimensions, generation_model, prompt_version,
+verification=not_checked y notice. No devuelve clave ni llama a OpenAI; available
+es solo configuración, no cuota/conectividad demostrada. No hay ruta pública de
+generación/embedding ni prueba facturable por HTTP en P20. Adaptadores internos
+y comando explícito app.ai_check --live en INTEGRACION_IA.md. Los rechazos reales
+por credit_balance_exhausted mantienen pendiente el cierre real de la integración.
+
 No se exponen endpoints de favoritos, estaciones, reconocimiento, cuentas ni
 locutor antes de habilitar sus pasos. El API de cada función aparece con su
 implementación; P03 solo necesita health y estructura, no rutas ficticias que

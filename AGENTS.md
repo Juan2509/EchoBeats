@@ -1,5 +1,13 @@
 # EchoBeats: contexto del proyecto
 
+P20 implementado con cierre real pendiente por OpenAI credit_balance_exhausted.
+Leer `docs/INTEGRACION_IA.md` y `docs/VALIDACION_P20.md`. Clave en .env privado,
+nunca mostrarla/versionarla ni copiarla al frontend. API de estado no consume ni
+acredita proveedor válido. AI_ENABLED=false por defecto. Dos pruebas --live con
+texto sintético fallaron por 429; cero respuestas validadas. No repetir hasta
+resolver créditos ni marcar P20 cerrado con mocks. app.ai_check --live es explícito,
+hasta dos solicitudes, sin reintentos, sin biblioteca/audio. P21 depende de P20.
+
 P19 implementa fichas con procedencia/atributos, versiones e historial, editor y
 precondiciones. Leer `docs/FICHAS_MUSICALES.md` y `docs/VALIDACION_P19.md` antes de
 P20/P21. 0007 aplicada tras respaldo. No sobrescribir manuales desde P18 ni anunciar

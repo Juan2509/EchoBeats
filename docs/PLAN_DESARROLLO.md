@@ -474,6 +474,14 @@ ficha incompleta no impide reproducir y no se anuncia análisis acústico inexis
 
 ### [ ] P20 — Integrar proveedor de IA y configuración
 
+Implementación lista el 13 de noviembre de 2026; cierre real pendiente.
+Adaptadores/configuración/límites/validación, estado y prueba controlada en
+INTEGRACION_IA.md. El usuario configuró clave privada; dos solicitudes reales
+de embedding devolvieron 429, última identificada como credit_balance_exhausted.
+Cero llamadas validadas; no se ejecutó generación. Detener nuevas llamadas hasta
+resolver créditos API. No cerrar con dobles de prueba. Ver VALIDACION_P20.md.
+P21 sigue como próxima implementación prevista, dependiente del cierre real P20.
+
 **Depende de:** P19. **Commit:** `feat(ai): integrar API con respuestas validadas y manejo de fallos`
 
 - Seleccionar y documentar proveedor/modelos, capacidades, credenciales y límites
@@ -665,9 +673,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P19 implementado y comprobado: fichas trazables y versionadas, editor y corpus preparado. Ver VALIDACION_P19.md.
+- **Trabajo actual:** P20 implementado; 167 pruebas backend/45 frontend y build aprobados. Cierre real pendiente por credit_balance_exhausted. Ver VALIDACION_P20.md.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P20, proveedor/configuración de IA. Embeddings e integración real todavía pendientes. Mantener revisiones visuales y audio registradas.
+- **Próximo bloque de implementación:** P21, tras cerrar prueba real de P20 con créditos API disponibles. No repetir llamadas mientras persista credit_balance_exhausted. Mantener pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

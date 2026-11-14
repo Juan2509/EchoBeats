@@ -2,6 +2,20 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P20 — 13 de noviembre de 2026
+
+El usuario autorizó P20 y configuró OPENAI_API_KEY en .env privado; no registrar
+valor. Adaptadores OpenAI REST con httpx existente: text-embedding-3-small/1536
+y gpt-6-luna/Responses/JSON Schema, sin herramientas ni audio. Timeout/límites,
+validación de citas, errores seguros y estado de configuración sin consumo.
+Integración permanece desactivada por defecto. Dos intentos reales de embedding
+con texto sintético fijo devolvieron 429; el segundo identificó
+credit_balance_exhausted. No hubo llamadas validadas ni generación; no repetir
+hasta resolver créditos API, no marcar P20 cerrado. Recibos privados en data/ai_checks.
+Ver INTEGRACION_IA.md y VALIDACION_P20.md. Pruebas simuladas separadas de consumo
+real; 167 pruebas backend (32 IA), 45 frontend y build aprobados. UI pendiente por host no disponible.
+P21 previsto, pero depende de cerrar prueba real de P20. Preservar pendientes previos.
+
 ## Avance vigente: P19 — 13 de noviembre de 2026
 
 El usuario autorizó P19. Fichas actuales/historial, editor por pista, ETag de

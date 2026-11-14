@@ -5,9 +5,10 @@ IA y pgvector. Proyecto académico en desarrollo.
 
 P17 prepara [casos y criterios de evaluación musical](docs/EVALUACION_BUSQUEDA.md)
 con cinco fragmentos sintéticos originales y 18 consultas. Aún no hay búsqueda
-semántica ni API de IA integrada. Ver [validación P17](docs/VALIDACION_P17.md).
+semántica. P20 prepara el adaptador de API; su prueba real está pendiente por
+créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P19 implementado; revisiones visuales y de audio pendientes registradas.** Inicio, navegación,
+**Estado actual: P20 implementado con cierre real pendiente por créditos API; revisiones visuales/audio registradas.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
@@ -26,9 +27,13 @@ con confirmación. Ver [validación P16](docs/VALIDACION_P16.md).
 
 ## Inicio con Docker
 
+Configuración muestra el estado privado de IA sin revelar claves ni consumir API.
+El proveedor está desactivado por defecto. Preparación/prueba controlada y pendientes
+en [INTEGRACION_IA.md](docs/INTEGRACION_IA.md) y [VALIDACION_P20.md](docs/VALIDACION_P20.md).
+
 P19 permite crear y corregir la «Ficha musical» de cada pista, con fuentes,
 evidencias, interpretaciones y versiones conservadas. Una ficha incompleta no
-impide escuchar. Todavía no genera embeddings ni usa un proveedor de IA. Ver
+impide escuchar. Editar fichas no llama al proveedor ni genera embeddings. Ver
 [fichas musicales](docs/FICHAS_MUSICALES.md) y [validación P19](docs/VALIDACION_P19.md).
 
 P18 permite preparar metadatos en segundo plano desde «Preparación de información»

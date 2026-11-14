@@ -224,6 +224,15 @@ Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 
+P20: OpenAI conforme a requerimientos; embedding text-embedding-3-small a 1536
+dimensiones y generación gpt-6-luna con Responses/JSON Schema y razonamiento none,
+verificados en documentación oficial. Adaptador REST con httpx ya bloqueado,
+sin añadir LangChain/SDK por complejidad innecesaria para estas dos operaciones.
+Claves en backend, app desactivada por defecto, prueba --live separada de pytest,
+sin audio/biblioteca y sin reintentos inciertos. Datos/límites/fuentes y alternativas
+en INTEGRACION_IA.md. Cierre real pendiente por credit_balance_exhausted; los
+modelos son elecciones de trabajo, no acceso/cuota comprobados de la cuenta.
+
 P19 implementa fichas explícitas versionadas con historial y evidencia por atributo.
 Fuentes manual/verified/metadata; emoción/energía/contexto son interpretaciones
 manuales. P18 no sobrescribe fichas. Los datos derivados de metadatos conservan
