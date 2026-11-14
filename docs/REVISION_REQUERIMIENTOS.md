@@ -24,6 +24,12 @@ pertenecen al caso documental usado para explicar la arquitectura.
 
 ## Relación con EchoBeats
 
+Actualización P22: recuperación vectorial exacta y textual/híbrida con filtros,
+compatibilidad de índice y evidencia versionada implementada; evaluador P17 sin red.
+Sin llamadas reales ni calibración mientras siga pendiente reanudar tras créditos.
+No declarar API real/RAG/pertinencia demostrados con rankings de prueba aislados.
+P23 integrará experiencia y generación fundamentada. Ver RECUPERACION_SEMANTICA.md.
+
 Actualización P21: almacenamiento pgvector, indexación asíncrona de fichas,
 versiones/modelo/receta y prevención de duplicados implementados. Pruebas PostgreSQL
 reales con proveedor simulado aprobadas; no equivalen a vectores reales del proveedor.

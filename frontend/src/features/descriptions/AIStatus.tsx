@@ -16,7 +16,7 @@ export function AIStatus() {
   }, [attempt])
   return <section aria-label="Estado de IA"><h3>Integración de IA</h3>
     <p role="status">{error ? 'No se pudo consultar la configuración de IA.' : !state ? 'Consultando configuración…' : !state.configured ? 'Falta configurar el proveedor en el servidor.' : !state.enabled ? 'Proveedor configurado; integración desactivada.' : 'Integración habilitada en la configuración.'}</p>
-    <p className="note">Esta consulta no llama al proveedor ni comprueba saldo o acceso. La búsqueda semántica aún no está implementada. Tus audios no se envían en el flujo de fichas de texto.</p>
+    <p className="note">Esta consulta no llama al proveedor ni comprueba saldo o acceso. La interfaz de exploración se completará en el siguiente paso. Tus audios no se envían en el flujo de fichas de texto.</p>
     <button className="secondary" onClick={() => retry(value => value + 1)}>Actualizar estado de IA</button>
   </section>
 }

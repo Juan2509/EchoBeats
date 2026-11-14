@@ -17,6 +17,8 @@ from app.api.walls import router as walls_router
 from app.api.processing import router as processing_router
 from app.api.descriptions import router as descriptions_router
 from app.api.ai import router as ai_router
+from app.api.search import router as search_router
+from app.integrations.ai import OpenAIProvider, AIError
 from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
 from app.config import Settings
@@ -44,6 +46,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="EchoBeats API", version="0.1.0", lifespan=lifespan)
     app.state.database_engine = engine
     app.state.settings = config
+    app.state.ai_provider = OpenAIProvider(config)
     app.include_router(health_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(readiness_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(imports_router, prefix="/api/v1", tags=["Importación"])
@@ -56,6 +59,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(processing_router, prefix="/api/v1", tags=["Procesamiento"])
     app.include_router(descriptions_router, prefix="/api/v1", tags=["Fichas musicales"])
     app.include_router(ai_router, prefix="/api/v1", tags=["IA"])
+    app.include_router(search_router, prefix="/api/v1", tags=["Exploración"])
+
+    @app.exception_handler(AIError)
+    async def ai_error(request,exc):
+        status=504 if exc.code=='ai_timeout' else 422 if exc.code=='ai_input_invalid' else 429 if exc.code in {'ai_busy','ai_rate_limit'} else 503
+        return error_response(exc.code,str(exc),status)
 
     @app.exception_handler(MetadataError)
     async def metadata_error(request, exc):

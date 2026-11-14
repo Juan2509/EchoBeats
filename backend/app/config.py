@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     ai_generation_model: str = Field(default='gpt-6-luna', pattern=r'^gpt-6-luna$')
     ai_timeout_seconds: float = Field(default=20, ge=1, le=60)
     ai_rate_limit_retries: int = Field(default=0, ge=0, le=1)
+    search_max_cosine_distance: float | None = Field(default=None, ge=0, le=2, allow_inf_nan=False)
 
     def hosts(self) -> list[str]:
         return [value.strip() for value in self.allowed_hosts.split(",") if value.strip()]

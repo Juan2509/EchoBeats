@@ -1,5 +1,11 @@
 # P17 — Casos y evaluación de recuperación musical
 
+Actualización P22: API con recuperación semántica/textual/híbrida y filtros,
+similitud por referencia y evaluador de informes guardados implementados. Ver
+RECUPERACION_SEMANTICA.md. El evaluador no consume API ni certifica origen de
+vectores. Pruebas reales y calibración de umbral siguen pendientes por créditos;
+no se modificaron las consultas/grados ni se ejecutaron reservadas para ajustar.
+
 13 de noviembre de 2026. Protocolo v1 fijado antes de prompts, proveedor e índice.
 Fuente ejecutable de casos: [consultas.json](../pruebas/semantica/consultas.json).
 Corpus: [manifiesto](../pruebas/semantica/manifest.json) y

@@ -1,5 +1,14 @@
 # EchoBeats: contexto del proyecto
 
+P22 implementa API exacta semántica/textual/híbrida, filtros y similares sin repetir
+referencia. Ver `docs/RECUPERACION_SEMANTICA.md` y `docs/VALIDACION_P22.md`.
+197 pruebas backend/45 frontend y build aprobados. Sin llamadas reales por petición
+del usuario; P20–P22 conservan cierre/evaluación pendientes. No elegir umbral con
+vectores ficticios ni presentar distancias/RRF como confianza. Sin umbral calibrado
+son candidatos. Mantener elegibilidad por versión/hash/modelo/receta y metadatos;
+no abrir transacción durante red. Evaluador local no certifica API real. Interfaz
+Explorar y explicaciones corresponden a P23; conservar pendientes visuales/audio.
+
 P21 implementa almacenamiento pgvector(1536), cola index_description y controles.
 Leer `docs/EMBEDDINGS.md` y `docs/VALIDACION_P21.md`. 0008 aplicada tras respaldo,
 175 pruebas backend/45 frontend y build aprobados. Proveedor simulado solo en BD

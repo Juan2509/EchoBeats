@@ -8,7 +8,7 @@ con cinco fragmentos sintéticos originales y 18 consultas. Aún no hay búsqued
 semántica. P20 prepara el adaptador de API; su prueba real está pendiente por
 créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P21 implementado; pruebas reales de P20/P21 pendientes por créditos API, por acuerdo del usuario.** Inicio, navegación,
+**Estado actual: API P22 implementada; pruebas reales y calibración P20–P22 pendientes por créditos, por acuerdo del usuario.** Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
@@ -26,6 +26,11 @@ nuevos durante un guardado y permite restaurar lo guardado o restablecer el dise
 con confirmación. Ver [validación P16](docs/VALIDACION_P16.md).
 
 ## Inicio con Docker
+
+P22 añade API semántica/textual/híbrida y similares por pista con filtros. La
+pantalla de exploración y las explicaciones se completan en P23. Sin umbral
+calibrado, resultados son candidatos. Ver
+[recuperación](docs/RECUPERACION_SEMANTICA.md) y [validación P22](docs/VALIDACION_P22.md).
 
 P21 añade indexación versionada y almacenamiento pgvector desde «Ficha musical».
 No se ha acreditado aún un embedding de API real; las pruebas usan proveedor

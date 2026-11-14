@@ -224,6 +224,13 @@ Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 
+P22: coseno exacto parametrizado, FTS simple y fusión de rangos RRF(60), ventana
+100 por rama, límite final 1–20. Filtros comunes y nueva instantánea tras llamada
+al proveedor; sin transacción abierta durante red. Referencia usa vector vigente
+sin API externa. Sin umbral calibrado se declaran candidatos, no confianza ni
+pertinencia demostrada. Evaluador local de informes P17; no se elige umbral con
+vectores simulados ni se afirman API real/CA-10. Ver RECUPERACION_SEMANTICA.md.
+
 P21 materializa índice vector(1536), receta description-v1 incorporada a la clave,
 cola durable index_description y publicación atómica con verificación de entrada
 vigente. Reutiliza SQLAlchemy/psycopg y tipo pgvector sin dependencias adicionales;

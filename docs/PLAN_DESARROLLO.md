@@ -516,6 +516,13 @@ duplica registros. Editar una ficha deja claro cuándo su vector está desactual
 
 ### [ ] P22 — Implementar recuperación semántica
 
+API implementada el 13 de noviembre de 2026: coseno exacto, FTS e híbrido RRF,
+referencia/filtros/estados/versiones y evaluador P17 sin red. 197 pruebas backend,
+45 frontend y build aprobados; rutas y consulta textual local comprobadas.
+No se hicieron llamadas OpenAI ni se calibró umbral con vectores ficticios. Cierre
+real/pertinencia pendientes junto con P20/P21 por acuerdo del usuario. Ver
+VALIDACION_P22.md y RECUPERACION_SEMANTICA.md. Próxima implementación P23, sin commit automático.
+
 **Depende de:** P17, P21. **Commit:** `feat(search): buscar canciones por similitud con pgvector`
 
 - Generar embedding de consulta compatible y ejecutar búsqueda parametrizada.
@@ -681,9 +688,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P21 implementado, con 175 pruebas backend/45 frontend y build aprobados. P20/P21 conservan cierre real pendiente por créditos API y decisión del usuario.
+- **Trabajo actual:** API P22 implementada; 197 pruebas backend/45 frontend y build aprobados. Cierre real y calibración P20–P22 pendientes por créditos y petición del usuario.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P22, recuperación semántica; evidencia real P20/P21 pendiente. No repetir llamadas hasta resolver créditos y reanudar esa prueba. Mantener pendientes visuales/audio.
+- **Próximo bloque de implementación:** P23, interfaz de exploración y explicaciones fundamentadas. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

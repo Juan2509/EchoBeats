@@ -2,6 +2,21 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P22 — 13 de noviembre de 2026
+
+El usuario autorizó P22. API de recuperación exacta por coseno, textual/híbrida
+RRF(60), filtros álbum/playlist y similares por referencia implementadas. Datos
+vigentes por versión/hash/modelo/receta y metadatos; nueva instantánea tras red.
+Sin transacción abierta durante proveedor ni explicaciones LLM. Sin umbral
+calibrado se devuelven candidatos, nunca confianza o pertinencia garantizada.
+Evaluador P17 de informes guardados sin red, sin certificar API/origen de vectores.
+197 pruebas backend, 45 frontend y build aprobados; pruebas aisladas y proveedor
+simulado. Sin llamadas OpenAI ni cambios de vectores/medios/.env personales.
+P22 no requiere migración. Ready/rutas y búsqueda lexical local verificados.
+Leer RECUPERACION_SEMANTICA.md y VALIDACION_P22.md. P20/P21/P22 conservan cierre
+real y evaluación pendientes por créditos/petición del usuario; no repetir llamadas.
+Interfaz Explorar y explicaciones siguen en P23, próximo paso de implementación.
+
 ## Avance vigente: P21 — 13 de noviembre de 2026
 
 El usuario autorizó P21 aunque P20 conservara prueba real pendiente, y confirmó

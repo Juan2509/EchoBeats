@@ -294,6 +294,19 @@ eliminada/cambiada durante la consulta se excluye o se vuelve a recuperar.
 
 ## 6. Cambios futuros y comprobación
 
+P22 efectivo: POST /explore/search con query, limit (5 por defecto, 1–20), mode
+semantic/lexical/hybrid (hybrid por defecto), album_id/playlist_id opcionales.
+GET /tracks/{id}/similar con limit/filtros usa vector de referencia sin llamada
+externa y excluye la referencia. Todos los resultados se limitan a versiones,
+hashes/modelo/receta elegibles. reference_not_indexed es 409.
+Respuesta: query/mode/limit/status/reason/model_key/results/distance_limit,
+relevance=candidates_only, warnings y query_usage cuando procede. Resultados
+incluyen track/description/evidence, distance, fusion_score, semantic_rank,
+lexical_rank y explanation_source=recorded. No hay vector ni generación LLM.
+No se confunde ok con pertinencia demostrada: sin umbral calibrado devuelve
+candidatos. Estados vacíos y errores completos en RECUPERACION_SEMANTICA.md.
+La interfaz Explorar/explicaciones sigue en P23; P20–P22 conservan evidencia real pendiente.
+
 P21 efectivo: POST /tracks/{id}/index-jobs (202, sin cuerpo o {}), GET
 /tracks/{id}/index-status (200, no-store) y despacho de GET /jobs y retry para
 index_description. Modelo/versión/hash se capturan en servidor; entrada arbitraria
