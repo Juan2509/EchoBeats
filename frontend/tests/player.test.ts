@@ -39,6 +39,19 @@ test('no inicia audio automáticamente; selección sincroniza pista y tiempo rea
   player.play(); await flush(); assert.equal(player.state.playing, true)
 })
 
+test('Explorar inicia solo al seleccionar y conserva la cola exacta sin esperar otra consulta', async () => {
+  const { audio, player } = setup()
+  assert.equal(audio.calls,0)
+  const old=player.start(song('old'),'Anterior')
+  player.startQueue(song('b'),[song('a'),song('b'),song('c')],'Explorar')
+  assert.equal(player.state.pendingQueue,false);assert.equal(player.state.index,1)
+  assert.deepEqual(player.state.queue.map(t=>t.id),['a','b','c'])
+  player.completeQueue(old,[song('old')])
+  assert.equal(player.state.track?.id,'b');assert.equal(player.state.context,'Explorar')
+  audio.metadata();await flush();player.next();assert.equal(player.state.track?.id,'c')
+  player.dispose()
+})
+
 test('rechazo tardío de play y cola antigua no contaminan la selección nueva', async () => {
   const { audio, player } = setup(); const old = deferred()
   audio.playHook = () => old.promise

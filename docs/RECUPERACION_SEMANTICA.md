@@ -1,5 +1,11 @@
 # Recuperación musical — P22
 
+Actualización P23: interfaz Explorar y explicación con evidencia implementadas.
+POST search añade explain=false y POST /explore/similar admite referencia con
+citas optativas; la recuperación P22 conserva su contrato base. El reproductor
+usa la cola exacta recuperada, sin repetir query. Ver EXPLORACION.md. No se
+reanudaron API real ni calibración pendientes por créditos.
+
 ## Alcance
 
 P22 implementa API de recuperación exacta por coseno, modo textual e híbrido,

@@ -157,6 +157,14 @@ listas vacías; Reproducir queda deshabilitado hasta que haya pistas disponibles
 
 ## 6. Explorar con IA
 
+Actualización P23: pantalla implementada, modo textual y citas IA desmarcadas por
+defecto, consulta manual, filtros y referencias. Resultados muestran citas con
+versión y detalles de procedencia/interpretaciones, sin prosa libre del modelo.
+Escuchar usa el reproductor compartido y la cola exacta recuperada, sin repetir
+búsqueda. Cancelar/salir invalida respuestas antiguas y no detiene audio previo.
+La referencia abre desde pista sin consulta automática. Ver EXPLORACION.md y
+VALIDACION_P23.md; revisión visual/manual y evidencia real todavía pendientes.
+
 ```text
 ┌────────────────────────────────────────────────────────────┐
 │ EchoBeats    Inicio   Biblioteca   Explorar    Configuración│

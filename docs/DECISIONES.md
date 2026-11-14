@@ -224,6 +224,14 @@ Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 
+P23 integra Explorar, reproducción desde instantánea de resultados y selección de
+citas opcional. Textual y sin generación por defecto; no hay consulta al abrir.
+Se usa el proveedor P20, máximo una operación de generación sobre hasta cinco
+fichas y su presupuesto; solo se publican citas literales comprobadas, no prosa
+libre como hecho. Error conserva evidencia registrada y versión/modelo/filtros
+se revalidan después de red. Es política conservadora explícita, pendiente de
+calidad musical real; no sustituye CA-11 con mocks. Ver EXPLORACION.md.
+
 P22: coseno exacto parametrizado, FTS simple y fusión de rangos RRF(60), ventana
 100 por rama, límite final 1–20. Filtros comunes y nueva instantánea tras llamada
 al proveedor; sin transacción abierta durante red. Referencia usa vector vigente

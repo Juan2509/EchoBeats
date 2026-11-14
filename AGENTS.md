@@ -1,5 +1,15 @@
 # EchoBeats: contexto del proyecto
 
+P23 implementa Explorar, filtros, similares, fuentes y reproducción de la cola
+recuperada. Leer `docs/EXPLORACION.md` y `docs/VALIDACION_P23.md`. Selección de
+citas con IA solo mediante opt-in; no publicar prosa libre del modelo. Comprobar
+citas literales/versión y revalidar elegibilidad/filtros tras red, sin transacción
+abierta durante proveedor. Ante fallo conservar descripciones registradas.
+213 pruebas backend/51 frontend y build aprobados. Proveedores simulados solo en bases
+aisladas; no llamadas reales ni cambios del índice personal. P20–P23 conservan
+cierre real/evaluación y revisión visual pendientes. Próxima implementación P24;
+no iniciar sin petición. Conservar pendientes visuales/audio anteriores.
+
 P22 implementa API exacta semántica/textual/híbrida, filtros y similares sin repetir
 referencia. Ver `docs/RECUPERACION_SEMANTICA.md` y `docs/VALIDACION_P22.md`.
 197 pruebas backend/45 frontend y build aprobados. Sin llamadas reales por petición

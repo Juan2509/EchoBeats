@@ -4,11 +4,14 @@ Reproductor musical con biblioteca propia, muros por álbum y exploración media
 IA y pgvector. Proyecto académico en desarrollo.
 
 P17 prepara [casos y criterios de evaluación musical](docs/EVALUACION_BUSQUEDA.md)
-con cinco fragmentos sintéticos originales y 18 consultas. Aún no hay búsqueda
-semántica. P20 prepara el adaptador de API; su prueba real está pendiente por
+con cinco fragmentos sintéticos originales y 18 consultas. P22 implementa búsqueda
+semántica; su validación real sigue pendiente. P20 prepara el adaptador de API; su prueba real está pendiente por
 créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: API P22 implementada; pruebas reales y calibración P20–P22 pendientes por créditos, por acuerdo del usuario.** Inicio, navegación,
+**Estado actual: P23 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** Explorar ofrece consulta, filtros,
+similares, fuentes y reproducción. La selección de citas con IA es opcional;
+Textual no consume proveedor y es el modo inicial. Ver [Exploración](docs/EXPLORACION.md)
+y [validación P23](docs/VALIDACION_P23.md). Revisión visual pendiente. Inicio, navegación,
 biblioteca visual de álbumes/canciones, búsqueda textual y detalle de álbum.
 Importación real de MP3, WAV PCM, FLAC, Ogg Vorbis y Ogg Opus, extracción de etiquetas/portadas
 y editor de metadatos con agrupación de álbumes, procedencia y control de revisión.
@@ -18,7 +21,7 @@ pausa, anterior/siguiente, avance y volumen. Playlists permiten crear, renombrar
 con apariencia de vinilo o tarjeta. P12 incorpora persistencia y API de muros independientes por álbum. P13 muestra la pared y permite cambiar su fondo con modos de edición/bloqueo.
 P14 permite añadir PNG/JPEG/GIF, seleccionar, mover y quitar objetos.
 P15 añade ancho/alto, giro, capas y selección de objetos tapados; su revisión visual
-de cierre sigue pendiente. La IA sigue pendiente. Ver [validación P15](docs/VALIDACION_P15.md).
+de cierre sigue pendiente. La prueba real de IA sigue pendiente. Ver [validación P15](docs/VALIDACION_P15.md).
 `health` y `ready` comprueban proceso y BD.
 
 P16 guarda la pared automáticamente tras una pausa al editar, conserva cambios
@@ -28,7 +31,7 @@ con confirmación. Ver [validación P16](docs/VALIDACION_P16.md).
 ## Inicio con Docker
 
 P22 añade API semántica/textual/híbrida y similares por pista con filtros. La
-pantalla de exploración y las explicaciones se completan en P23. Sin umbral
+pantalla de exploración y selección de citas se implementan en P23. Sin umbral
 calibrado, resultados son candidatos. Ver
 [recuperación](docs/RECUPERACION_SEMANTICA.md) y [validación P22](docs/VALIDACION_P22.md).
 

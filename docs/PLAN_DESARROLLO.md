@@ -536,6 +536,14 @@ tratan catálogo vacío/no indexado o falta de coincidencias útiles. Cubrir CA-
 
 ### [ ] P23 — Integrar exploración con IA y explicaciones fundamentadas
 
+**Implementación lista, 14 de noviembre de 2026; cierre real/visual pendiente.**
+Explorar, filtros, similares, fuentes versionadas, selección optativa de citas
+literales y reproducción de cola exacta disponibles. 213 pruebas backend/51 frontend y build
+aprobados. Proveedores simulados en bases aisladas; no llamadas reales por acuerdo
+previo. Sin prosa libre del modelo, con fallback registrado y revalidación tras
+red. Ver EXPLORACION.md y VALIDACION_P23.md. Mantener casilla abierta hasta
+evidencia real y recorrido visual; pendientes P20–P22 y audio siguen vigentes.
+
 **Depende de:** P10, P20, P22. **Commit:** `feat(explore): buscar por sensaciones y explicar recomendaciones`
 
 - Construir la sección separada con consulta, estados, resultados y reproducción.
@@ -688,9 +696,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** API P22 implementada; 197 pruebas backend/45 frontend y build aprobados. Cierre real y calibración P20–P22 pendientes por créditos y petición del usuario.
+- **Trabajo actual:** P23 implementado: Explorar, fuentes, selección de citas y reproducción. 213 pruebas backend/51 frontend y build aprobados. Cierre real/evaluación P20–P23 y revisión visual pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P23, interfaz de exploración y explicaciones fundamentadas. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
+- **Próximo bloque de implementación:** P24, favoritos, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

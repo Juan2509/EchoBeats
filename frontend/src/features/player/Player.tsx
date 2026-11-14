@@ -7,7 +7,7 @@ import type { PlayerState } from './controller'
 import { loadQueue } from './queue'
 
 type QueueContext = { path: string; label: string }
-type PlayerContextValue = { state: PlayerState; select: (track: Track, context: QueueContext, fallback: Track[]) => void; control: () => PlayerController | null }
+type PlayerContextValue = { state: PlayerState; select: (track: Track, context: QueueContext, fallback: Track[]) => void; selectSnapshot: (track: Track, queue: Track[], label: string) => void; control: () => PlayerController | null }
 const PlayerContext = createContext<PlayerContextValue | null>(null)
 export function usePlayer() {
   const player = useContext(PlayerContext)
@@ -56,7 +56,11 @@ export function PlayerProvider({ children, refresh }: { children: ReactNode; ref
       } finally { window.clearTimeout(timeout) }
     })()
   }
-  return <PlayerContext.Provider value={{ state, select, control: () => controller.current }}>
+  function selectSnapshot(track: Track, queue: Track[], label: string) {
+    pending.current?.abort()
+    controller.current?.startQueue(track,queue,label)
+  }
+  return <PlayerContext.Provider value={{ state, select, selectSnapshot, control: () => controller.current }}>
     {children}<audio ref={audio} preload="metadata" aria-hidden="true" />
   </PlayerContext.Provider>
 }

@@ -134,4 +134,5 @@ def similar(engine,settings,track_id,limit,album_id=None,playlist_id=None):
         if reference is None:raise metadata.MetadataError('reference_not_indexed','La pista de referencia necesita una ficha y un vector vigentes del modelo activo.',409)
         filters=track_filters(connection,album_id,playlist_id,exclude=track_id)
         results=ranked(connection,settings,filters,None,'reference',reference.embedding,limit)
-        return envelope(settings,None,'reference',limit,'ok' if results else 'no_matches',reference_track_id=track_id,query_usage=None,results=results)
+        return envelope(settings,None,'reference',limit,'ok' if results else 'no_matches',reference_track_id=track_id,
+            reference_description_version=reference.version,reference_content_hash=reference.content_hash,query_usage=None,results=results)

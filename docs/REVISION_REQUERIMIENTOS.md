@@ -1,5 +1,15 @@
 # Revisión de los requerimientos académicos
 
+## Cobertura incremental P23 — 14 de noviembre de 2026
+
+Explorar conecta recuperación y fichas con selección opcional de citas, fuentes
+versionadas y alternativa registrada. El contexto se acota y no contiene audio;
+se valida la evidencia y se revalida vigencia después de red. No se publica prosa
+libre ni se equipara similitud con confianza. Ver EXPLORACION.md y
+VALIDACION_P23.md. Proveedores simulados no certifican RAG con API real ni cierran
+los requisitos de evaluación; ese flujo sigue pendiente por acuerdo del usuario.
+Se conservan las decisiones pendientes sobre stack, despliegue y PDF/OCR.
+
 **Directriz posterior del usuario, 13 de noviembre de 2026:** incorporar desde
 ahora lo descrito en los requerimientos al desarrollo de EchoBeats. Esta revisión
 debe utilizarse para adaptar las próximas etapas y comprobar su cobertura;

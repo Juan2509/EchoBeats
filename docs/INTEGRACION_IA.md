@@ -119,6 +119,12 @@ consumido tokens. La disponibilidad/cuota/precios efectivos dependen de la cuent
 
 ## Continuidad
 
+P23 conecta el adaptador de generación solo tras solicitud explícita explain=true
+y candidatos recuperados. Envía consulta y extractos de hasta cinco fichas; es
+distinto de la prueba fija --live de P20. La UI informa consumo/datos y arranca
+en modo textual sin generación. No se ejecutó ese flujo con proveedor real durante
+el desarrollo por la instrucción de dejarlo pendiente. Ver EXPLORACION.md.
+
 P20 no añade tablas ni persiste vectores. P21 usa la clave base del proveedor
 `openai:text-embedding-3-small:dimensions=1536:float:v1` más `:description-v1`
 para identificar la receta de preparación del texto, versión/hash de ficha y

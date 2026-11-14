@@ -294,6 +294,17 @@ eliminada/cambiada durante la consulta se excluye o se vuelve a recuperar.
 
 ## 6. Cambios futuros y comprobación
 
+P23 efectivo: POST /explore/search añade explain=false (booleano estricto).
+POST /explore/similar acepta track_id/limit/album_id/playlist_id/explain para
+generación optativa; GET /tracks/{id}/similar conserva recuperación sin generación.
+La respuesta añade explanation_policy=literal_quotes_only, explanations_requested,
+generation_usage y explanation por resultado; explanation_source=recorded o
+generated_selection. Solo se publican citas literales ID/versión comprobados,
+nunca prosa libre del modelo. Fallo de generación conserva respuesta recuperada
+con alternativa/aviso. Revalidación posterior de versión/hash/modelo/filtros;
+referencia cambiada devuelve 409 reference_changed. Ver EXPLORACION.md.
+RF-14/CA-11 real y validación de pertinencia siguen pendientes por petición del usuario.
+
 P22 efectivo: POST /explore/search con query, limit (5 por defecto, 1–20), mode
 semantic/lexical/hybrid (hybrid por defecto), album_id/playlist_id opcionales.
 GET /tracks/{id}/similar con limit/filtros usa vector de referencia sin llamada

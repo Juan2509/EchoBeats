@@ -80,6 +80,11 @@ export class PlayerController {
     this.load(track)
     return this.generation
   }
+  startQueue(track: Track, queue: Track[], context: string) {
+    if (this.disposed) return
+    const token=this.start(track,context)
+    this.completeQueue(token,[...new Map(queue.map(item=>[item.id,item])).values()])
+  }
   private load(track: Track) {
     this.intent += 1; this.wantsPlay = false; this.endedPending = false
     this.audio.pause()

@@ -58,7 +58,7 @@ function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[
     <div><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><span>{artists(item)}</span>
       <a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a>
       <ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} />
-      <DescriptionEditor trackId={item.id} title={item.title} /></div>
+      <DescriptionEditor trackId={item.id} title={item.title} /><a href={`/explorar?similar=${item.id}`} onClick={event => { event.preventDefault(); navigate(`/explorar?similar=${item.id}`) }}>Buscar similares</a></div>
     <time aria-label={`Duración ${duration(item.duration_ms)}`}>{duration(item.duration_ms)}</time>
   </li>)}</ul>
 }

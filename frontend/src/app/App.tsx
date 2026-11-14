@@ -7,6 +7,7 @@ import { PlayerBar, PlayerProvider } from '../features/player/Player'
 
 import { PlaylistView } from '../features/playlists/Playlists'
 import { AIStatus } from '../features/descriptions/AIStatus'
+import { ExploreView } from '../features/explore/ExploreView'
 
 type Connection = 'checking' | 'connected' | 'error'
 export function App() {
@@ -60,11 +61,11 @@ export function App() {
     </header>
     {configuration && <aside className="settings" aria-label="Configuración local"><h2>Tu instalación local</h2><p>MP3, WAV PCM, FLAC, Ogg Vorbis y Opus · hasta 50 MiB por archivo · 20 archivos y 200 MiB por solicitud.</p><p>La importación y edición de etiquetas no envían tus canciones a servicios de IA.</p><p role="status">{connection === 'connected' ? 'Servidor conectado' : connection === 'checking' ? 'Comprobando conexión…' : 'No se pudo conectar con el servidor'}</p><button onClick={() => setAttempt(value => value + 1)}>Comprobar conexión</button><AIStatus /></aside>}
     <main id="content" ref={heading} tabIndex={-1}>
-      {path === '/' && <section className="hero"><p className="eyebrow">Una colección que se siente tuya</p><h1>Tu música.<br /><em>Tu espacio.</em></h1><p className="intro">Redescubre los discos que te acompañan. Reúne tu música y empieza a construir tu propio rincón para escucharla.</p><a className="button-link" href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Abrir mi biblioteca <span aria-hidden="true">↗</span></a><div className="pillars"><div><span>01</span><h2>Música propia</h2><p>Importa tus archivos de audio y conserva tu colección.</p></div><div><span>02</span><h2>Un lugar por álbum</h2><p>Consulta sus portadas, artistas y canciones.</p></div><div><span>03</span><h2>Nuevas conexiones</h2><p>Más adelante, explora tu música por sensaciones.</p></div></div></section>}
+      {path === '/' && <section className="hero"><p className="eyebrow">Una colección que se siente tuya</p><h1>Tu música.<br /><em>Tu espacio.</em></h1><p className="intro">Redescubre los discos que te acompañan. Reúne tu música y empieza a construir tu propio rincón para escucharla.</p><a className="button-link" href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Abrir mi biblioteca <span aria-hidden="true">↗</span></a><div className="pillars"><div><span>01</span><h2>Música propia</h2><p>Importa tus archivos de audio y conserva tu colección.</p></div><div><span>02</span><h2>Un lugar por álbum</h2><p>Consulta sus portadas, artistas y canciones.</p></div><div><span>03</span><h2>Nuevas conexiones</h2><p>Explora fichas y posibles coincidencias de tu colección.</p></div></div></section>}
       {path === '/biblioteca' && <Library refresh={refresh} navigate={navigate} search={search} />}
       {playlist && <PlaylistView key={playlist[1]} id={playlist[1]} navigate={navigate} onSaved={changed} onDirty={setPlaylistDirty} />}
       {album && <AlbumView key={album[1]} id={album[1]} refresh={refresh} navigate={navigate} onDirty={setWallDirty} />}
-      {path === '/explorar' && <section className="hero"><p className="eyebrow">Próximamente</p><h1>¿A qué suena<br />este momento?</h1><p className="intro">La exploración por sensaciones se incorporará cuando estén conectadas las fichas musicales, la API de IA y la búsqueda vectorial. Puedes seguir organizando tu biblioteca.</p><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Ir a mi música →</a></section>}
+      {path === '/explorar' && <ExploreView key={search} search={search} navigate={navigate} />}
       {!['/', '/biblioteca', '/explorar'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
       <div hidden={path !== '/biblioteca'}>
         <ImportPanel onImported={changed} />

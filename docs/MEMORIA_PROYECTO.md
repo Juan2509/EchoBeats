@@ -2,6 +2,21 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P23 — 14 de noviembre de 2026
+
+Explorar implementado con modos, filtros, similares, fuentes versionadas y cola
+exacta en reproductor compartido. Textual y sin generación por defecto; ninguna
+llamada ni reproducción automática. Selección de citas con IA explícita, máximo
+cinco fichas, sin audio. Solo citas literales verificadas; no se publica prosa
+libre. Fallos conservan descripciones registradas. Nueva instantánea tras red
+revalida fichas, referencia y filtros. Sin umbral calibrado son candidatos.
+213 pruebas backend/51 frontend y build aprobados. Sin llamadas reales por solicitud previa,
+sin migraciones/dependencias ni cambios en .env/índice/medios personales. Leer
+EXPLORACION.md y VALIDACION_P23.md. P20–P23 conservan cierre real/evaluación;
+revisión visual bloqueada por host de navegador y ventana minimizada. No cerrar
+criterios reales con proveedores simulados. Pendientes visuales/audio previos
+vigentes. Próxima implementación prevista P24; no se creó commit.
+
 ## Avance vigente: P22 — 13 de noviembre de 2026
 
 El usuario autorizó P22. API de recuperación exacta por coseno, textual/híbrida
