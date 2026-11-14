@@ -1,5 +1,11 @@
 # Fichas musicales estructuradas — P19
 
+Actualización P21: el editor incorpora estado y controles de indexación; GET/PUT
+actualizan el estado según vectores realmente almacenados. Un vector antiguo pasa
+a stale al corregir ficha/metadatos derivados. Guardar sigue sin llamar al proveedor.
+Consultar EMBEDDINGS.md y VALIDACION_P21.md; las pruebas reales quedan separadas
+de los vectores simulados de bases aisladas.
+
 Una ficha es información aportada con procedencia, no un análisis automático del
 audio. Puede estar incompleta sin impedir escuchar, editar metadatos o importar.
 P19 no consume APIs, no reconoce instrumentos por sonido y no genera embeddings.

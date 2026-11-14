@@ -7,6 +7,7 @@ from sqlalchemy import (
     Index, MetaData, String, Table, UniqueConstraint, Uuid, func, text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
+from app.models.vector import Vector1536
 
 metadata = MetaData(naming_convention={
     "ix": "ix_%(table_name)s_%(column_0_name)s",
@@ -146,13 +147,15 @@ processing_job = Table(
     Column('track_id', Uuid, ForeignKey('track.id', ondelete='RESTRICT'), nullable=False),
     Column('operation', String(32), nullable=False),
     Column('input_version', Integer, nullable=False),
+    Column('model_key', String(200), nullable=False, server_default=''),
+    Column('input_hash', String(64)),
     Column('status', String(16), nullable=False, server_default='pending'),
     Column('attempts', Integer, nullable=False, server_default='0'),
     Column('error_code', String(40)), Column('result', JSONB),
     Column('started_at', DateTime(timezone=True)), Column('finished_at', DateTime(timezone=True)),
     *timestamps(),
-    UniqueConstraint('track_id', 'operation', 'input_version'),
-    CheckConstraint("operation = 'prepare_metadata'", name='operation'),
+    UniqueConstraint('track_id', 'operation', 'input_version', 'model_key'),
+    CheckConstraint("operation IN ('prepare_metadata','index_description')", name='operation'),
     CheckConstraint("status IN ('pending','processing','completed','error','stale')", name='status'),
     CheckConstraint('input_version > 0', name='version'),
     CheckConstraint('attempts >= 0 AND attempts <= 3', name='attempts'),
@@ -175,4 +178,18 @@ description_revision = Table(
     Column('version', Integer, primary_key=True),
     Column('snapshot', JSONB, nullable=False),
     Column('created_at', DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+
+track_embedding = Table(
+    'track_embedding', metadata, identity(),
+    Column('description_id', Uuid, ForeignKey('track_description.id', ondelete='RESTRICT'), nullable=False),
+    Column('description_version', Integer, nullable=False),
+    Column('content_hash', String(64), nullable=False),
+    Column('model_key', String(200), nullable=False),
+    Column('input_format', String(32), nullable=False),
+    Column('embedding', Vector1536(), nullable=False),
+    Column('usage', JSONB, nullable=False),
+    Column('created_at', DateTime(timezone=True), nullable=False, server_default=func.now()),
+    UniqueConstraint('description_id', 'description_version', 'model_key'),
+    CheckConstraint('description_version > 0', name='version'),
 )

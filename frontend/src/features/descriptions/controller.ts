@@ -41,7 +41,7 @@ export class DescriptionController {
       if (!this.alive || this.pending !== abort) return
       if (abort.signal.aborted) throw new Error('No se pudo confirmar la operación.')
       const draft = result.record ? payload(result.record) : blank()
-      this.update({ record: result.record, draft, baseline: structuredClone(draft), etag: result.etag, needsReload: false, notice: write ? 'Ficha guardada. Sin embedding; la indexación se habilitará después.' : '' })
+      this.update({ record: result.record, draft, baseline: structuredClone(draft), etag: result.etag, needsReload: false, notice: write ? 'Ficha guardada. Consulta el estado de indexación de esta versión.' : '' })
     } catch (cause) {
       if (this.alive && this.pending === abort) this.update({ needsReload: this.state.needsReload || (write && (!(cause instanceof DescriptionError) || cause.status === 412 || cause.status >= 500)), error: cause instanceof DescriptionError ? cause.message : 'No se pudo confirmar la operación. Tu borrador se conserva; recarga para comprobar el estado.' })
     } finally { clearTimeout(timeout); if (this.pending === abort) this.update({ loading: false, saving: false }) }

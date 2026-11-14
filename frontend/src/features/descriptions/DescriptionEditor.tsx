@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { DescriptionController } from './controller'
 import type { Feature } from './controller'
+import { IndexPanel } from './IndexPanel'
 
 const names = { tempo_bpm: 'Tempo (BPM)', timbre: 'Timbre', instruments: 'Instrumentos', energy: 'Energía', mood: 'Emoción', genre: 'Género', context: 'Contexto', mode: 'Modo', percussion: 'Percusión', voice: 'Voz', note_density: 'Densidad de notas' }
 const sources = [['manual', 'Anotación manual'], ['verified', 'Verificado con fuente'], ['metadata', 'Metadatos existentes']]
@@ -33,7 +34,7 @@ function Editor({ trackId, title, close }: { trackId: string; title: string; clo
   return <dialog ref={dialog} className="description-dialog" aria-labelledby={`description-${trackId}`} onCancel={event => { event.preventDefault(); if (canClose()) close() }}>
     <h2 id={`description-${trackId}`}>Ficha musical: {title}</h2>
     <p className="note">Registra lo que conoces y su fuente. No se ha analizado el sonido mediante IA. Deja desconocido lo que no puedas respaldar; las interpretaciones se distinguen de los hechos.</p>
-    <p role="status">{state.loading ? 'Cargando ficha…' : state.saving ? 'Guardando ficha…' : dirty ? 'Cambios sin guardar' : state.notice || (state.record ? `Versión ${state.record.version} · sin embedding` : 'Sin ficha todavía')}</p>
+    <p role="status">{state.loading ? 'Cargando ficha…' : state.saving ? 'Guardando ficha…' : dirty ? 'Cambios sin guardar' : state.notice || (state.record ? `Versión ${state.record.version}` : 'Sin ficha todavía')}</p>
     {state.error && <p role="alert">{state.error}</p>}
     {state.record?.metadata_stale && <p role="alert">Los metadatos cambiaron desde que se guardó esta ficha. Revisa y corrige los datos derivados antes de indexarla.</p>}
     <form onSubmit={event => { event.preventDefault(); void controller?.save() }}>
@@ -52,10 +53,11 @@ function Editor({ trackId, title, close }: { trackId: string; title: string; clo
         </fieldset>)}
         <button type="button" className="secondary" disabled={state.draft.features.length >= 20} onClick={() => controller?.edit({ ...state.draft, features: [...state.draft.features, { name: 'timbre', value: '', source: 'manual', evidence: '', interpretation: false }] })}>Añadir atributo</button>
       </fieldset>
-      <p className="note">Guardar una corrección crea una nueva versión. No genera un embedding. Una descripción vacía conserva una ficha incompleta y no impide escuchar.</p>
+      <p className="note">Guardar una corrección crea una nueva versión y exige indexar esa versión por separado. Una descripción vacía conserva una ficha incompleta y no impide escuchar.</p>
       <button disabled={blocked || !dirty}>Guardar ficha</button>
       <button type="button" className="secondary" disabled={state.saving || state.loading} onClick={() => { if (!dirty || window.confirm('¿Descartar el borrador y recargar la ficha guardada?')) void controller?.load() }}>Recargar ficha guardada</button>
       <button type="button" className="secondary" disabled={state.saving} onClick={() => { if (canClose()) close() }}>Cerrar</button>
     </form>
+    {state.record&&!state.loading&&<IndexPanel trackId={trackId} version={state.record.version} locked={dirty||blocked||!!state.record.metadata_stale} />}
   </dialog>
 }

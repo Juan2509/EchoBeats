@@ -2,6 +2,19 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P21 — 13 de noviembre de 2026
+
+El usuario autorizó P21 aunque P20 conservara prueba real pendiente, y confirmó
+después: «Aún no; deja la prueba real pendiente» respecto a créditos API. No repetir
+llamadas mientras no se resuelva y se reanude esa prueba. P21 implementa pgvector
+1536, index_description en cola durable, versión/hash/modelo/receta description-v1,
+publicación atómica y controles/API de índice. Vectores viejos se conservan y no
+se presentan vigentes. 175 pruebas backend (ocho P21), 45 frontend y build aprobados,
+con proveedor simulado solo en bases aisladas. 0008 aplicada tras respaldo; ready
+y columna 1536 verificados. Cero vectores en principal; sin nuevas llamadas OpenAI.
+Leer EMBEDDINGS.md y VALIDACION_P21.md. P20/P21 no cerrados por falta de prueba real;
+UI pendiente por host no disponible. Próxima implementación prevista P22.
+
 ## Avance vigente: P20 — 13 de noviembre de 2026
 
 El usuario autorizó P20 y configuró OPENAI_API_KEY en .env privado; no registrar

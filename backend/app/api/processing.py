@@ -8,6 +8,7 @@ from sqlalchemy import select
 from app.api.metadata import engine_for
 from app.models.catalog import processing_job
 from app.services import processing
+from app.services import indexing, descriptions
 from app.services.metadata import require_track
 
 router = APIRouter()
@@ -31,7 +32,7 @@ def create(track_id: UUID, body: ProcessingCreate, request: Request):
 def listing(track_id: UUID, request: Request):
     with engine_for(request).connect() as connection:
         current = require_track(connection, track_id)
-        rows = connection.execute(select(processing_job).where(processing_job.c.track_id == track_id).order_by(processing_job.c.created_at.desc(), processing_job.c.id.desc()).limit(10))
+        rows = connection.execute(select(processing_job).where(processing_job.c.track_id == track_id, processing_job.c.operation == 'prepare_metadata').order_by(processing_job.c.created_at.desc(), processing_job.c.id.desc()).limit(10))
         return response({'items': [processing.public(row, current.revision) for row in rows], 'limit': 10})
 
 
@@ -39,9 +40,33 @@ def listing(track_id: UUID, request: Request):
 def get(job_id: UUID, request: Request):
     with engine_for(request).connect() as connection:
         row = processing.require_job(connection, job_id)
-        return response(processing.public(row, require_track(connection, row.track_id).revision))
+        record = descriptions.data(connection, row.track_id)[0] if row.operation == 'index_description' else None
+        version = record['version'] if record else require_track(connection, row.track_id).revision
+        result = processing.public(row, version)
+        if row.operation == 'index_description':
+            result['is_current'] = indexing.matching(record, row, indexing.model_key(request.app.state.settings))
+        return response(result)
 
 
 @router.post('/jobs/{job_id}/retry', status_code=202)
 def retry(job_id: UUID, request: Request):
+    with engine_for(request).connect() as connection:
+        row = processing.require_job(connection, job_id)
+    if row.operation == 'index_description':
+        return response(indexing.retry(engine_for(request), job_id, request.app.state.settings), 202)
     return response(processing.retry(engine_for(request), job_id), 202)
+
+
+class IndexCreate(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+
+@router.post('/tracks/{track_id}/index-jobs', status_code=202)
+def index(track_id: UUID, request: Request, body: IndexCreate | None = None):
+    return response(indexing.enqueue(engine_for(request), track_id, request.app.state.settings), 202)
+
+
+@router.get('/tracks/{track_id}/index-status')
+def index_status(track_id: UUID, request: Request):
+    with engine_for(request).connect() as connection:
+        return response(indexing.state(connection, track_id, request.app.state.settings))

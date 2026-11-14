@@ -119,8 +119,9 @@ consumido tokens. La disponibilidad/cuota/precios efectivos dependen de la cuent
 
 ## Continuidad
 
-P20 no añade tablas ni persiste vectores. P21 usará model_key
-`openai:text-embedding-3-small:dimensions=1536:float:v1`, versión/hash de ficha y
+P20 no añade tablas ni persiste vectores. P21 usa la clave base del proveedor
+`openai:text-embedding-3-small:dimensions=1536:float:v1` más `:description-v1`
+para identificar la receta de preparación del texto, versión/hash de ficha y
 trabajos durables; P22 deberá consultar con el mismo espacio; P23 evaluará citas
 y explicaciones con el protocolo P17. Cambiar modelo/dimensiones exige nueva
 configuración/índice y reindexación; no mezclar espacios incompatibles.

@@ -151,6 +151,16 @@ exacta y justificar índices aproximados con mediciones posteriores.
 
 ## 6. Etapas de creación y conservación
 
+P21 efectivo (0008_track_embeddings): track_embedding referencia ficha/versión,
+content_hash, model_key que incluye receta description-v1, input_format,
+vector(1536), usage y fecha. Unicidad ficha/versión/modelo. processing_job añade
+model_key (vacío en metadatos) e input_hash; unicidad pista/operación/versión/modelo.
+index_description interpreta input_version como versión de ficha. Publicación y
+finalización del trabajo son atómicas; la entrada antigua no reemplaza la actual.
+Conservar historial de vectores; no consultar espacios incompatibles ni versiones
+antiguas como vigentes. Downgrade rechaza vectores o trabajos de índice existentes.
+No hay ANN en esta etapa. Ver EMBEDDINGS.md.
+
 P19 efectivo (`0007_track_descriptions`): track_description tiene UUID estable,
 track_id único, version, text, features JSONB, source, source_details, content_hash
 y created_at/updated_at. description_revision usa PK(description_id,version),

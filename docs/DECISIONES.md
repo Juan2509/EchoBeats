@@ -224,6 +224,13 @@ Sin nuevas dependencias ni migración. Ver VALIDACION_P14.md.
 
 ## D09 — IA desacoplada de la escucha
 
+P21 materializa índice vector(1536), receta description-v1 incorporada a la clave,
+cola durable index_description y publicación atómica con verificación de entrada
+vigente. Reutiliza SQLAlchemy/psycopg y tipo pgvector sin dependencias adicionales;
+no añade ANN. Otra dimensión requiere cambio explícito del esquema. Proveedor
+simulado solo en pruebas aisladas; prueba real pendiente por acuerdo del usuario.
+Ver EMBEDDINGS.md y VALIDACION_P21.md. La búsqueda se implementa en P22.
+
 P20: OpenAI conforme a requerimientos; embedding text-embedding-3-small a 1536
 dimensiones y generación gpt-6-luna con Responses/JSON Schema y razonamiento none,
 verificados en documentación oficial. Adaptador REST con httpx ya bloqueado,

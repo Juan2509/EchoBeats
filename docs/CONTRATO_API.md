@@ -294,6 +294,16 @@ eliminada/cambiada durante la consulta se excluye o se vuelve a recuperar.
 
 ## 6. Cambios futuros y comprobación
 
+P21 efectivo: POST /tracks/{id}/index-jobs (202, sin cuerpo o {}), GET
+/tracks/{id}/index-status (200, no-store) y despacho de GET /jobs y retry para
+index_description. Modelo/versión/hash se capturan en servidor; entrada arbitraria
+no admitida. El trabajo conserva input_version de ficha, input_hash y model_key.
+GET de índice devuelve estado y trabajo, sin vector y sin consumo. GET/PUT ficha
+informan index_status real, incluido ready/stale; el historial permanece histórico.
+Reglas y errores completos en EMBEDDINGS.md. Las rutas de exploración siguen sin
+implementarse y la evidencia real P20/P21 sigue pendiente mientras falte resolver
+el último error de créditos. No presentar vectores de pruebas aisladas como API real.
+
 P20 efectivo: GET /ai/status (200, no-store) devuelve provider, enabled, configured,
 available, embedding_model, dimensions, generation_model, prompt_version,
 verification=not_checked y notice. No devuelve clave ni llama a OpenAI; available

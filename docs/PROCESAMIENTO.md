@@ -1,5 +1,11 @@
 # Procesamiento durable — P18
 
+Actualización P21: la cola admite también index_description con versión de ficha,
+hash/modelo y almacenamiento vectorial atómico. prepare_metadata conserva su
+semántica y listado independiente. El trabajador exclusivo atiende ambas operaciones;
+indexación espera con IA desactivada y no se reintenta automáticamente tras error.
+Ver EMBEDDINGS.md. P20/P21 conservan prueba real pendiente por petición del usuario.
+
 Operación disponible: **preparar metadatos existentes**. No extrae emociones,
 instrumentos ni géneros del sonido, no crea fichas P19, no genera embeddings ni
 consume APIs. No reescribe originales ni modifica campos manuales.

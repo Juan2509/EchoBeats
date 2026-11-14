@@ -496,6 +496,14 @@ gestionados. Los dobles de prueba no se presentan como integración real.
 
 ### [ ] P21 — Generar y almacenar embeddings reales
 
+Implementación lista el 13 de noviembre de 2026; cierre real pendiente por acuerdo
+del usuario (aún sin créditos API). Migración 0008 aplicada tras respaldo, cola de
+indexación y controles/API; pgvector real con proveedor simulado en pruebas aisladas.
+175 pruebas backend/45 frontend y build aprobados. Cero vectores de prueba en la
+principal; sin nuevas llamadas a OpenAI. Ver VALIDACION_P21.md y EMBEDDINGS.md.
+No marcar cerrado hasta comprobar vectores reales persistidos. P20 mantiene su
+pendiente; próxima implementación prevista P22, sin commit automático.
+
 **Depende de:** P04, P19, P20. **Commit:** `feat(embeddings): indexar fichas musicales en pgvector`
 
 - Crear migración vectorial con dimensiones coherentes con el modelo/configuración.
@@ -673,9 +681,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P20 implementado; 167 pruebas backend/45 frontend y build aprobados. Cierre real pendiente por credit_balance_exhausted. Ver VALIDACION_P20.md.
+- **Trabajo actual:** P21 implementado, con 175 pruebas backend/45 frontend y build aprobados. P20/P21 conservan cierre real pendiente por créditos API y decisión del usuario.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P21, tras cerrar prueba real de P20 con créditos API disponibles. No repetir llamadas mientras persista credit_balance_exhausted. Mantener pendientes visuales/audio.
+- **Próximo bloque de implementación:** P22, recuperación semántica; evidencia real P20/P21 pendiente. No repetir llamadas hasta resolver créditos y reanudar esa prueba. Mantener pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

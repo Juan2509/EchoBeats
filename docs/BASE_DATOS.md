@@ -1,5 +1,10 @@
 # PostgreSQL y pgvector — Operación local
 
+P21 añade 0008_track_embeddings: vector(1536) e identidad de modelo/entrada para
+trabajos de índice. Aplicada tras respaldo privado desde 0007. No se borran medios
+ni trabajos anteriores; downgrade protegido si hay vectores o trabajos de índice.
+La base principal se comprobó sin vectores ficticios. Ver VALIDACION_P21.md.
+
 P19 añade `0007_track_descriptions`: fichas actuales e historial versionado. Se
 aplicó con respaldo privado previo desde 0006, sin modificar medios. El downgrade
 rechaza retirar fichas existentes. Ver VALIDACION_P19.md para evidencia y respaldo.

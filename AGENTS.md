@@ -1,5 +1,15 @@
 # EchoBeats: contexto del proyecto
 
+P21 implementa almacenamiento pgvector(1536), cola index_description y controles.
+Leer `docs/EMBEDDINGS.md` y `docs/VALIDACION_P21.md`. 0008 aplicada tras respaldo,
+175 pruebas backend/45 frontend y build aprobados. Proveedor simulado solo en BD
+aisladas; principal sin vectores de prueba. El usuario confirmó falta de créditos y
+pidió dejar pendiente la prueba real: no repetir llamadas sin resolver/reanudar.
+P20/P21 no cerrados. Clave de índice añade :description-v1 al model_key P20;
+no mezclar espacios/recetas/versiones. Publicación y finalización deben ser atómicas,
+con CAS por intento y versión/hash/elegibilidad/modelo. Conservar historial.
+Próxima implementación prevista P22; mantener revisiones visuales/audio pendientes.
+
 P20 implementado con cierre real pendiente por OpenAI credit_balance_exhausted.
 Leer `docs/INTEGRACION_IA.md` y `docs/VALIDACION_P20.md`. Clave en .env privado,
 nunca mostrarla/versionarla ni copiarla al frontend. API de estado no consume ni

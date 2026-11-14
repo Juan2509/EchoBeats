@@ -24,6 +24,13 @@ pertenecen al caso documental usado para explicar la arquitectura.
 
 ## Relación con EchoBeats
 
+Actualización P21: almacenamiento pgvector, indexación asíncrona de fichas,
+versiones/modelo/receta y prevención de duplicados implementados. Pruebas PostgreSQL
+reales con proveedor simulado aprobadas; no equivalen a vectores reales del proveedor.
+El usuario deja pendiente esa prueba por créditos API. Se incorpora estructura
+de indexación/compatibilidad, sin declarar aún cumplidos API real, RAG ni recuperación
+híbrida. Ver EMBEDDINGS.md y VALIDACION_P21.md.
+
 Actualización P20: adaptador OpenAI para embeddings/generación, configuración
 privada, validación y manejo de fallos preparados. 167 pruebas backend, 45 frontend
 y build aprobados; intentos reales rechazados por credit_balance_exhausted, sin

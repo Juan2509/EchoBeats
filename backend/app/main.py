@@ -29,7 +29,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        worker = ProcessingWorker(app.state.database_engine) if config.processing_worker_enabled and app.state.database_engine is not None else None
+        worker = ProcessingWorker(app.state.database_engine, settings=config) if config.processing_worker_enabled and app.state.database_engine is not None else None
         if worker is not None:
             worker.start()
         try:

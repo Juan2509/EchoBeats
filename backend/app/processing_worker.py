@@ -4,13 +4,16 @@ from threading import Event, Thread
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import processing
+from app.services import indexing
+from app.integrations.ai import AIError, OpenAIProvider
 
 logger = logging.getLogger(__name__)
 
 
 class ProcessingWorker:
-    def __init__(self, engine, interval=1):
+    def __init__(self, engine, interval=1, settings=None, provider_factory=OpenAIProvider):
         self.engine, self.interval = engine, interval
+        self.settings, self.provider_factory = settings, provider_factory
         self.stop_event = Event()
         self.thread = Thread(target=self.run, name='echobeats-processing', daemon=True)
 
@@ -35,7 +38,20 @@ class ProcessingWorker:
                             owner.execute(text('SELECT 1'))
                             claimed = processing.claim(self.engine)
                             if claimed is None:
+                                claimed = indexing.claim(self.engine, self.settings)
+                            if claimed is None:
                                 self.stop_event.wait(self.interval)
+                                continue
+                            if claimed.operation == 'index_description':
+                                try:
+                                    result = indexing.prepare(self.engine, claimed, self.settings, self.provider_factory)
+                                    indexing.finish(self.engine, claimed, self.settings, result)
+                                except AIError as exc:
+                                    indexing.finish(self.engine, claimed, self.settings, error_code=exc.code)
+                                except SQLAlchemyError:
+                                    raise
+                                except Exception:
+                                    indexing.finish(self.engine, claimed, self.settings, error_code='processing_failed')
                                 continue
                             try:
                                 result = processing.prepare(self.engine, claimed)

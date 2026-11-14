@@ -10,6 +10,9 @@ MESSAGES = {
     'input_changed': 'Los metadatos cambiaron. Inicia una preparación con la versión actual.',
     'processing_failed': 'No se pudo preparar la información. Puedes reintentar sin importar de nuevo.',
 }
+from app.integrations.ai import MESSAGES as AI_MESSAGES
+MESSAGES.update(AI_MESSAGES)
+MESSAGES['index_input_changed'] = 'La ficha o el modelo cambió; solicita la indexación actual.'
 
 
 def public(row, current_version=None):
@@ -56,7 +59,7 @@ def retry(engine, job_id):
 def claim(engine):
     """Adquisición atómica; orden de bloqueos pista → trabajo, igual que retry."""
     with engine.begin() as connection:
-        candidates = connection.execute(select(job.c.id, job.c.track_id).where(job.c.status == 'pending').order_by(job.c.created_at, job.c.id).limit(32)).all()
+        candidates = connection.execute(select(job.c.id, job.c.track_id).where(job.c.status == 'pending', job.c.operation == 'prepare_metadata').order_by(job.c.created_at, job.c.id).limit(32)).all()
         for candidate in candidates:
             current = connection.execute(select(track).where(track.c.id == candidate.track_id).with_for_update(skip_locked=True)).first()
             if current is None:
