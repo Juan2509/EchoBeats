@@ -563,6 +563,13 @@ si así se cerró en P01.
 
 ### [ ] P24 — Guardar favoritos
 
+**Implementación lista, 14 de noviembre de 2026; cierre visual pendiente.**
+Favoritos persistentes con botones compartidos, listado y reproducción filtrada.
+0009 aplicada tras respaldo; 222 pruebas backend/57 frontend y build aprobados.
+Marcado/desmarcado verificados en BD aisladas al reabrir aplicación. Sin historial
+ni cambios de ranking. Ver FAVORITOS.md y VALIDACION_P24.md; mantener casilla
+abierta hasta comprobar coherencia visual entre vistas. Pendientes previos vigentes.
+
 **Depende de:** P10, P05. **Commit:** `feat(favorites): guardar y consultar canciones favoritas`
 
 - Crear persistencia y controles para marcar/desmarcar favoritos.
@@ -696,9 +703,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P23 implementado: Explorar, fuentes, selección de citas y reproducción. 213 pruebas backend/51 frontend y build aprobados. Cierre real/evaluación P20–P23 y revisión visual pendientes.
+- **Trabajo actual:** P24 implementado: favoritos compartidos y lista/cola filtrada. 222 pruebas backend/57 frontend y build aprobados. Cierre visual P24 y pendientes visuales/audio y reales P20–P23 conservados.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P24, favoritos, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
+- **Próximo bloque de implementación:** P25, preferencias explícitas en recomendaciones, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

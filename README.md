@@ -8,7 +8,11 @@ con cinco fragmentos sintéticos originales y 18 consultas. P22 implementa búsq
 semántica; su validación real sigue pendiente. P20 prepara el adaptador de API; su prueba real está pendiente por
 créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P23 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** Explorar ofrece consulta, filtros,
+**Estado actual: P24 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** Favoritos disponibles en biblioteca,
+playlists, reproductor y Explorar, con lista en **Biblioteca → Favoritos**.
+Persisten tras reiniciar; todavía no cambian el ranking. Ver [favoritos](docs/FAVORITOS.md)
+y [validación P24](docs/VALIDACION_P24.md); revisión visual pendiente.
+Explorar ofrece consulta, filtros,
 similares, fuentes y reproducción. La selección de citas con IA es opcional;
 Textual no consume proveedor y es el modo inicial. Ver [Exploración](docs/EXPLORACION.md)
 y [validación P23](docs/VALIDACION_P23.md). Revisión visual pendiente. Inicio, navegación,

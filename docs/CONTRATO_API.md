@@ -1,5 +1,14 @@
 # Contrato inicial de API de EchoBeats
 
+## Actualización efectiva P24 — Favoritos
+
+GET/PUT `/api/v1/tracks/{track_id}/favorite` devuelve `{track_id,favorite,created_at}`.
+PUT recibe `{favorite: boolean}` estricto y aplica ese estado idempotentemente,
+sin alternancia ni historial. GET `/api/v1/favorites` devuelve página de pistas
+completas filtradas por q, limit 1–100 y offset >=0; orden título/ID. Sin caché.
+404 pista desconocida, 422 datos inválidos, 403 origen de escritura ajeno,
+503 BD no disponible. Usuario local único. Contrato y concurrencia en FAVORITOS.md.
+
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
 P03 implementó health, P04 ready y P06 imports. P07 incorpora lectura/edición de
 pistas y álbumes, listas paginadas de selección, extracción y assets de portada.

@@ -1,5 +1,13 @@
 # Decisiones técnicas de EchoBeats
 
+## Incremento P24 — Preferencia explícita local
+
+Guardar favoritos en tabla separada, sin modificar revisión de pista ni historial
+de escucha. PUT de estado deseado idempotente con bloqueo por pista; estado de UI
+compartido, confirmado y sin reintentos automáticos de escritura. Resultado incierto
+exige consulta. Revalidar al enfocar ventana; último estado escrito entre sesiones,
+sin push ni cuentas. No emplear la señal en recuperación hasta P25. Ver FAVORITOS.md.
+
 Fecha: 12 de noviembre de 2026. Entregable P02.
 Estado: decisiones iniciales de trabajo para implementar P03 en adelante.
 Son elecciones de diseño adoptadas en este paso, revisables con el usuario;

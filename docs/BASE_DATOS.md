@@ -1,5 +1,9 @@
 # PostgreSQL y pgvector — Operación local
 
+P24 añade 0009_favorites (track_id único/FK y created_at), aplicada tras respaldo
+desde 0008. No modifica catálogo ni medios; downgrade rechaza preferencias
+existentes. Ver FAVORITOS.md y VALIDACION_P24.md. No usar principal para tests.
+
 P21 añade 0008_track_embeddings: vector(1536) e identidad de modelo/entrada para
 trabajos de índice. Aplicada tras respaldo privado desde 0007. No se borran medios
 ni trabajos anteriores; downgrade protegido si hay vectores o trabajos de índice.

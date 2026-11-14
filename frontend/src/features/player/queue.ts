@@ -14,7 +14,8 @@ export async function loadQueue(path: string, signal: AbortSignal, fetcher: type
   while (queue.length < total) {
     const params = new URLSearchParams(path.split('?')[1])
     params.set('limit', '100'); params.set('offset', String(queue.length))
-    const response = await fetcher(`/api/v1/tracks?${params}`, { signal, cache: 'no-store' })
+    const endpoint = path.split('?')[0] === '/favorites' ? 'favorites' : 'tracks'
+    const response = await fetcher(`/api/v1/${endpoint}?${params}`, { signal, cache: 'no-store' })
     if (!response.ok) throw new Error('queue_unavailable')
     const page: { items: Track[]; total: number } = await response.json()
     if (!Array.isArray(page.items) || !Number.isSafeInteger(page.total) || page.total < 0) throw new Error('invalid_queue')

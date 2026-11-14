@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ExploreController } from './controller'
 import { usePlayer } from '../player/Player'
+import { FavoriteButton } from '../favorites/Favorites'
 import { Cover, useRead, artists } from '../library/Library'
 import type { Track } from '../../shared/api/metadata'
 import { DescriptionEditor } from '../descriptions/DescriptionEditor'
@@ -62,6 +63,7 @@ export function ExploreView({ search, navigate }: { search: string; navigate: (p
       <ol className="explore-results">{data.results.map(item=><li key={item.track.id}><article className="explore-result">
         <div className="explore-result-heading"><Cover url={item.track.cover_url} title={item.track.title} /><div><h3>{item.track.title}</h3><p>{artists(item.track)}</p><a href={`/albumes/${item.track.album_id}`} onClick={e=>{e.preventDefault();navigate(`/albumes/${item.track.album_id}`)}}>{item.track.album_title}</a></div>
           <button aria-label={`Reproducir ${item.track.title}`} onClick={()=>player.selectSnapshot(item.track,queue,'Resultados de Explorar')}>Escuchar</button></div>
+        <FavoriteButton trackId={item.track.id} title={item.track.title} />
         <h4>Qué dice su ficha</h4><p className="note">{item.explanation_source==='generated_selection'?'Fragmentos seleccionados por IA y comprobados contra la ficha':'Descripción registrada · alternativa sin generación'} · versión {item.description.version}</p>
         {item.evidence.map((citation,index)=><blockquote key={index}><p>{citation.quote}</p><cite>Ficha de {item.track.title}, versión {citation.version}</cite></blockquote>)}
         <details><summary>Ver ficha, atributos y procedencia</summary><p>Fuente: {sourceLabels[item.description.source]??item.description.source}</p><p>{item.description.text}</p><p>{item.description.source_details}</p>

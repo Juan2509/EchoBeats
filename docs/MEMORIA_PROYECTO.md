@@ -2,6 +2,21 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P24 — 14 de noviembre de 2026
+
+Favoritos locales implementados, con botones compartidos en biblioteca/álbum,
+playlists, reproductor y Explorar. Listado Biblioteca → Favoritos con búsqueda,
+páginas y cola filtrada. Sin cambios de ranking ni historial de escucha. Estado
+confirmado, PUT idempotente, sin reintentos automáticos ni éxito optimista; ante
+respuesta incierta consultar antes de otro cambio. Al reenfocar se revalida estado.
+0009_favorites aplicada tras respaldo privado pre_p24_b4bb939c. 222 pruebas backend,
+57 frontend y build aprobados. No se alteraron favoritos personales durante las
+pruebas, medios, vectores ni .env; IA desactivada y sin llamadas reales.
+Docker encontrado en Programs/DockerDesktop del usuario; no se instaló software.
+Leer FAVORITOS.md y VALIDACION_P24.md. Revisión visual/teclado pendiente por falta
+de node_repl; conservar pendientes anteriores y P20–P23 reales. Próximo P25,
+cuando el usuario lo solicite. Sin commit creado.
+
 ## Avance vigente: P23 — 14 de noviembre de 2026
 
 Explorar implementado con modos, filtros, similares, fuentes versionadas y cola

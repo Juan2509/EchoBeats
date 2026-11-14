@@ -5,6 +5,7 @@ import defaultCover from '../../shared/assets/default-cover.svg'
 import { initialPlayer, PlayerController } from './controller'
 import type { PlayerState } from './controller'
 import { loadQueue } from './queue'
+import { FavoriteButton } from '../favorites/Favorites'
 
 type QueueContext = { path: string; label: string }
 type PlayerContextValue = { state: PlayerState; select: (track: Track, context: QueueContext, fallback: Track[]) => void; selectSnapshot: (track: Track, queue: Track[], label: string) => void; control: () => PlayerController | null }
@@ -76,7 +77,7 @@ export function PlayerBar({ navigate }: { navigate: (path: string) => void }) {
   return <section className="player-bar" aria-label="Reproductor de música">
     <div className="player-track">{track && <img src={track.cover_url ?? defaultCover} alt="" onError={event => { if (!event.currentTarget.src.endsWith(defaultCover)) event.currentTarget.src = defaultCover }} />}
       <div><p className="player-status" role="status">{status}</p>{track ? <><strong>{track.title}</strong><span>{track.artists.map(item => item.name).join(', ') || 'Artista desconocido'}</span>
-        <a href={`/albumes/${track.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{track.album_title}</a></> : <span>Elige una canción en tu biblioteca.</span>}</div></div>
+        <a href={`/albumes/${track.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{track.album_title}</a><FavoriteButton trackId={track.id} title={track.title} /></> : <span>Elige una canción en tu biblioteca.</span>}</div></div>
     <div className="player-controls"><div className="transport">
       <button aria-label={state.index === 0 ? 'Volver al inicio de la canción' : 'Canción anterior'} disabled={!track || state.pendingQueue} onClick={() => control()?.previous()}>◀◀</button>
       <button className="play-primary" aria-label={state.playing || state.loading ? 'Pausar' : 'Reproducir'} disabled={!track} onClick={() => control()?.toggle()}>{state.playing || state.loading ? 'Ⅱ' : '▶'}</button>

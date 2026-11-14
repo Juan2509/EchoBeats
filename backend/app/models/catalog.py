@@ -114,6 +114,12 @@ playlist_track = Table(
     UniqueConstraint("playlist_id", "position"), CheckConstraint("position >= 0", name="position"),
 )
 
+favorite = Table(
+    'favorite', metadata,
+    Column('track_id', Uuid, ForeignKey('track.id', ondelete='RESTRICT'), primary_key=True),
+    Column('created_at', DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+
 
 WALL_DEFAULT_BACKGROUND = "#242038"
 wall = Table(

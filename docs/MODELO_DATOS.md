@@ -183,7 +183,10 @@ Downgrade se rechaza si hay trabajos. Ver PROCESAMIENTO.md para transiciones.
 P05 crea catálogo, recursos y playlists; P12 añade muros/elementos; P18 trabajos;
 P19 fichas; P21 embeddings. Crear el muro al crear un álbum se incorpora al
 servicio de álbumes en P12, incluyendo migración para álbumes preexistentes.
-P24 añade favoritos si se habilita; historial y conversaciones no se crean ahora.
+P24 habilita favorite(track_id UUID PK/FK RESTRICT, created_at timestamptz),
+una fila por pista del usuario local. Sin cuentas ni historial de escucha;
+marcar/desmarcar no cambia track.revision ni fichas/vectores. Ver FAVORITOS.md.
+Historial y conversaciones no se crean ahora.
 
 No implementar DELETE de pistas/álbumes en el MVP inicial. Relaciones a archivos
 compartidos se protegen con RESTRICT; eliminación de playlist retira sus vínculos

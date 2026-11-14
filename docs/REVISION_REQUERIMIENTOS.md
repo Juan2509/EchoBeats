@@ -1,5 +1,12 @@
 # Revisión de los requerimientos académicos
 
+## Cobertura incremental P24 — 14 de noviembre de 2026
+
+Persistencia de favoritos explícitos, controles compartidos y consulta paginada.
+Preparan la señal de preferencias de RF-17; su uso en recomendaciones y evaluación
+corresponde a P25 y no se considera cumplido por almacenar corazones. Sin historial
+implícito, consumo de IA ni cambios de stack/tenant. Evidencia en VALIDACION_P24.md.
+
 ## Cobertura incremental P23 — 14 de noviembre de 2026
 
 Explorar conecta recuperación y fichas con selección opcional de citas, fuentes

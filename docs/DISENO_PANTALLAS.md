@@ -1,5 +1,14 @@
 # Pantallas y flujos de EchoBeats
 
+## Incremento P24 — Favoritos
+
+Biblioteca incorpora vista Favoritos con búsqueda, páginas, vacío y reproducción
+de su cola filtrada. Corazón accesible con aria-pressed y nombre de canción en
+biblioteca/álbum, playlists, reproductor y Explorar. Controles de una misma pista
+comparten estado confirmado; guardado bloqueado y error incierto con consulta
+explícita. La acción no navega ni inicia audio. No cambia la personalización del
+muro. Recorrido visual/teclado pendiente; ver VALIDACION_P24.md.
+
 P02 · 12 de noviembre de 2026. Wireframes de baja fidelidad, sin implementación.
 La composición es funcional; colores, tipografía e identidad visual final se
 refinarán durante la interfaz sin alterar los recorridos del [alcance](ALCANCE_MVP.md).

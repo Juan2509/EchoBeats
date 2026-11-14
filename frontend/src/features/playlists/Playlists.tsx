@@ -3,6 +3,7 @@ import { allMetadata, editOptions, metadataRequest } from '../../shared/api/meta
 import type { Track } from '../../shared/api/metadata'
 import { Cover, Pagination, ReadState, useRead } from '../library/Library'
 import { usePlayer } from '../player/Player'
+import { FavoriteButton } from '../favorites/Favorites'
 
 type Navigate = (path: string) => void
 export type Playlist = { id: string; name: string; appearance: 'vinyl' | 'image'; image_asset_id: string | null; image_url: string | null; revision: number; track_count: number; items: Track[] }
@@ -90,7 +91,7 @@ export function PlaylistView({ id, navigate, onSaved, onDirty }: { id: string; n
         <label>Imagen PNG o JPEG (hasta 5 MiB)<input type="file" accept="image/png,image/jpeg" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) { if (file.size > 5 * 1024 * 1024) setError('La imagen supera 5 MiB.'); else void write(file) } }} /></label>
         <button type="button" disabled={!item.image_asset_id} onClick={() => void write(null)}>Usar imagen predeterminada</button>
         <h2>Canciones y orden</h2><p>Los botones Subir y Bajar cambian el orden. Quitar conserva la canción en su álbum.</p>
-        {!songs.length && <p>Esta playlist está vacía.</p>}<ol className="playlist-songs">{songs.map((song, index) => <li key={song.id}><span>{song.title} · {song.album_title}</span><div>
+        {!songs.length && <p>Esta playlist está vacía.</p>}<ol className="playlist-songs">{songs.map((song, index) => <li key={song.id}><span>{song.title} · {song.album_title}</span><FavoriteButton trackId={song.id} title={song.title} /><div>
           <button type="button" aria-label={`Reproducir ${song.title} en la playlist guardada`} disabled={dirty} onClick={() => player.select(song, { path: `/playlists/${id}`, label: item.name }, item.items)}>▶</button>
           <button type="button" aria-label={`Subir ${song.title}`} disabled={index === 0} onClick={() => reorder(index, -1)}>Subir</button><button type="button" aria-label={`Bajar ${song.title}`} disabled={index === songs.length - 1} onClick={() => reorder(index, 1)}>Bajar</button>
           <button type="button" aria-label={`Quitar ${song.title}`} onClick={() => { setSongs(songs.filter(value => value.id !== song.id)); setDirty(true) }}>Quitar</button></div></li>)}</ol>

@@ -8,6 +8,7 @@ import { PlayerBar, PlayerProvider } from '../features/player/Player'
 import { PlaylistView } from '../features/playlists/Playlists'
 import { AIStatus } from '../features/descriptions/AIStatus'
 import { ExploreView } from '../features/explore/ExploreView'
+import { FavoritesProvider } from '../features/favorites/Favorites'
 
 type Connection = 'checking' | 'connected' | 'error'
 export function App() {
@@ -54,7 +55,7 @@ export function App() {
     return () => { disposed = true; controller.abort(); window.clearTimeout(timeout) }
   }, [attempt])
   const changed = () => setRefresh(value => value + 1)
-  return <PlayerProvider refresh={refresh}><div className="workspace">
+  return <FavoritesProvider><PlayerProvider refresh={refresh}><div className="workspace">
     <a className="skip-link" href="#content">Saltar al contenido</a>
     <header className="site-header"><a className="brand" href="/" onClick={event => { event.preventDefault(); navigate('/') }}><span className="mark" aria-hidden="true">◉</span> EchoBeats</a>
       <nav aria-label="Navegación principal">{[['/', 'Inicio'], ['/biblioteca', 'Biblioteca'], ['/explorar', 'Explorar']].map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={event => { event.preventDefault(); navigate(href) }}>{label}</a>)}<button className="secondary" aria-expanded={configuration} onClick={() => setConfiguration(value => !value)}>Configuración</button></nav>
@@ -74,5 +75,5 @@ export function App() {
     </main>
     <footer>EchoBeats <span>Tu colección personal · Tu música, tu espacio</span></footer>
     <PlayerBar navigate={navigate} />
-  </div></PlayerProvider>
+  </div></PlayerProvider></FavoritesProvider>
 }

@@ -2,7 +2,7 @@
 
 from sqlalchemy import func, or_, select
 
-from app.models.catalog import album, album_artist, artist, playlist, track, track_artist
+from app.models.catalog import album, album_artist, artist, playlist, track, track_artist, favorite
 from app.services import metadata
 
 
@@ -26,9 +26,11 @@ def album_filter(query):
     return or_(matches(album.c.title, query), album.c.id.in_(credits), album.c.id.in_(songs))
 
 
-def page(connection, kind, limit, offset, query='', album_id=None, include_empty_system=True):
+def page(connection, kind, limit, offset, query='', album_id=None, include_empty_system=True, favorites_only=False):
     table = {'tracks': track, 'albums': album, 'playlists': playlist}[kind]
     statement = select(table.c.id)
+    if favorites_only:
+        statement = statement.where(track.c.id.in_(select(favorite.c.track_id)))
     if kind == 'albums' and not include_empty_system:
         statement = statement.where(or_(album.c.system_key.is_(None), album.c.id.in_(select(track.c.album_id))))
     if query:

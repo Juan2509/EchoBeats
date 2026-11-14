@@ -94,6 +94,13 @@ h1 { font-size: clamp(2.4rem, 5vw, 4.3rem); letter-spacing: -.045em; overflow-wr
 .track-list li > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .track-list span { display: block; color: #bbc4af; font-size: .9rem; margin: 5px 0; }
 .track-list a { font-size: .85rem; }.track-list time { flex-shrink: 0; color: #c5ceba; font-variant-numeric: tabular-nums; }
+.favorite-control { display: inline-flex; flex-direction: column; gap: 6px; max-width: 100%; }
+.favorite-control small { max-width: 28ch; overflow-wrap: anywhere; }
+.favorite-button { margin: 0; min-height: 44px; white-space: normal; }
+.favorite-button[aria-pressed=true] { color: #202719; background: #d4e6ad; }
+.track-list .favorite-control { display: flex; align-items: flex-start; margin-top: 10px; }
+.view-switch { flex-wrap: wrap; }
+.player-track .favorite-control { margin-top: 8px; }
 .album-heading { display: flex; align-items: center; gap: 32px; margin: 32px 0 48px; }.album-heading .cover { width: min(30%, 240px); flex-shrink: 0; }.album-heading h1 { font-size: clamp(2rem, 4vw, 4rem); }
 .pagination { display: flex; align-items: center; gap: 18px; margin: 24px 0; }.pagination button { margin: 0; }
 .empty-state { padding: 32px; border: 1px dashed #687354; border-radius: 12px; margin: 24px 0; line-height: 1.6; }

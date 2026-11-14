@@ -6,6 +6,7 @@ import { WallView } from '../walls/WallView'
 import { usePlayer } from '../player/Player'
 import { ProcessingPanel } from '../processing/ProcessingPanel'
 import { DescriptionEditor } from '../descriptions/DescriptionEditor'
+import { FavoriteButton, useFavoritesRevision } from '../favorites/Favorites'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 type Navigate = (path: string) => void
@@ -58,15 +59,16 @@ function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[
     <div><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><span>{artists(item)}</span>
       <a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a>
       <ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} />
-      <DescriptionEditor trackId={item.id} title={item.title} /><a href={`/explorar?similar=${item.id}`} onClick={event => { event.preventDefault(); navigate(`/explorar?similar=${item.id}`) }}>Buscar similares</a></div>
+      <DescriptionEditor trackId={item.id} title={item.title} /><a href={`/explorar?similar=${item.id}`} onClick={event => { event.preventDefault(); navigate(`/explorar?similar=${item.id}`) }}>Buscar similares</a><FavoriteButton trackId={item.id} title={item.title} /></div>
     <time aria-label={`Duración ${duration(item.duration_ms)}`}>{duration(item.duration_ms)}</time>
   </li>)}</ul>
 }
 
 export function Library({ refresh, navigate, search }: { refresh: number; navigate: Navigate; search: string }) {
+  const favoritesRevision = useFavoritesRevision()
   const params = new URLSearchParams(search)
   const query = params.get('q') ?? ''
-  const view = params.get('vista') === 'playlists' ? 'playlists' : params.get('vista') === 'canciones' ? 'canciones' : 'albumes'
+  const view = params.get('vista') === 'favoritos' ? 'favoritos' : params.get('vista') === 'playlists' ? 'playlists' : params.get('vista') === 'canciones' ? 'canciones' : 'albumes'
   const rawOffset = Number(params.get('offset') ?? '0')
   const offset = Number.isSafeInteger(rawOffset) && rawOffset >= 0 ? rawOffset : 0
   const [draft, setDraft] = useState(query)
@@ -75,7 +77,7 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
     const next = new URLSearchParams({ vista: nextView, q: nextQuery, offset: String(nextOffset) })
     navigate(`/biblioteca?${next}`)
   }
-  const result = useRead<Page<Album | Track>>(`/${view === 'albumes' ? 'albums' : 'tracks'}?${new URLSearchParams({ q: query, limit: '24', offset: String(offset), include_empty_system: 'false' })}`, refresh, view !== 'playlists')
+  const result = useRead<Page<Album | Track>>(`/${view === 'albumes' ? 'albums' : view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query, limit: '24', offset: String(offset), include_empty_system: 'false' })}`, refresh + (view === 'favoritos' ? favoritesRevision : 0), view !== 'playlists')
   return <section aria-labelledby="library-title">
     <p className="eyebrow">Tus discos, tus recuerdos</p><h1 id="library-title">Mi biblioteca</h1>
     <p className="intro">Un espacio para toda la música que has hecho tuya.</p>
@@ -85,13 +87,15 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
       {query && <button type="button" className="secondary" onClick={() => { setDraft(''); move(view, '') }}>Limpiar búsqueda</button>}
     </form>
     <div className="view-switch" aria-label="Mostrar colección"><button aria-pressed={view === 'albumes'} onClick={() => move('albumes')}>Álbumes</button><button aria-pressed={view === 'canciones'} onClick={() => move('canciones')}>Canciones</button><button aria-pressed={view === 'playlists'} onClick={() => move('playlists')}>Playlists</button></div>
+    <div className="view-switch"><button aria-pressed={view === 'favoritos'} onClick={() => move('favoritos')}>♥ Favoritos</button></div>
+    {view === 'favoritos' && <p className="note">Canciones que guardaste expresamente. Puedes marcarlas en la biblioteca, el reproductor o Explorar. Todavía no cambian el orden de las recomendaciones.</p>}
     {view === 'playlists' && <PlaylistLibrary refresh={refresh} navigate={navigate} search={search} />}
     {view !== 'playlists' && <ReadState {...result} />}
     {view !== 'playlists' && result.data && <><p role="status" className="note">{result.data.total} {view === 'albumes' ? 'álbumes' : 'canciones'}{query ? ` para «${query}»` : ' en tu colección'}</p>
-      {!result.data.items.length && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : 'Importa tus archivos de audio para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
+      {!result.data.items.length && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : view === 'favoritos' ? 'Todavía no guardaste favoritos' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : view === 'favoritos' ? 'Pulsa el corazón de una canción para encontrarla aquí.' : 'Importa tus archivos de audio para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
       {view === 'albumes' ? <div className="album-grid">{(result.data.items as Album[]).map(item => <a className="album-card" key={item.id} href={`/albumes/${item.id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>
         <Cover url={item.cover_url} title={item.title} /><h2>{item.title}</h2><p>{artists(item)}</p><span>{item.track_count} pistas</span>
-      </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} queuePath={`/tracks?${new URLSearchParams({ q: query })}`} queueLabel={query ? `Búsqueda: ${query}` : 'Mi biblioteca'} />}
+      </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} queuePath={`/${view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query })}`} queueLabel={view === 'favoritos' ? 'Mis favoritos' : query ? `Búsqueda: ${query}` : 'Mi biblioteca'} />}
       <Pagination offset={offset} total={result.data.total} move={value => move(view, query, value)} />
     </>}
   </section>

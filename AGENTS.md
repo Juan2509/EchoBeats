@@ -1,5 +1,13 @@
 # EchoBeats: contexto del proyecto
 
+P24 añade favoritos explícitos locales, controles compartidos y listado/cola
+filtrada. Leer `docs/FAVORITOS.md` y `docs/VALIDACION_P24.md`. 0009_favorites
+aplicada tras respaldo; 222 pruebas backend/57 frontend y build aprobados.
+PUT expresa estado deseado; no reintentar automáticamente guardados inciertos.
+No historial, cuentas ni cambios de ranking (P25). Downgrade rechaza favoritos
+existentes; probar solo en bases aisladas. Revisión visual pendiente; conservar
+pendientes anteriores y no llamar a OpenAI. Próxima implementación prevista P25.
+
 P23 implementa Explorar, filtros, similares, fuentes y reproducción de la cola
 recuperada. Leer `docs/EXPLORACION.md` y `docs/VALIDACION_P23.md`. Selección de
 citas con IA solo mediante opt-in; no publicar prosa libre del modelo. Comprobar

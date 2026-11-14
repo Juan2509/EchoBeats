@@ -18,6 +18,7 @@ from app.api.processing import router as processing_router
 from app.api.descriptions import router as descriptions_router
 from app.api.ai import router as ai_router
 from app.api.search import router as search_router
+from app.api.favorites import router as favorites_router
 from app.integrations.ai import OpenAIProvider, AIError
 from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
@@ -60,6 +61,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(descriptions_router, prefix="/api/v1", tags=["Fichas musicales"])
     app.include_router(ai_router, prefix="/api/v1", tags=["IA"])
     app.include_router(search_router, prefix="/api/v1", tags=["Exploración"])
+    app.include_router(favorites_router, prefix="/api/v1", tags=["Favoritos"])
 
     @app.exception_handler(AIError)
     async def ai_error(request,exc):
