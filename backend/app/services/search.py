@@ -2,17 +2,17 @@
 from sqlalchemy import select, func, cast, Text, Float, bindparam, or_, not_
 from sqlalchemy.dialects.postgresql import JSONPATH
 from starlette.concurrency import run_in_threadpool
-from app.models.catalog import track, album, artist, track_artist, playlist, playlist_track
+from app.models.catalog import track, album, artist, track_artist, playlist, playlist_track, favorite
 from app.models.catalog import track_description as description, description_revision as revision, track_embedding as embedding
 from app.models.vector import Vector1536
 from app.integrations.ai import OpenAIProvider, AIError
-from app.services import indexing, metadata
+from app.services import indexing, metadata, preferences as preference_service
 
 WINDOW = 100
 RRF_K = 60
 
 
-def track_filters(connection, album_id, playlist_id, exclude=None):
+def track_filters(connection, album_id, playlist_id, exclude=None, preferences='off'):
     conditions=[]
     if album_id is not None:
         metadata.require_album(connection,album_id)
@@ -22,6 +22,7 @@ def track_filters(connection, album_id, playlist_id, exclude=None):
             raise metadata.MetadataError('playlist_not_found','No existe esa playlist.',404)
         conditions.append(track.c.id.in_(select(playlist_track.c.track_id).where(playlist_track.c.playlist_id==playlist_id)))
     if exclude is not None: conditions.append(track.c.id!=exclude)
+    if preferences == 'discovery': conditions.append(~track.c.id.in_(select(favorite.c.track_id)))
     return conditions
 
 
@@ -44,10 +45,10 @@ def envelope(settings, query, mode, limit, status, reason=None, **extra):
         'relevance':'candidates_only','warnings':['Ranking de candidatos; la pertinencia y el umbral aún requieren evaluación con P17. Los scores no son porcentajes de confianza.'],**extra}
 
 
-def preflight(engine, settings, query, mode, limit, album_id, playlist_id):
+def preflight(engine, settings, query, mode, limit, album_id, playlist_id, preferences='off'):
     indexing.configured(settings)
     with engine.connect() as connection:
-        filters=track_filters(connection,album_id,playlist_id)
+        filters=track_filters(connection,album_id,playlist_id,preferences=preferences)
         if not connection.scalar(select(func.count()).select_from(track)):
             return envelope(settings,query,mode,limit,'no_library')
         if not connection.scalar(select(func.count()).select_from(track).where(*filters)):
@@ -101,17 +102,18 @@ def ranked(connection, settings, conditions, query, mode, vector, limit):
     return results
 
 
-def retrieve(engine,settings,query,mode,limit,album_id,playlist_id,vector):
+def retrieve(engine,settings,query,mode,limit,album_id,playlist_id,vector,preferences='off'):
     # Nueva instantánea después del proveedor: excluye fichas que cambiaron en vuelo.
     with engine.connect().execution_options(isolation_level='REPEATABLE READ') as connection,connection.begin():
-        filters=track_filters(connection,album_id,playlist_id)
+        filters=track_filters(connection,album_id,playlist_id,preferences=preferences)
         results=ranked(connection,settings,filters,query,mode,vector,limit)
-        return envelope(settings,query,mode,limit,'ok' if results else 'no_matches',results=results)
+        results,details=preference_service.apply(connection,results,preferences)
+        return envelope(settings,query,mode,limit,'ok' if results else 'no_matches',results=results,preferences=details)
 
 
-async def search(engine,settings,provider,query,mode,limit,album_id=None,playlist_id=None):
-    empty=await run_in_threadpool(preflight,engine,settings,query,mode,limit,album_id,playlist_id)
-    if empty is not None:return empty
+async def search(engine,settings,provider,query,mode,limit,album_id=None,playlist_id=None,preferences='off'):
+    empty=await run_in_threadpool(preflight,engine,settings,query,mode,limit,album_id,playlist_id,preferences)
+    if empty is not None:return {**empty,'preferences':preference_service.summary(preferences)}
     vector=None;consumption=None
     if mode!='lexical':
         if not settings.ai_enabled:raise AIError('ai_disabled')
@@ -121,18 +123,19 @@ async def search(engine,settings,provider,query,mode,limit,album_id=None,playlis
         try:Vector1536().bind_processor(None)(result['vector'])
         except (KeyError,ValueError,TypeError,OverflowError):raise AIError('ai_invalid_response') from None
         vector=result['vector'];consumption=result.get('usage')
-    value=await run_in_threadpool(retrieve,engine,settings,query,mode,limit,album_id,playlist_id,vector)
+    value=await run_in_threadpool(retrieve,engine,settings,query,mode,limit,album_id,playlist_id,vector,preferences)
     value['query_usage']=consumption
     return value
 
 
-def similar(engine,settings,track_id,limit,album_id=None,playlist_id=None):
+def similar(engine,settings,track_id,limit,album_id=None,playlist_id=None,preferences='off'):
     indexing.configured(settings)
     with engine.connect().execution_options(isolation_level='REPEATABLE READ') as connection,connection.begin():
         metadata.require_track(connection,track_id)
         reference=connection.execute(eligible(settings,[track.c.id==track_id]).add_columns(embedding.c.embedding)).first()
         if reference is None:raise metadata.MetadataError('reference_not_indexed','La pista de referencia necesita una ficha y un vector vigentes del modelo activo.',409)
-        filters=track_filters(connection,album_id,playlist_id,exclude=track_id)
+        filters=track_filters(connection,album_id,playlist_id,exclude=track_id,preferences=preferences)
         results=ranked(connection,settings,filters,None,'reference',reference.embedding,limit)
+        results,details=preference_service.apply(connection,results,preferences)
         return envelope(settings,None,'reference',limit,'ok' if results else 'no_matches',reference_track_id=track_id,
-            reference_description_version=reference.version,reference_content_hash=reference.content_hash,query_usage=None,results=results)
+            reference_description_version=reference.version,reference_content_hash=reference.content_hash,query_usage=None,results=results,preferences=details)

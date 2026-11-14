@@ -1,5 +1,15 @@
 # EchoBeats: contexto del proyecto
 
+P25 incorpora preferencias off/favorites/discovery en consulta y similares.
+Leer `docs/PREFERENCIAS.md` y `docs/VALIDACION_P25.md`. Regla adjacent_pairs_v1:
+pares disjuntos dentro del top K, desplazamiento máximo uno; no cambiar scores
+ni incorporar favoritas ajenas. Discovery excluye antes del límite. Revalidar
+favoritos/filtros/elegibilidad después de generación y reconstruir comparación;
+no mantener transacción durante red ni enviar flags de favoritos al proveedor.
+Sin entrenamiento, historial ni gustos desde decoraciones. 232 pruebas backend/60
+frontend y build aprobados; evaluación musical/visual pendiente. Sin migraciones ni
+llamadas reales; conservar pendientes anteriores. Próximo bloque P26 a petición.
+
 P24 añade favoritos explícitos locales, controles compartidos y listado/cola
 filtrada. Leer `docs/FAVORITOS.md` y `docs/VALIDACION_P24.md`. 0009_favorites
 aplicada tras respaldo; 222 pruebas backend/57 frontend y build aprobados.

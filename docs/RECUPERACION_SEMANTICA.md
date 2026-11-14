@@ -1,5 +1,10 @@
 # Recuperación musical — P22
 
+P25 añade preferencias optativas sin cambiar coseno, RRF ni elegibilidad. Ajuste
+de pares sobre el top K y descubrimiento con exclusión previa de favoritos.
+Contrato y evaluación técnica en PREFERENCIAS.md y VALIDACION_P25.md; no equivale
+a calibración ni mejora musical demostrada, que siguen pendientes.
+
 Actualización P23: interfaz Explorar y explicación con evidencia implementadas.
 POST search añade explain=false y POST /explore/similar admite referencia con
 citas optativas; la recuperación P22 conserva su contrato base. El reproductor

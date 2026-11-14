@@ -49,3 +49,46 @@ test('gateway distingue referencia de consulta y selección IA es explícita',as
   }
   try{await requestSearch(input,new AbortController().signal);await requestSearch({...input,track_id:'a',explain:true},new AbortController().signal)}finally{globalThis.fetch=original}
 })
+
+function preferenceResponse(): SearchResponse {
+  const first=response().results[0]
+  const second=structuredClone(first);second.track.id='b';second.track.audio_url='/api/v1/tracks/b/audio'
+  return {...response(),results:[
+    {...second,preference:{favorite:true,base_rank:2,rank:1,reason:'Favorito explícito: sube una posición.'}},
+    {...first,preference:{favorite:false,base_rank:1,rank:2,reason:'Cede una posición.'}},
+  ],preferences:{mode:'favorites',policy:'adjacent_pairs_v1',baseline_order:['a','b'],result_order:['b','a'],reordered:true}}
+}
+
+test('comparación de preferencias conserva orden base y señal explícita sin consultar otra vez',async()=>{
+  let calls=0
+  const controller=new ExploreController(async request=>{calls++;assert.equal(request.preferences,'favorites');return preferenceResponse()})
+  await controller.search({...input,preferences:'favorites'})
+  const data=controller.state.data!
+  assert.deepEqual(data.preferences?.baseline_order,['a','b']);assert.deepEqual(data.results.map(item=>item.track.id),['b','a'])
+  assert.deepEqual([...data.results].sort((a,b)=>a.preference!.base_rank-b.preference!.base_rank).map(item=>item.track.id),['a','b'])
+  assert.equal(calls,1);controller.dispose()
+})
+
+test('rechaza comparación ajena, cambio de orden oculto o descubrimiento que conserva favoritos',()=>{
+  for(const modify of [
+    (data:SearchResponse)=>{data.preferences!.baseline_order=['a','ajena']},
+    (data:SearchResponse)=>{data.preferences!.reordered=false},
+    (data:SearchResponse)=>{data.results[0].preference!.base_rank=3},
+    (data:SearchResponse)=>{data.preferences!.mode='off'},
+    (data:SearchResponse)=>{data.preferences!.mode='discovery'},
+    (data:SearchResponse)=>{delete data.preferences},
+  ]){const data=preferenceResponse();modify(data);assert.throws(()=>decode(data))}
+  assert.doesNotThrow(()=>decode(preferenceResponse()))
+})
+
+test('gateway envía preferencias explícitas para consulta y referencia, desactivadas por defecto',async()=>{
+  const previous=globalThis.fetch;const sent:{preferences:string;track_id?:string}[]=[]
+  globalThis.fetch=async(_url,options)=>{sent.push(JSON.parse(options?.body as string));return new Response(JSON.stringify(response()))}
+  try{
+    await requestSearch(input,new AbortController().signal)
+    await requestSearch({...input,preferences:'favorites'},new AbortController().signal)
+    await requestSearch({...input,track_id:'a',preferences:'discovery'},new AbortController().signal)
+    assert.deepEqual(sent.map(body=>body.preferences),['off','favorites','discovery'])
+    assert.equal(sent[2].track_id,'a')
+  }finally{globalThis.fetch=previous}
+})

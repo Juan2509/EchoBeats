@@ -10,6 +10,7 @@ from app.services import exploration
 from starlette.concurrency import run_in_threadpool
 
 router=APIRouter()
+PreferenceMode=Literal['off','favorites','discovery']
 
 
 class SearchInput(BaseModel):
@@ -20,12 +21,13 @@ class SearchInput(BaseModel):
     album_id: UUID | None=None
     playlist_id: UUID | None=None
     explain: bool = Field(default=False,strict=True)
+    preferences: PreferenceMode = 'off'
 
 
 @router.post('/explore/search')
 async def search(body:SearchInput,request:Request):
     data=await service.search(engine_for(request),request.app.state.settings,request.app.state.ai_provider,
-        body.query,body.mode,body.limit,body.album_id,body.playlist_id)
+        body.query,body.mode,body.limit,body.album_id,body.playlist_id,body.preferences)
     data=await exploration.explain(engine_for(request),request.app.state.settings,request.app.state.ai_provider,data,body.explain,body.album_id,body.playlist_id)
     return JSONResponse(jsonable_encoder(data),headers={'Cache-Control':'no-store'})
 
@@ -37,16 +39,17 @@ class SimilarInput(BaseModel):
     album_id: UUID | None=None
     playlist_id: UUID | None=None
     explain: bool = Field(default=False,strict=True)
+    preferences: PreferenceMode = 'off'
 
 
 @router.post('/explore/similar')
 async def similar_explained(body:SimilarInput,request:Request):
-    data=await run_in_threadpool(service.similar,engine_for(request),request.app.state.settings,body.track_id,body.limit,body.album_id,body.playlist_id)
+    data=await run_in_threadpool(service.similar,engine_for(request),request.app.state.settings,body.track_id,body.limit,body.album_id,body.playlist_id,body.preferences)
     data=await exploration.explain(engine_for(request),request.app.state.settings,request.app.state.ai_provider,data,body.explain,body.album_id,body.playlist_id)
     return JSONResponse(jsonable_encoder(data),headers={'Cache-Control':'no-store'})
 
 
 @router.get('/tracks/{track_id}/similar')
-def similar(track_id:UUID,request:Request,limit:Annotated[int,Query(ge=1,le=20)]=5,album_id:UUID | None=None,playlist_id:UUID | None=None):
-    data=service.similar(engine_for(request),request.app.state.settings,track_id,limit,album_id,playlist_id)
+def similar(track_id:UUID,request:Request,limit:Annotated[int,Query(ge=1,le=20)]=5,album_id:UUID | None=None,playlist_id:UUID | None=None,preferences:PreferenceMode='off'):
+    data=service.similar(engine_for(request),request.app.state.settings,track_id,limit,album_id,playlist_id,preferences)
     return JSONResponse(jsonable_encoder(data),headers={'Cache-Control':'no-store'})

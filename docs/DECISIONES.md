@@ -1,5 +1,15 @@
 # Decisiones técnicas de EchoBeats
 
+## Incremento P25 — Ajuste conservador y descubrimiento explícito
+
+Preferencias desactivadas por defecto. Favorecer solo intercambia pares disjuntos
+del top K para acotar cada desplazamiento a una posición; no mezcla un bono con
+scores ni atrae favoritas fuera de consulta. Discovery excluye guardadas antes de
+recuperar. Sin rotación oculta, escucha implícita ni inferencia desde muros.
+La regla es una decisión de producto versionada, no una calibración con vectores
+simulados. Comparar mismos candidatos localmente; revalidar tras generación.
+Ver PREFERENCIAS.md para límites y VALIDACION_P25.md para evidencia y pendientes.
+
 ## Incremento P24 — Preferencia explícita local
 
 Guardar favoritos en tabla separada, sin modificar revisión de pista ni historial

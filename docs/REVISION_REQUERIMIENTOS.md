@@ -1,5 +1,14 @@
 # Revisión de los requerimientos académicos
 
+## Cobertura incremental P25 — 14 de noviembre de 2026
+
+RF-17 incorpora efecto técnico explicable de favoritos: ajuste acotado del orden,
+alternativa sin favoritos, descubrimiento y comparación explícita. No se confunde
+personalización con entrenamiento, decoraciones o historial. Se conserva el
+recorrido de fuentes P23 y se revalida vigencia/preferencias tras red. Evidencia
+en VALIDACION_P25.md; calidad musical y recorrido visual aún pendientes. No se
+ejecutaron API real ni consultas reservadas para ajustar pesos.
+
 ## Cobertura incremental P24 — 14 de noviembre de 2026
 
 Persistencia de favoritos explícitos, controles compartidos y consulta paginada.

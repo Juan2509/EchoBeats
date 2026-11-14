@@ -1,5 +1,14 @@
 # Contrato inicial de API de EchoBeats
 
+## Actualización efectiva P25 — Preferencias explícitas
+
+POST /explore/search y POST /explore/similar reciben preferences: off (por defecto),
+favorites o discovery. GET /tracks/{id}/similar admite el mismo parámetro. 422 si
+es inválido. Respuesta preferences {mode,policy,baseline_order,result_order,reordered}
+y cada candidato preference {favorite,base_rank,rank,reason}. Política versionada
+adjacent_pairs_v1; misma consulta/filtros/scores, descubrimiento excluye antes de K.
+Las razones son de orden y no afirmaciones musicales. Ver PREFERENCIAS.md.
+
 ## Actualización efectiva P24 — Favoritos
 
 GET/PUT `/api/v1/tracks/{track_id}/favorite` devuelve `{track_id,favorite,created_at}`.

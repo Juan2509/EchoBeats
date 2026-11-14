@@ -1,5 +1,11 @@
 # P17 — Casos y evaluación de recuperación musical
 
+P25 compara orden base/con preferencias sobre el mismo conjunto en pruebas
+artificiales de algoritmo, no en las consultas reservadas P17. No altera grados,
+particiones ni umbral. La regla de producto adjacent_pairs_v1 acota desplazamientos
+a uno, sin alegar mejora de nDCG/Recall o pertinencia. Ver PREFERENCIAS.md;
+la evaluación con proveedor real sigue pendiente por petición del usuario.
+
 Actualización P22: API con recuperación semántica/textual/híbrida y filtros,
 similitud por referencia y evaluador de informes guardados implementados. Ver
 RECUPERACION_SEMANTICA.md. El evaluador no consume API ni certifica origen de

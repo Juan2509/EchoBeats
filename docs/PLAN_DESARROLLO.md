@@ -581,6 +581,14 @@ las vistas. No se registra historial de escucha sin haber definido ese alcance.
 
 ### [ ] P25 — Personalizar recomendaciones con señales explícitas
 
+**Implementación lista, 14 de noviembre de 2026; evaluación musical/visual pendiente.**
+Regla adjacent_pairs_v1, modos off/favorites/discovery, comparación de órdenes y
+razones explícitas. Sin expansión del top K por gustos, entrenamiento ni historial.
+232 pruebas backend/60 frontend y build aprobados. Proveedores simulados solo en bases aisladas;
+sin calibración ni consultas reservadas. Ver PREFERENCIAS.md y VALIDACION_P25.md.
+Mantener cierre abierto hasta revisión visual y valoración musical real; conservar
+pendientes P20–P24. Siguiente bloque P26, cuando el usuario lo solicite.
+
 **Depende de:** P22–P24. **Commit:** `feat(recommendations): incorporar favoritos al orden de resultados`
 
 - Definir una regla sencilla y documentada para usar favoritos en la recuperación
@@ -703,9 +711,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P24 implementado: favoritos compartidos y lista/cola filtrada. 222 pruebas backend/57 frontend y build aprobados. Cierre visual P24 y pendientes visuales/audio y reales P20–P23 conservados.
+- **Trabajo actual:** P25 implementado: preferencias explícitas, descubrimiento y comparación de orden. 232 pruebas backend/60 frontend y build aprobados. Evaluación musical/visual P25 y pendientes anteriores conservados.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P25, preferencias explícitas en recomendaciones, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
+- **Próximo bloque de implementación:** P26, integración y recuperación ante fallos, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

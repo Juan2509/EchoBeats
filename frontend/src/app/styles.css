@@ -100,6 +100,10 @@ h1 { font-size: clamp(2.4rem, 5vw, 4.3rem); letter-spacing: -.045em; overflow-wr
 .favorite-button[aria-pressed=true] { color: #202719; background: #d4e6ad; }
 .track-list .favorite-control { display: flex; align-items: flex-start; margin-top: 10px; }
 .view-switch { flex-wrap: wrap; }
+.preference-comparison { border: 1px solid #59624c; border-radius: 12px; padding: 16px; margin: 18px 0; overflow-wrap: anywhere; }
+.preference-comparison table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 14px; }
+.preference-comparison th, .preference-comparison td { text-align: left; padding: 8px; border-bottom: 1px solid #59624c; }
+.preference-comparison th:first-child { width: 50%; }
 .player-track .favorite-control { margin-top: 8px; }
 .album-heading { display: flex; align-items: center; gap: 32px; margin: 32px 0 48px; }.album-heading .cover { width: min(30%, 240px); flex-shrink: 0; }.album-heading h1 { font-size: clamp(2rem, 4vw, 4rem); }
 .pagination { display: flex; align-items: center; gap: 18px; margin: 24px 0; }.pagination button { margin: 0; }

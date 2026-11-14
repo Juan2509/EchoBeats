@@ -8,9 +8,14 @@ con cinco fragmentos sintéticos originales y 18 consultas. P22 implementa búsq
 semántica; su validación real sigue pendiente. P20 prepara el adaptador de API; su prueba real está pendiente por
 créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P24 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** Favoritos disponibles en biblioteca,
+**Estado actual: P25 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** En Explorar puedes conservar el orden,
+favorecer favoritos con un ajuste acotado o descubrir sin favoritos guardados,
+y comparar posiciones sin otra llamada API. No aprende gustos ni registra escuchas;
+su evaluación musical y revisión visual siguen pendientes. Ver
+[preferencias](docs/PREFERENCIAS.md) y [validación P25](docs/VALIDACION_P25.md).
+Favoritos disponibles en biblioteca,
 playlists, reproductor y Explorar, con lista en **Biblioteca → Favoritos**.
-Persisten tras reiniciar; todavía no cambian el ranking. Ver [favoritos](docs/FAVORITOS.md)
+Persisten tras reiniciar; el ajuste del ranking requiere activarlo en Explorar. Ver [favoritos](docs/FAVORITOS.md)
 y [validación P24](docs/VALIDACION_P24.md); revisión visual pendiente.
 Explorar ofrece consulta, filtros,
 similares, fuentes y reproducción. La selección de citas con IA es opcional;

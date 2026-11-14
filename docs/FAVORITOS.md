@@ -1,5 +1,9 @@
 # Favoritos — P24
 
+Actualización P25: Explorar ya ofrece ajuste de orden y descubrimiento mediante
+favoritos explícitos, desactivados por defecto. PREFERENCIAS.md describe regla,
+comparación y límites; el resto de este documento describe la entrega base P24.
+
 Favoritos explícitos para la instalación local de un usuario. No hay cuentas,
 propiedad por tenant ni historial de escucha. Escuchar o decorar un muro no añade
 favoritos. P24 no cambia recuperación, distancias, RRF ni recomendaciones: P25

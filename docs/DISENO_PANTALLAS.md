@@ -1,5 +1,14 @@
 # Pantallas y flujos de EchoBeats
 
+## Incremento P25 — Comparación de preferencias en Explorar
+
+Selector conservar/favorecer/descubrir, inicialmente conservar. Se aplica solo al
+buscar; tabla desplegable compara posiciones base y mostradas sin red adicional.
+Cada candidato explica el efecto de su favorito en ese momento, separado de ficha
+y citas. Cambiar un corazón no refresca ni reordena la lista y no inicia audio.
+El descubrimiento avisa que la comparación corresponde al conjunto ya filtrado.
+Revisión visual/teclado pendiente; ver VALIDACION_P25.md.
+
 ## Incremento P24 — Favoritos
 
 Biblioteca incorpora vista Favoritos con búsqueda, páginas, vacío y reproducción

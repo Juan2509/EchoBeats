@@ -1,5 +1,10 @@
 # Explorar, fuentes y reproducción — P23
 
+P25 añade selector de preferencias off/favorites/discovery. El ajuste intercambia
+pares de candidatos, sin variar scores ni fuentes; descubrir excluye favoritos
+antes del límite. Razones de orden separadas de las citas musicales y comparación
+local sin otra petición. No se reordena al cambiar un corazón. Ver PREFERENCIAS.md.
+
 ## Recorrido disponible
 
 En «Explorar», escribir una consulta, escoger modo/filtros y pulsar «Buscar en mi

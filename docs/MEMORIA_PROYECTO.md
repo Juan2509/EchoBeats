@@ -2,6 +2,21 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P25 — 14 de noviembre de 2026
+
+Preferencias optativas en Explorar y consulta/similares: off por defecto,
+favorites intercambia pares contiguos del top K si el segundo es favorito y el
+primero no (máximo una posición), discovery excluye favoritos antes de recuperar.
+Sin favoritos se conserva orden; no añadir favoritos ajenos, alterar scores,
+aprender gustos ni registrar escuchas. No se usan decoraciones. Comparación
+local de orden base/mostrado y razón por pista sin repetir proveedor. Al terminar
+generación se revalidan fichas/filtros/referencia/favoritos y se reconstruye orden.
+No se envían flags de preferencia a generación. 232 pruebas backend/60 frontend y build
+aprobados. Sin migración, escrituras personales, medios/vectores/.env ni llamadas
+reales. Leer PREFERENCIAS.md y VALIDACION_P25.md. Evaluación musical y recorrido
+visual/teclado pendientes; P20–P23 y audio/visuales previos conservados. Próximo
+P26 a petición del usuario; no se creó commit.
+
 ## Avance vigente: P24 — 14 de noviembre de 2026
 
 Favoritos locales implementados, con botones compartidos en biblioteca/álbum,

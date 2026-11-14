@@ -5,7 +5,7 @@ from starlette.concurrency import run_in_threadpool
 from pydantic import ValidationError
 from app.integrations.ai import AIError, Explanation, usage
 from app.models.catalog import track
-from app.services import search, metadata
+from app.services import search, metadata, preferences
 
 
 def recorded(item):
@@ -33,7 +33,8 @@ def current_results(engine,settings,data,album_id,playlist_id):
             reference=connection.execute(search.eligible(settings,[track.c.id==data['reference_track_id']])).first()
             if reference is None or reference.version!=data['reference_description_version'] or reference.content_hash!=data['reference_content_hash']:
                 raise metadata.MetadataError('reference_changed','La referencia cambió mientras se preparaban las citas. Vuelve a consultar su versión actual.',409)
-        filters=search.track_filters(connection,album_id,playlist_id,exclude=data.get('reference_track_id'))
+        preference_mode=data.get('preferences',{}).get('mode','off')
+        filters=search.track_filters(connection,album_id,playlist_id,exclude=data.get('reference_track_id'),preferences=preference_mode)
         ids=[item['track']['id'] for item in data['results']]
         rows=connection.execute(search.eligible(settings,[*filters,track.c.id.in_(ids)])).all()
         valid={(str(row.track_id),str(row.description_id),row.version,row.content_hash) for row in rows}
@@ -43,7 +44,7 @@ def current_results(engine,settings,data,album_id,playlist_id):
             key=(str(item['track']['id']),str(desc['id']),desc['version'],desc['content_hash'])
             if key in valid:
                 results.append({**item,'track':metadata.track_data(connection,item['track']['id'])[0]})
-        return results
+        return preferences.apply(connection,results,preference_mode)
 
 
 async def explain(engine,settings,provider,data,requested,album_id=None,playlist_id=None):
@@ -82,7 +83,10 @@ async def explain(engine,settings,provider,data,requested,album_id=None,playlist
         data['warnings'].append('La IA seleccionó citas; no se muestra su prosa libre ni se garantiza pertinencia por esa selección. Los demás resultados conservan su descripción registrada.')
     except (AIError,ValidationError,KeyError,TypeError,ValueError):
         data['warnings'].append('No se pudo validar la selección de citas con IA. Se conservan las descripciones guardadas; no se reintentó ni se inventaron explicaciones.')
-    refreshed=await run_in_threadpool(current_results,engine,settings,data,album_id,playlist_id)
+    refreshed,details=await run_in_threadpool(current_results,engine,settings,data,album_id,playlist_id)
+    if data.get('preferences')!=details:
+        data['warnings'].append('El orden y los favoritos se comprobaron de nuevo después de la generación; la comparación corresponde a los candidatos que siguen vigentes.')
+    data['preferences']=details
     if len(refreshed)!=len(data['results']):
         data['warnings'].append('Se excluyeron resultados que cambiaron o dejaron de pertenecer al filtro durante la generación.')
     data['results']=refreshed
