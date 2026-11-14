@@ -1,5 +1,10 @@
 # P21 — Indexación versionada en pgvector
 
+Corrección posterior P26: algunos helpers recreaban Settings heredando MEDIA_ROOT
+personal aunque la BD era aislada. No dar por verificada la conservación de medios
+de esas ejecuciones. Aislamiento corregido y alcance en HALLAZGO_AISLAMIENTO_P26.md;
+506 MP3 no registrados se conservan, sin atribución individual ni limpieza automática.
+
 13 de noviembre de 2026. **Implementación lista; cierre con proveedor real pendiente.**
 El usuario confirmó que aún no se resolvieron los créditos API y pidió dejar
 pendiente la prueba real. No se hicieron llamadas a OpenAI durante este paso.

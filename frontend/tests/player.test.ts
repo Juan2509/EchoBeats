@@ -4,6 +4,10 @@ import { PlayerController } from '../src/features/player/controller.ts'
 import type { AudioPort } from '../src/features/player/controller.ts'
 import type { Track } from '../src/shared/api/metadata.ts'
 import { loadQueue } from '../src/features/player/queue.ts'
+import { WallController } from '../src/features/walls/controller.ts'
+import type { WallGateway, WallResult } from '../src/features/walls/controller.ts'
+import { ExploreController } from '../src/features/explore/controller.ts'
+import { FavoritesController } from '../src/features/favorites/controller.ts'
 
 class AudioDouble extends EventTarget {
   src = ''; currentSrc = ''; currentTime = 0; duration = NaN; readyState = 0
@@ -25,6 +29,36 @@ const song = (id: string): Track => ({
 function setup() { const audio = new AudioDouble(); return { audio, player: new PlayerController(audio as unknown as AudioPort) } }
 function deferred() { let resolve!: () => void; let reject!: (error: unknown) => void; const promise = new Promise<void>((yes, no) => { resolve = yes; reject = no }); return { promise, resolve, reject } }
 const flush = async () => { await Promise.resolve(); await Promise.resolve() }
+
+test('flujo integrado: muro bloqueado/editable, error de Explorar y favorito no interrumpen controles de audio', async () => {
+  const {audio,player}=setup()
+  let persisted:WallResult={wall:{id:'wall-a',album_id:'a',schema_version:1,revision:1,background_color:'#242038',updated_at:'',elements:[]},etag:'1'}
+  const gateway:WallGateway=async(_id,_signal,write)=>{
+    if(write)persisted={wall:{...persisted.wall,...write.body,revision:2,elements:[]},etag:'2'}
+    return structuredClone(persisted)
+  }
+  const wall=new WallController('a',gateway)
+  let attempts=0
+  const explore=new ExploreController(async()=>{attempts++;throw new Error('Cuota simulada agotada')})
+  const favorites=new FavoritesController(async(_id,desired)=>desired??false)
+  try{
+    await wall.load();assert.equal(wall.state.editing,false)
+    wall.setColor('#123456');assert.equal(wall.state.color,'#242038')
+    player.startQueue(song('a'),[song('a'),song('b')],'Integración simulada')
+    audio.metadata();await flush();player.seek(5);player.setVolume(.4)
+    await wall.toggleEditing();wall.setColor('#123456')
+    await explore.search({query:'tono',mode:'semantic',limit:5,explain:false})
+    assert.match(explore.state.error,/Cuota/);assert.equal(attempts,1)
+    await favorites.load('a');await favorites.set('a',true)
+    await wall.toggleEditing()
+    assert.equal(wall.state.editing,false);assert.equal(persisted.wall.background_color,'#123456')
+    assert.equal(player.state.track?.id,'a');assert.equal(player.state.position,5)
+    assert.equal(player.state.volume,.4);assert.equal(player.state.playing,true);assert.equal(audio.calls,1)
+    player.pause();assert.equal(player.state.playing,false)
+    player.play();await flush();player.next();audio.metadata();await flush()
+    assert.equal(player.state.track?.id,'b');assert.equal(player.state.queue.length,2)
+  }finally{wall.dispose();explore.dispose();favorites.dispose();player.dispose()}
+})
 
 test('no inicia audio automáticamente; selección sincroniza pista y tiempo real', async () => {
   const { audio, player } = setup()

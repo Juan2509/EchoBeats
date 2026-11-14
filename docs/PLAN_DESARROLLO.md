@@ -606,6 +606,16 @@ comprueba que los recorridos completos funcionan juntos y prepara la entrega.
 
 ### [ ] P26 — Verificar recorridos completos y recuperación ante fallos
 
+**Verificación automática lista, 14 de noviembre de 2026; cierre global pendiente.**
+237 pruebas backend/61 frontend y build aprobados; HTTP real con dos reinicios
+de procesos aislados y recuperación de fallos. Matriz CA-01–CA-13 y protocolo en
+MATRIZ_ACEPTACION_P26.md/RECORRIDOS_P26.md; evidencia en VALIDACION_P26.md.
+Corregido defecto de aislamiento de medios al recrear Settings; ver
+HALLAZGO_AISLAMIENTO_P26.md. 506 MP3 sin fila conservados; diez assets registrados
+íntegros y huella de 516 archivos sin cambios tras regresión corregida. Sin
+llamadas reales ni migración. CA-13 no aplica. Mantener casilla abierta por
+navegador/escucha y CA-10/CA-11; próximo P27 a petición, con pendientes anteriores.
+
 **Depende de:** P11, P16, P23; P25 si forma parte de la entrega.
 **Commit:** `test(integration): verificar recorridos y persistencia del MVP`
 
@@ -711,9 +721,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P25 implementado: preferencias explícitas, descubrimiento y comparación de orden. 232 pruebas backend/60 frontend y build aprobados. Evaluación musical/visual P25 y pendientes anteriores conservados.
+- **Trabajo actual:** P26 verificado automáticamente: 237 pruebas backend/61 frontend y build, matriz de aceptación y reinicios HTTP aislados. Corregido aislamiento de medios en pruebas; 506 MP3 sin fila conservados. Cierre visual/audio y API real pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P26, integración y recuperación ante fallos, cuando el usuario lo solicite. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
+- **Próximo bloque de implementación:** P27, accesibilidad, recursos y protección de datos, cuando el usuario lo solicite. Conservar hallazgo de 506 archivos sin fila sin borrarlos por defecto. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

@@ -2,6 +2,31 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P26 — 14 de noviembre de 2026
+
+Integración verificada con servidor HTTP real en BD/medios aislados, tres procesos
+sucesivos: importación/duplicados, edición manual, playlist/imagen, muros A/B con
+PNG/GIF/preview/transformaciones, recursos, rangos y reset persistentes. Fallos
+simulados de cuota/timeout/respuesta inválida y recuperación conservan catálogo,
+playlist, favoritos y audio por bytes. Controladores integrados frontend también
+verificados con doble de audio. 237 pruebas backend/61 frontend y build aprobados.
+Informes en data/validation; matriz CA-01–CA-13 en MATRIZ_ACEPTACION_P26.md y
+protocolo RECORRIDOS_P26.md. No declarar escucha, navegador ni API real aprobados.
+
+Hallazgo corregido: al recrear Settings, helpers de P21–P25 podían heredar MEDIA_ROOT
+personal aunque usaban BD aislada. Se rectificaron validaciones anteriores y el
+fixture autouse ahora fija medios temporales, clave vacía e IA/worker desactivados.
+Ver HALLAZGO_AISLAMIENTO_P26.md. Principal: diez assets con hash/tamaño correctos,
+cero faltantes/staging; 506 MP3 sin fila (49.487.414 bytes) conservados, sin atribuir
+origen individual ni borrar. Huella antes/después de regresión corregida: 516
+archivos, 83.797.981 bytes, mismos hashes, sin modificaciones. No limpiar por defecto.
+
+Sin migración, nuevas dependencias ni llamadas reales. .env/volumen/respaldos
+conservados. CA-13 no aplica por reconocimiento aplazado. Pendientes de teclado,
+360/768/1280, escucha/seek y CA-10/CA-11 reales siguen vigentes; P26 queda abierto.
+Falta node_repl para Computer Use; no fingir revisión visual con tests/HTTP.
+Próximo bloque P27 a petición del usuario; no se creó commit.
+
 ## Avance vigente: P25 — 14 de noviembre de 2026
 
 Preferencias optativas en Explorar y consulta/similares: off por defecto,

@@ -1,5 +1,10 @@
 # P22 — Recuperación semántica, textual e híbrida
 
+Corrección posterior P26: el aislamiento de BD no garantizaba medios temporales al
+recrear Settings en helpers. Las afirmaciones previas de medios sin cambios quedan
+limitadas por HALLAZGO_AISLAMIENTO_P26.md. Corregido el entorno de tests; conservar
+los 506 MP3 no registrados, sin atribuirlos ni borrarlos automáticamente.
+
 13 de noviembre de 2026. **API implementada; cierre real y calibración pendientes.**
 Se conserva la petición del usuario de dejar pendiente la prueba real por créditos.
 No se consultó OpenAI ni se ejecutaron las reservadas para ajustar resultados.

@@ -1,5 +1,10 @@
 # P23 — Explorar con fuentes y reproducción
 
+Corrección posterior P26: helpers de tests podían heredar MEDIA_ROOT personal al
+recrear Settings, pese a BD aislada. Ver HALLAZGO_AISLAMIENTO_P26.md; la afirmación
+previa de medios personales sin cambios no quedó garantizada. Aislamiento corregido;
+506 MP3 no registrados conservados sin limpieza automática.
+
 14 de noviembre de 2026. **Implementación lista; cierre real y revisión visual pendientes.**
 Se respeta la solicitud de no repetir llamadas reales mientras siga pendiente
 la disponibilidad de créditos. No se llamó a OpenAI ni se alteró el índice personal.

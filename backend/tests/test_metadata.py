@@ -45,7 +45,7 @@ def tagged(title="Canción etiquetada", collection="Colección", names=None, pic
 
 @pytest.fixture
 async def client(catalog_engine, tmp_path):
-    app = create_app(Settings(_env_file=None, media_root=tmp_path))
+    app = create_app(Settings(_env_file=None, media_root=tmp_path / 'media'))
     original = app.state.database_engine
     app.state.database_engine = catalog_engine
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://localhost") as session:

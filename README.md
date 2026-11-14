@@ -8,7 +8,12 @@ con cinco fragmentos sintéticos originales y 18 consultas. P22 implementa búsq
 semántica; su validación real sigue pendiente. P20 prepara el adaptador de API; su prueba real está pendiente por
 créditos API agotados. Ver [validación P17](docs/VALIDACION_P17.md).
 
-**Estado actual: P25 implementado; pruebas reales y calibración P20–P23 pendientes por créditos, por acuerdo del usuario.** En Explorar puedes conservar el orden,
+**Estado actual: P26 verificado automáticamente; cierre visual/audio y API real pendientes.**
+237 pruebas backend, 61 frontend y build aprobados. Matriz y límites en
+[validación P26](docs/VALIDACION_P26.md). Se corrigió un fallo de aislamiento de
+medios en las pruebas; 506 MP3 sin fila se conservan como
+[hallazgo pendiente de revisión](docs/HALLAZGO_AISLAMIENTO_P26.md). Sin llamadas
+reales nuevas a OpenAI. En Explorar puedes conservar el orden,
 favorecer favoritos con un ajuste acotado o descubrir sin favoritos guardados,
 y comparar posiciones sin otra llamada API. No aprende gustos ni registra escuchas;
 su evaluación musical y revisión visual siguen pendientes. Ver

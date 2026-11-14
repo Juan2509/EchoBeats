@@ -1,5 +1,11 @@
 # PostgreSQL y pgvector — Operación local
 
+P26 verifica procesos HTTP nuevos con bases echobeats_test_<uuid> y medios
+temporales. El fixture global también fija MEDIA_ROOT al recrear Settings: una
+BD aislada por sí sola no aislaba archivos en helpers anteriores. Ver
+HALLAZGO_AISLAMIENTO_P26.md y VALIDACION_P26.md. Conservar los 506 MP3 sin fila,
+sin restaurar, reimportar ni borrar por omisión. No hay migración nueva.
+
 P24 añade 0009_favorites (track_id único/FK y created_at), aplicada tras respaldo
 desde 0008. No modifica catálogo ni medios; downgrade rechaza preferencias
 existentes. Ver FAVORITOS.md y VALIDACION_P24.md. No usar principal para tests.

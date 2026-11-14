@@ -1,5 +1,10 @@
 # P25 — Personalización mediante favoritos
 
+Corrección posterior P26: helpers de búsqueda recreaban Settings con MEDIA_ROOT
+personal aunque la BD era aislada. La afirmación previa de medios sin cambios no
+estaba garantizada. Ver HALLAZGO_AISLAMIENTO_P26.md: fixture corregido, regresión y
+huella de medios antes/después; 506 MP3 sin fila conservados, sin borrado automático.
+
 14 de noviembre de 2026. **Regla e interfaz implementadas; evaluación musical real
 y recorrido visual pendientes.** Sin llamadas reales a OpenAI, por acuerdo previo.
 

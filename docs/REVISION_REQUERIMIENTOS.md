@@ -1,5 +1,14 @@
 # Revisión de los requerimientos académicos
 
+## Cobertura incremental P26 — 14 de noviembre de 2026
+
+Matriz CA-01–CA-13 y regresión integrada con persistencia entre procesos HTTP
+nuevos y recuperación ante fallos simulados. 237 pruebas backend/61 frontend y
+build aprobados; corregido aislamiento de medios del entorno de tests. Evidencia
+y límites en VALIDACION_P26.md. CA-10/CA-11 y RF-13/RF-14 no se cierran con mocks;
+CA-13 no aplica mientras reconocimiento esté aplazado. Sin API real nueva,
+escucha ni revisión visual acreditada; no declarar MVP completo.
+
 ## Cobertura incremental P25 — 14 de noviembre de 2026
 
 RF-17 incorpora efecto técnico explicable de favoritos: ajuste acotado del orden,

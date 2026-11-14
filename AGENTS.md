@@ -1,5 +1,17 @@
 # EchoBeats: contexto del proyecto
 
+P26 verifica integración HTTP con dos reinicios reales de procesos aislados y
+recuperación ante fallos simulados. Leer docs/VALIDACION_P26.md,
+docs/MATRIZ_ACEPTACION_P26.md y docs/HALLAZGO_AISLAMIENTO_P26.md. 237 pruebas
+backend/61 frontend y build aprobados. Corregido aislamiento de tests: fixture
+autouse fija MEDIA_ROOT temporal, vacía clave y desactiva IA/worker por omisión,
+también al recrear Settings. Antes algunos helpers podían escribir en medios
+personales pese a BD aislada: notas P21–P25 rectificadas. Se conservan 506 MP3
+sin fila, sin asumir procedencia ni borrarlos. Diez assets registrados íntegros;
+huella de 516 archivos sin cambios tras regresión corregida. Sin migración ni
+llamadas reales. CA-13 no aplica; visual/escucha y CA-10/CA-11 pendientes, P26
+no cerrado. Próximo P27 a petición; conservar todos los pendientes anteriores.
+
 P25 incorpora preferencias off/favorites/discovery en consulta y similares.
 Leer `docs/PREFERENCIAS.md` y `docs/VALIDACION_P25.md`. Regla adjacent_pairs_v1:
 pares disjuntos dentro del top K, desplazamiento máximo uno; no cambiar scores

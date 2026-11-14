@@ -9,6 +9,16 @@ from app.config import Settings
 from app.database import get_database_url, migration_config
 
 
+@pytest.fixture(autouse=True)
+def isolated_runtime_settings(tmp_path, monkeypatch):
+    # Settings() creado de nuevo en un helper también debe heredar medios temporales.
+    # _env_file=None no desactiva variables heredadas del contenedor.
+    monkeypatch.setenv('MEDIA_ROOT', str(tmp_path / 'media'))
+    monkeypatch.setenv('AI_ENABLED', 'false')
+    monkeypatch.setenv('OPENAI_API_KEY', '')
+    monkeypatch.setenv('PROCESSING_WORKER_ENABLED', 'false')
+
+
 @pytest.fixture
 def catalog_engine():
     if os.getenv("RUN_DB_TESTS") != "1":

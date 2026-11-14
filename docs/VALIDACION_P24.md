@@ -1,5 +1,10 @@
 # P24 — Favoritos persistentes
 
+Corrección posterior P26: la regresión incluía helpers de búsqueda/indexación que
+podían escribir medios en la raíz personal al recrear Settings. El aislamiento de
+BD sí se conserva, pero no afirmar medios sin cambios de esas ejecuciones. Ver
+HALLAZGO_AISLAMIENTO_P26.md; corregido el fixture global y conservados 506 MP3 sin fila.
+
 14 de noviembre de 2026. **Implementación y verificación automatizada listas;
 recorrido visual pendiente.** Sin llamadas a OpenAI ni cambios del índice personal.
 
