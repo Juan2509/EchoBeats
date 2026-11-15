@@ -1,5 +1,12 @@
 # PostgreSQL y pgvector — Operación local
 
+P28: instalación/configuración actualizadas en INSTALACION.md/CONFIGURACION.md;
+head 0009_favorites. La demostración usa otro proyecto PostgreSQL/medios vacíos.
+El helper scripts/base_datos.py siempre opera desde compose.yaml de la raíz:
+**no usarlo para una demo aislada**, pues apuntaría a la instalación principal.
+Para esa demo, conservar el prefijo --project-name/--env-file/--file de su informe
+en todas las operaciones. No intercambiar credenciales o volúmenes entre proyectos.
+
 P26 verifica procesos HTTP nuevos con bases echobeats_test_<uuid> y medios
 temporales. El fixture global también fija MEDIA_ROOT al recrear Settings: una
 BD aislada por sí sola no aislaba archivos en helpers anteriores. Ver
@@ -120,6 +127,11 @@ la validación; actualizarlo deliberadamente y repetir pruebas.
 
 ## 4. Respaldo lógico y restauración sin reemplazo
 
+El helper necesita Python 3 en el host y docker en PATH. No requiere ejecutar el
+backend con ese Python. En Windows con Docker fuera de PATH, añadir su directorio
+solo a la sesión antes de llamar el helper. Los manifiestos UTF-8 y UTF-8 con BOM
+se aceptan; el hash del dump sigue siendo obligatorio y se valida antes de crear BD.
+
 Con PostgreSQL iniciado:
 
 ```bash
@@ -142,6 +154,47 @@ antes de crear la base; se rechaza si existe o coincide con la activa. Se restau
 con `pg_restore --exit-on-error --no-owner --no-acl`, sin `--clean`. Un fallo puede
 dejar la base nueva incompleta para diagnóstico; no se elimina ni se toca la activa.
 No borrar la base original para probar una restauración.
+
+### Alternativa sin Python en el host
+
+Usar pg_dump/createdb/pg_restore del propio contenedor. El siguiente ejemplo es
+deliberadamente para un proyecto de demostración: sustituir ID por el informe real.
+No quitar el prefijo ni cambiarlo por la principal durante un ensayo.
+
+```powershell
+$dockerExe = Join-Path $env:LOCALAPPDATA 'Programs\DockerDesktop\resources\bin\docker.exe'
+$demo = 'data/echobeats_p28_ID'
+$ctx = @('compose','--project-name','echobeats_p28_ID','--env-file',"$demo/.env",'--file',"$demo/compose.json")
+& $dockerExe @ctx stop frontend backend
+& $dockerExe @ctx up -d --wait postgres
+& $dockerExe @ctx exec -T postgres sh -c 'exec pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom --no-owner --no-acl -f /tmp/echobeats.dump'
+if ($LASTEXITCODE -ne 0) { throw 'Respaldo no completado' }
+& $dockerExe @ctx cp postgres:/tmp/echobeats.dump "$demo/backup.dump"
+if ($LASTEXITCODE -ne 0) { throw 'Copia no completada' }
+Get-FileHash -LiteralPath "$demo/backup.dump" -Algorithm SHA256
+& $dockerExe @ctx exec -T postgres pg_restore --list /tmp/echobeats.dump
+```
+
+Registrar hash/manifiesto fuera de Git y copiar también appdata/media mientras
+frontend/backend siguen detenidos; destino nuevo, dentro del respaldo elegido,
+comparando hashes. No copiar solo el dump y llamarlo biblioteca completa. No
+reescribir un respaldo anterior ni incluir .env/claves en material de exposición.
+Si se mueve el dump, comprobar que su SHA-256 coincide antes de crear destino.
+
+Para restaurar el dump que sigue dentro del mismo contenedor:
+
+```powershell
+& $dockerExe @ctx exec -T postgres sh -c 'exec createdb -U "$POSTGRES_USER" -- echobeats_restore_revision'
+if ($LASTEXITCODE -ne 0) { throw 'Destino ya existe o no se pudo crear; elegir otro, no borrar la activa' }
+& $dockerExe @ctx exec -T postgres sh -c 'exec pg_restore -U "$POSTGRES_USER" --dbname=echobeats_restore_revision --no-owner --no-acl --exit-on-error /tmp/echobeats.dump'
+if ($LASTEXITCODE -ne 0) { throw 'Restauración incompleta en la nueva BD; conservar para diagnóstico' }
+```
+
+No usar --clean ni elegir como destino POSTGRES_DB. Para un dump trasladado,
+copiarlo explícitamente al contenedor con el mismo prefijo. Verificar revisión,
+filas, referencias y archivos en la copia antes de reconfigurar una aplicación;
+restaurar no la cambia automáticamente. Guardar configuración privada separadamente.
+El roundtrip P28, en datos sintéticos, queda registrado en VALIDACION_P28.md.
 
 Comprobar tablas, revisión, extensión y datos dentro de la nueva base antes de
 considerar cambiar la conexión de la aplicación. Una restauración de esquema

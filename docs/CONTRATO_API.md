@@ -1,5 +1,10 @@
 # Contrato inicial de API de EchoBeats
 
+P27 conserva payloads/orden de páginas, con lectura agrupada interna. GET
+/assets/{id}/content valida archivo regular/tamaño/acceso antes de cabeceras:
+404 media_missing para faltante/inválido y 503 media_unavailable para OSError,
+sin rutas privadas. Cache privada/nosniff y tipos admitidos se mantienen.
+
 ## Actualización efectiva P25 — Preferencias explícitas
 
 POST /explore/search y POST /explore/similar reciben preferences: off (por defecto),

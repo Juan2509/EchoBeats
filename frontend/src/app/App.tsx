@@ -17,6 +17,7 @@ export function App() {
   const [attempt, setAttempt] = useState(0)
   const [refresh, setRefresh] = useState(0)
   const [configuration, setConfiguration] = useState(false)
+  const [metadataActivated, setMetadataActivated] = useState(false)
   const [playlistDirty, setPlaylistDirty] = useState(false)
   const [wallDirty, setWallDirty] = useState(false)
   const heading = useRef<HTMLElement>(null)
@@ -44,6 +45,19 @@ export function App() {
   }, [playlistDirty, wallDirty, location])
   useEffect(() => { heading.current?.focus(); window.scrollTo(0, 0) }, [path])
   useEffect(() => {
+    const reveal = (event: FocusEvent) => {
+      const target = event.target
+      if (!(target instanceof HTMLElement) || !target.matches(':focus-visible') || target.closest('.wall-panel, .player-bar, dialog, .skip-link')) return
+      requestAnimationFrame(() => {
+        if (!target.isConnected || document.activeElement !== target) return
+        const control = target.getBoundingClientRect(), player = document.querySelector('.player-bar')?.getBoundingClientRect()
+        if (player && control.bottom > player.top - 16 && control.top < player.bottom) window.scrollBy(0, control.bottom - player.top + 24)
+      })
+    }
+    document.addEventListener('focusin', reveal)
+    return () => document.removeEventListener('focusin', reveal)
+  }, [])
+  useEffect(() => {
     const controller = new AbortController()
     let disposed = false
     setConnection('checking')
@@ -70,7 +84,7 @@ export function App() {
       {!['/', '/biblioteca', '/explorar'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
       <div hidden={path !== '/biblioteca'}>
         <ImportPanel onImported={changed} />
-        <details className="metadata-tools"><summary>Editar canciones, álbumes y portadas</summary><MetadataEditor refresh={refresh} onSaved={changed} /></details>
+        <details className="metadata-tools" onToggle={event => { if (event.currentTarget.open) setMetadataActivated(true) }}><summary>Editar canciones, álbumes y portadas</summary>{metadataActivated && <MetadataEditor refresh={refresh} onSaved={changed} />}</details>
       </div>
     </main>
     <footer>EchoBeats <span>Tu colección personal · Tu música, tu espacio</span></footer>

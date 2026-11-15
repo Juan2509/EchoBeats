@@ -1,5 +1,23 @@
 # Revisión de los requerimientos académicos
 
+## Entrega incremental P28 — 14 de noviembre de 2026
+
+Guías de instalación/configuración/arquitectura/demostración y arranque aislado
+desde almacenamiento vacío con Dockerfiles/locks, 62 tests frontend/build,
+dependencias/esquema, importación/rangos/recreación y respaldo/restauración real
+en datos sintéticos. No acredita API real/RF-14, pertinencia musical o escucha.
+Mantener pendientes docentes Java/Spring/VPS/tenant/PDF/OCR; no fingir cobertura
+por adaptar patrones al dominio musical. Ver VALIDACION_P28.md y matriz P26.
+
+## Cobertura incremental P27 — 14 de noviembre de 2026
+
+Revisión de calidad con presupuesto SQL, límites de recursos y contexto simulado,
+preservación de fuentes/portadas y errores seguros. Ajustes de nombres/foco y carga
+diferida; auditoría acotada de secretos y acceso local sin cuentas. 241 pruebas
+backend/62 frontend y build aprobados. No certifica WCAG, seguridad comercial,
+tenancy, proveedor real ni rendimiento universal. Ver REVISION_CALIDAD_P27.md;
+la aceptación real/visual y el alcance docente pendiente no cambian.
+
 ## Cobertura incremental P26 — 14 de noviembre de 2026
 
 Matriz CA-01–CA-13 y regresión integrada con persistencia entre procesos HTTP

@@ -76,7 +76,7 @@ def restore(path, database):
     manifest = path.with_suffix(".json")
     if not manifest.is_file():
         raise SystemExit("Falta el manifiesto JSON del respaldo.")
-    metadata = json.loads(manifest.read_text(encoding="utf-8"))
+    metadata = json.loads(manifest.read_text(encoding="utf-8-sig"))
     if metadata.get("sha256") != checksum(path):
         raise SystemExit("El hash del respaldo no coincide. No se creó ninguna base.")
     if query("SELECT current_database()") == database:

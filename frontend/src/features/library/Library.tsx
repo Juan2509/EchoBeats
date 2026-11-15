@@ -11,7 +11,7 @@ import { FavoriteButton, useFavoritesRevision } from '../favorites/Favorites'
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 type Navigate = (path: string) => void
 export function Cover({ url, title }: { url: string | null; title: string }) {
-  return <img className="cover" src={url ?? defaultCover} alt={`Portada de ${title}`} loading="lazy"
+  return <img className="cover" src={url ?? defaultCover} alt={`Portada de ${title}`} loading="lazy" decoding="async"
     onError={event => { if (!event.currentTarget.src.endsWith(defaultCover)) event.currentTarget.src = defaultCover }} />
 }
 export const artists = (item: Album | Track) => item.artists.map(value => value.name).join(', ') || 'Artista desconocido'

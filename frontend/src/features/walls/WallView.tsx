@@ -19,7 +19,7 @@ function Decoration({ item, index, animated, editable, selected, handlers }: { i
   useEffect(() => setFailed(false), [source])
   return <li className="wall-element" style={{ left: `${item.cx * 100}%`, top: `${item.cy * 100}%`, width: `${item.width * 100}%`, height: `${item.height * 100}%`, transform: `translate(-50%, -50%) rotate(${item.rotation_deg}deg)`, zIndex: item.z_index }}>
     <button type="button" className="wall-object" disabled={!editable} tabIndex={editable ? 0 : -1} aria-pressed={selected} aria-label={`${kinds[item.kind]} ${index + 1}${editable ? ': mover con las flechas' : ''}`} {...handlers}>
-      {failed || !source ? <span className="wall-placeholder">{paused ? 'GIF en pausa' : 'Imagen no disponible'}</span> : <img src={source} alt="" draggable={false} onError={() => setFailed(true)} />}
+      {failed || !source ? <span className="wall-placeholder">{paused ? 'GIF en pausa' : 'Imagen no disponible'}</span> : <img src={source} alt="" loading="lazy" decoding="async" draggable={false} onError={() => setFailed(true)} />}
     </button>
   </li>
 }
@@ -87,7 +87,7 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
   return <section className="wall-panel" onFocusCapture={event => {
     const target = event.target
     requestAnimationFrame(() => {
-      if (!target.isConnected || drag.current) return
+      if (!target.isConnected || document.activeElement !== target || drag.current) return
       const control = target.getBoundingClientRect(), player = document.querySelector('.player-bar')?.getBoundingClientRect()
       if (player && control.bottom > player.top - 16 && control.top < player.bottom) window.scrollBy(0, control.bottom - player.top + 24)
     })

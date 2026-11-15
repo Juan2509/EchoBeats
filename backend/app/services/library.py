@@ -48,6 +48,6 @@ def page(connection, kind, limit, offset, query='', album_id=None, include_empty
         from app.services.playlists import data
         items = [data(connection, value, include_items=False)[0] for value in ids]
     else:
-        reader = metadata.track_data if kind == 'tracks' else metadata.album_data
-        items = [reader(connection, value)[0] for value in ids]
+        reader = metadata.tracks_data if kind == 'tracks' else metadata.albums_data
+        items = reader(connection, ids)
     return {'items': items, 'total': total, 'limit': limit, 'offset': offset}

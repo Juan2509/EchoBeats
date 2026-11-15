@@ -99,37 +99,76 @@ def require_cover(connection, asset_id):
         raise MetadataError("invalid_cover", "La referencia no corresponde a una portada PNG o JPEG válida.")
 
 
-def track_data(connection, track_id):
-    row = require_track(connection, track_id)
-    collection = require_album(connection, row.album_id)
+def track_document(row, collection_title, collection_cover, artists, mime_type):
     # Un null manual significa usar la portada predeterminada, no heredar.
     cover = row.cover_asset_id
     cover_source = row.metadata_sources.get("cover", "fallback")
     if cover is None and row.metadata_sources.get("cover") != "manual":
-        cover = collection.cover_asset_id
+        cover = collection_cover
         if cover is not None:
             cover_source = "album"
     return {
-        "id": row.id, "title": row.title, "content_sha256": row.content_sha256, "artists": credits(connection, track_artist, track_artist.c.track_id, row.id),
-        "album_id": row.album_id, "album_title": collection.title, "duration_ms": row.duration_ms,
+        "id": row.id, "title": row.title, "content_sha256": row.content_sha256, "artists": artists,
+        "album_id": row.album_id, "album_title": collection_title, "duration_ms": row.duration_ms,
         "audio_url": f"/api/v1/tracks/{row.id}/audio",
-        "audio_mime_type": connection.scalar(select(media_asset.c.mime_type).where(media_asset.c.id == row.audio_asset_id)),
+        "audio_mime_type": mime_type,
         "track_number": row.track_number, "cover_asset_id": row.cover_asset_id,
         "cover_url": f"/api/v1/assets/{cover}/content" if cover else None,
         "cover_source": cover_source,
         "metadata_sources": row.metadata_sources, "revision": row.revision, "updated_at": row.updated_at,
-    }, etag("track", row)
+    }
+
+
+def track_data(connection, track_id):
+    row = require_track(connection, track_id)
+    collection = require_album(connection, row.album_id)
+    return track_document(row, collection.title, collection.cover_asset_id,
+        credits(connection, track_artist, track_artist.c.track_id, row.id),
+        connection.scalar(select(media_asset.c.mime_type).where(media_asset.c.id == row.audio_asset_id))), etag('track', row)
+
+
+def batch_credits(connection, table, column, ids):
+    grouped = {identity: [] for identity in ids}
+    for row in connection.execute(select(column, artist.c.id, artist.c.name).select_from(
+            table.join(artist, artist.c.id == table.c.artist_id)).where(column.in_(ids)).order_by(column, table.c.position)):
+        grouped[row[0]].append({'id': row.id, 'name': row.name})
+    return grouped
+
+
+def tracks_data(connection, ids):
+    if not ids: return []
+    rows = connection.execute(select(track, album.c.title.label('album_title'),
+        album.c.cover_asset_id.label('album_cover'), media_asset.c.mime_type.label('audio_mime')).select_from(
+        track.join(album, album.c.id == track.c.album_id).join(media_asset, media_asset.c.id == track.c.audio_asset_id))
+        .where(track.c.id.in_(ids))).all()
+    artists = batch_credits(connection, track_artist, track_artist.c.track_id, ids)
+    documents = {row.id: track_document(row, row.album_title, row.album_cover, artists[row.id], row.audio_mime) for row in rows}
+    return [documents[identity] for identity in ids]
 
 
 def album_data(connection, album_id):
     row = require_album(connection, album_id)
+    return album_document(row, credits(connection, album_artist, album_artist.c.album_id, row.id),
+        connection.scalar(select(func.count()).select_from(track).where(track.c.album_id == row.id))), etag('album', row)
+
+
+def album_document(row, artists, count):
     return {
-        "id": row.id, "title": row.title, "artists": credits(connection, album_artist, album_artist.c.album_id, row.id),
+        "id": row.id, "title": row.title, "artists": artists,
         "cover_asset_id": row.cover_asset_id,
         "cover_url": f"/api/v1/assets/{row.cover_asset_id}/content" if row.cover_asset_id else None,
-        "track_count": connection.scalar(select(func.count()).select_from(track).where(track.c.album_id == row.id)),
+        "track_count": count,
         "system_key": row.system_key, "metadata_sources": row.metadata_sources, "revision": row.revision,
-    }, etag("album", row)
+    }
+
+
+def albums_data(connection, ids):
+    if not ids: return []
+    rows = connection.execute(select(album, func.count(track.c.id).label('track_count')).select_from(
+        album.outerjoin(track, track.c.album_id == album.c.id)).where(album.c.id.in_(ids)).group_by(album.c.id)).all()
+    artists = batch_credits(connection, album_artist, album_artist.c.album_id, ids)
+    documents = {row.id: album_document(row, artists[row.id], row.track_count) for row in rows}
+    return [documents[identity] for identity in ids]
 
 
 def enrich_track(engine, store, track_id, expected=None):

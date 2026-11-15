@@ -1,5 +1,12 @@
 # Matriz de aceptación integrada — P26
 
+Actualización P28: otro proyecto vacío aprobó build/migraciones/dependencias,
+62 tests frontend, importación/rangos/proxy y medio después de recrear contenedor;
+dump/restauración a nueva BD y copia de medios sintéticos verificados. Complementa
+el arranque/transporte/persistencia de CA-01 a nivel técnico; no sustituye los
+otros recorridos P26, navegador/escucha ni CA-10/CA-11.
+Guía repetible en GUIA_DEMOSTRACION.md, evidencia en VALIDACION_P28.md.
+
 14 de noviembre de 2026. Fuente de aceptación: ALCANCE_MVP.md, CA-01–CA-13.
 **Ningún recorrido audible/visual se declara superado solo por HTTP o dobles.**
 Pruebas ejecutadas sin OpenAI real, con PostgreSQL/pgvector y medios aislados.

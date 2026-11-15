@@ -4,5 +4,6 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
+COPY scripts/revisar_secretos.mjs /app/scripts/revisar_secretos.mjs
 EXPOSE 5173
 CMD ["npm", "run", "dev"]

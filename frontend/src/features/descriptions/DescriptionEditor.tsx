@@ -7,7 +7,7 @@ const names = { tempo_bpm: 'Tempo (BPM)', timbre: 'Timbre', instruments: 'Instru
 const sources = [['manual', 'Anotación manual'], ['verified', 'Verificado con fuente'], ['metadata', 'Metadatos existentes']]
 export function DescriptionEditor({ trackId, title }: { trackId: string; title: string }) {
   const [open, setOpen] = useState(false)
-  return <><button className="secondary" onClick={() => setOpen(true)}>Ficha musical</button>{open && <Editor key={trackId} trackId={trackId} title={title} close={() => setOpen(false)} />}</>
+  return <><button type="button" className="secondary" aria-haspopup="dialog" aria-expanded={open} aria-label={`Ficha musical de ${title}`} onClick={() => setOpen(true)}>Ficha musical</button>{open && <Editor key={trackId} trackId={trackId} title={title} close={() => setOpen(false)} />}</>
 }
 function Editor({ trackId, title, close }: { trackId: string; title: string; close: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)
@@ -22,6 +22,7 @@ function Editor({ trackId, title, close }: { trackId: string; title: string; clo
   const controller = control.current
   const dirty = controller?.dirty ?? false, blocked = state.loading || state.saving || state.needsReload
   const canClose = () => !state.saving && (!dirty || window.confirm('¿Descartar los cambios sin guardar de esta ficha?'))
+  function finishClose() { dialog.current?.close(); close() }
   useEffect(() => {
     const unload = (event: BeforeUnloadEvent) => { if (dirty || state.saving) event.preventDefault() }
     const navigate = (event: Event) => { if (state.saving || (dirty && !window.confirm('Hay cambios sin guardar en una ficha musical. ¿Salir y descartarlos?'))) event.preventDefault() }
@@ -31,7 +32,7 @@ function Editor({ trackId, title, close }: { trackId: string; title: string; clo
   function feature(index: number, changes: Partial<Feature>) {
     controller?.edit({ ...state.draft, features: state.draft.features.map((f, i) => i === index ? { ...f, ...changes } : f) })
   }
-  return <dialog ref={dialog} className="description-dialog" aria-labelledby={`description-${trackId}`} onCancel={event => { event.preventDefault(); if (canClose()) close() }}>
+  return <dialog ref={dialog} className="description-dialog" aria-labelledby={`description-${trackId}`} onCancel={event => { event.preventDefault(); if (canClose()) finishClose() }}>
     <h2 id={`description-${trackId}`}>Ficha musical: {title}</h2>
     <p className="note">Registra lo que conoces y su fuente. No se ha analizado el sonido mediante IA. Deja desconocido lo que no puedas respaldar; las interpretaciones se distinguen de los hechos.</p>
     <p role="status">{state.loading ? 'Cargando ficha…' : state.saving ? 'Guardando ficha…' : dirty ? 'Cambios sin guardar' : state.notice || (state.record ? `Versión ${state.record.version}` : 'Sin ficha todavía')}</p>
@@ -56,7 +57,7 @@ function Editor({ trackId, title, close }: { trackId: string; title: string; clo
       <p className="note">Guardar una corrección crea una nueva versión y exige indexar esa versión por separado. Una descripción vacía conserva una ficha incompleta y no impide escuchar.</p>
       <button disabled={blocked || !dirty}>Guardar ficha</button>
       <button type="button" className="secondary" disabled={state.saving || state.loading} onClick={() => { if (!dirty || window.confirm('¿Descartar el borrador y recargar la ficha guardada?')) void controller?.load() }}>Recargar ficha guardada</button>
-      <button type="button" className="secondary" disabled={state.saving} onClick={() => { if (canClose()) close() }}>Cerrar</button>
+      <button type="button" className="secondary" disabled={state.saving} onClick={() => { if (canClose()) finishClose() }}>Cerrar</button>
     </form>
     {state.record&&!state.loading&&<IndexPanel trackId={trackId} version={state.record.version} locked={dirty||blocked||!!state.record.metadata_stale} />}
   </dialog>

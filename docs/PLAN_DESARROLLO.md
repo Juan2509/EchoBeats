@@ -631,6 +631,14 @@ Los defectos detectados se corrigen en commits `fix` concretos antes del cierre.
 
 ### [ ] P27 — Revisar accesibilidad, recursos y protección de datos
 
+**Revisión automática y correcciones listas, 14 de noviembre; visual pendiente.**
+241 pruebas backend/62 frontend y build aprobados. Q01–Q08 resueltos o limitados
+en REVISION_CALIDAD_P27.md; evidencia en VALIDACION_P27.md. Cuatro SQL por página
+de 24 pistas/álbumes, carga de editor diferida, entrega de imágenes segura y
+ajustes de nombre/foco. Auditoría de secretos acotada sin coincidencias, sin
+revelar valores ni afirmar seguridad completa. Sin migración/dependencias/API
+real. Conservar 506 MP3 sin fila y pendientes anteriores; próximo P28 a petición.
+
 **Depende de:** P26. **Commit:** `fix(quality): resolver hallazgos de la revisión del MVP`
 
 - Revisar teclado, foco, etiquetas y legibilidad; comprobar controles de audio
@@ -645,6 +653,16 @@ declara preparación comercial a partir de una revisión del prototipo.
 Si no hay correcciones, registrar únicamente la evidencia en un commit `docs`.
 
 ### [ ] P28 — Documentar arranque y preparar demostración
+
+**Entrega documental y arranque aislado listos, 14 de noviembre de 2026.**
+README y guías de instalación/configuración/arquitectura/demo actualizadas. Entorno
+vacío echobeats_p28_83f7845a: Docker build, pip/alembic check, 62 tests frontend,
+importación/proxy/rangos y audio tras recrear backend aprobados. Restauración a
+otra BD y copia de medio sintético verificadas. Ver VALIDACION_P28.md. Caché
+posible, sin máquina externa/visual/escucha/API real. Último backend P27: 241.
+Casilla abierta para demostración completa y dependencias P26/P27 pendientes.
+No hay siguiente implementación núcleo automática: cerrar pendientes; Oxx solo
+por autorización y alcance explícitos. Sin commits creados.
 
 **Depende de:** P26, P27 y requisitos académicos aplicables.
 **Commit:** `docs(delivery): documentar instalación, arquitectura y demostración`
@@ -721,9 +739,9 @@ No se habilitan por inferencia migración a Spring Boot, VPS/tenants ni PDF/OCR.
 Confirmar cuáles son exigencias universales antes de la implementación afectada.
 
 - **Última actualización:** 13 de noviembre de 2026.
-- **Trabajo actual:** P26 verificado automáticamente: 237 pruebas backend/61 frontend y build, matriz de aceptación y reinicios HTTP aislados. Corregido aislamiento de medios en pruebas; 506 MP3 sin fila conservados. Cierre visual/audio y API real pendientes.
+- **Trabajo actual:** P28 documentado y arranque aislado aprobado con 62 pruebas frontend/build/pip/alembic, recreación y restauración de demo. Último backend P27: 241. 506 MP3 sin fila conservados; demostración visual/audio y API real pendientes.
 - **Aplicación:** catálogo, importación, metadatos, portadas, biblioteca visual, audio con rangos y reproductor compartido.
-- **Próximo bloque de implementación:** P27, accesibilidad, recursos y protección de datos, cuando el usuario lo solicite. Conservar hallazgo de 506 archivos sin fila sin borrarlos por defecto. Sin llamadas reales hasta resolver/reanudar prueba pendiente; conservar pendientes visuales/audio.
+- **Siguiente trabajo:** cerrar validaciones visuales/audio y API/evaluación/rúbrica pendientes cuando se habiliten y el usuario lo solicite. No iniciar Oxx automáticamente ni llamar al proveedor por seguir etapas. Conservar los 506 archivos sin fila sin borrado por defecto.
 - **Decisiones de trabajo:** local de un usuario, React/TypeScript/Vite,
   Python 3.12/FastAPI y PostgreSQL/pgvector; archivos copiados a MEDIA_ROOT.
 - **Decisiones pendientes:** proveedores/modelos de IA,

@@ -1,5 +1,28 @@
 # EchoBeats: contexto del proyecto
 
+P28 prepara entrega: README, INSTALACION/CONFIGURACION/ARQUITECTURA y
+GUIA_DEMOSTRACION. Leer VALIDACION_P28.md. Arranque final aislado
+echobeats_p28_83f7845a aprobado desde BD/medios vacíos, pip/alembic check,
+build/62 pruebas frontend, importación/rangos/proxy y recreación de contenedor
+con audio persistente. Dump/restauración a BD nueva y copia de un medio verificados.
+Solo caché Docker posible, no máquina externa/navegador/API real. Helper Node
+prepara .env sin sobrescribir; restaurador acepta BOM. Frontend Docker incluye
+auditor requerido por tests. Entornos de demo detenidos, datos/volúmenes conservados.
+Última regresión backend P27: 241; no fingir nueva corrida backend en P28.
+Sin llamadas reales; conservar 506 MP3 sin fila. P28 no cierra MVP: quedan
+visuales/audio/API/evaluación/rúbrica pendientes. No activar Oxx como siguiente
+paso automático. No se crearon commits.
+
+P27 corrige lecturas N+1 de páginas (pistas 98→4 SQL, álbumes 74→4 en 24 elementos),
+carga oculta del editor, entrega visual con truncado/permisos y nombres/foco de
+diálogos/controles. Ver docs/REVISION_CALIDAD_P27.md y docs/VALIDACION_P27.md.
+241 pruebas backend/62 frontend y build aprobados; sin migraciones/dependencias.
+Auditoría acotada con scripts/revisar_secretos.mjs no emite claves ni contenidos;
+no certificar historial completo/logs no examinados, accesibilidad o rendimiento
+universal. Solo contexto simulado de IA. Conservar 506 MP3 sin fila y todos los
+medios/respaldos; no reanudar OpenAI. Visual/escucha y aceptación P26 pendientes;
+P27 conserva cierre visual abierto. Próximo P28 a petición del usuario.
+
 P26 verifica integración HTTP con dos reinicios reales de procesos aislados y
 recuperación ante fallos simulados. Leer docs/VALIDACION_P26.md,
 docs/MATRIZ_ACEPTACION_P26.md y docs/HALLAZGO_AISLAMIENTO_P26.md. 237 pruebas

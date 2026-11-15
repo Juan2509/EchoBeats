@@ -1,5 +1,14 @@
 # Pantallas y flujos de EchoBeats
 
+## Incremento P27 — Nombres, foco y carga
+
+Diálogo de álbum con nombre único/estado ocupado; ficha cierra nativamente antes
+de desmontarse. Foco visible de controles fuera del muro se revela frente a la
+barra sticky; muro conserva protección de gestos y descarta foco antiguo. Objetos
+con foco claro/oscuro para fondos configurables. Imágenes lazy/async y metadatos
+bajo demanda; después de activar el editor se conserva el borrador al ocultarlo.
+Interacción real, reflow/zoom y lector pendientes: ver VALIDACION_P27.md.
+
 ## Incremento P25 — Comparación de preferencias en Explorar
 
 Selector conservar/favorecer/descubrir, inicialmente conservar. Se aplica solo al

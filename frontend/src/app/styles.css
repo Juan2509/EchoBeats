@@ -113,6 +113,7 @@ h1 { font-size: clamp(2.4rem, 5vw, 4.3rem); letter-spacing: -.045em; overflow-wr
 .note, footer { color: #bbc4af; }footer { display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid #383d32; padding-top: 20px; margin-top: 32px; }
 .skip-link { position: absolute; left: 16px; top: -100px; background: #d4e6ad; color: #202719; padding: 12px; z-index: 10; }.skip-link:focus { top: 12px; }
 a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-offset: 5px; }
+main:focus-visible { outline: 3px solid #e1f2bf; outline-offset: 5px; }
 [hidden] { display: none !important; }
 .player-bar { position: sticky; bottom: 0; z-index: 2; display: grid; grid-template-columns: minmax(180px, 1fr) minmax(250px, 1.3fr) 150px; gap: 20px; align-items: center; background: #20271b; border: 1px solid #65794a; border-radius: 14px; padding: 18px; margin-top: 8px; box-shadow: 0 -8px 28px #10150ce0; }
 .player-track { display: flex; gap: 12px; align-items: center; min-width: 0; }.player-track img { width: 58px; height: 58px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
@@ -187,7 +188,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid #e1f2bf; outline-off
 .wall-element .wall-object { display: block; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; touch-action: none; cursor: grab; }
 .wall-element .wall-object:disabled { opacity: 1; cursor: default; pointer-events: none; }
 .wall-element .wall-object[aria-pressed=true] { outline: 2px dashed #fff; outline-offset: 3px; }
-.wall-element .wall-object:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.wall-element .wall-object:focus-visible { outline: 3px solid #fff; outline-offset: 4px; box-shadow: 0 0 0 3px #121510; }
 .wall-element .wall-object:active { cursor: grabbing; }
 .wall-add { display: grid; gap: 12px; margin-top: 20px; }
 .wall-add label { display: grid; gap: 8px; }

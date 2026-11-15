@@ -1,5 +1,23 @@
 # Decisiones técnicas de EchoBeats
 
+## Entrega P28 — Reproducción sin mezclar bibliotecas
+
+Arranque vacío en proyecto Compose único con configuración nueva sin OpenAI,
+puertos separados y medios/BD propios. Conservación de datos al parar y descarga
+de audio después de recrear contenedor, no solo restart. Preparador Node alternativo
+sin sobrescritura; manifiestos Windows BOM admitidos en restore. No cambiar stack,
+modelo ni política de consumo por preparar una exposición. Caché/automatización no
+equivalen a demostración audible o API real. Ver VALIDACION_P28.md.
+
+## Incremento P27 — Lectura agrupada y revisión acotada
+
+Agrupar filas/créditos/conteos por página, manteniendo serializador compartido con
+detalle y snapshots existentes. No resolver latencia añadiendo caché incoherente.
+Editor bajo demanda conserva borrador tras primera apertura. Imagen se comprueba
+antes de cabeceras, igual que audio, sin hacer SHA-256 por cada GET. Sin nueva
+migración, dependencia ni cambios de proveedor/ranking. Hallazgos/foco/acceso y
+mediciones con límites explícitos en REVISION_CALIDAD_P27.md; no preparación comercial.
+
 ## Incremento P25 — Ajuste conservador y descubrimiento explícito
 
 Preferencias desactivadas por defecto. Favorecer solo intercambia pares disjuntos

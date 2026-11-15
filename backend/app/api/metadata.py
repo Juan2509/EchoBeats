@@ -1,4 +1,6 @@
 from typing import Annotated
+import os
+import stat
 from uuid import UUID
 from urllib.parse import urlencode
 
@@ -150,11 +152,17 @@ def cover_content(asset_id: UUID, request: Request):
         raise service.MetadataError("cover_not_found", "No existe esa portada.", 404)
     try:
         path = MediaStore(request.app.state.settings.media_root).path_for(resource.storage_key)
-    except ValueError:
+        if not stat.S_ISREG(path.stat().st_mode):
+            raise service.MetadataError('media_missing', 'La imagen no está disponible.', 404)
+        with path.open('rb') as stream:
+            info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size != resource.byte_size:
+            raise service.MetadataError('media_missing', 'La imagen no está disponible.', 404)
+    except (ValueError, FileNotFoundError, NotADirectoryError, IsADirectoryError):
         raise service.MetadataError("media_missing", "No se encuentra la imagen.", 404) from None
-    if not path.is_file():
-        raise service.MetadataError("media_missing", "No se encuentra la imagen.", 404)
-    return FileResponse(path, media_type=resource.mime_type, content_disposition_type="inline", headers={
+    except OSError:
+        raise service.MetadataError('media_unavailable', 'No se pudo acceder a la imagen. Vuelve a intentarlo más tarde.', 503) from None
+    return FileResponse(path, media_type=resource.mime_type, stat_result=info, content_disposition_type="inline", headers={
         "X-Content-Type-Options": "nosniff", "Cache-Control": "private, max-age=3600",
     })
 

@@ -2,6 +2,54 @@
 
 Registro inicial: 12 de noviembre de 2026.
 
+## Avance vigente: P28 — 14 de noviembre de 2026
+
+Entrega documental preparada: README práctico y guías INSTALACION, CONFIGURACION,
+ARQUITECTURA y GUIA_DEMOSTRACION; respaldo/restauración actualizado. Ver
+VALIDACION_P28.md. Preparador Node conserva .env existente; verificador crea
+proyectos únicos sin clave OpenAI ni copia del .env personal. Frontend Dockerfile
+incluye script de auditoría importado por tests. Helper restore acepta UTF-8 BOM,
+con rechazo de hash inválido previo a operaciones verificado mediante mocks.
+
+Arranque final echobeats_p28_83f7845a aprobado: base/medios vacíos, Dockerfiles/locks
+(caché posible), migración 0009, pip/alembic check, build y 62 pruebas frontend
+dentro del contenedor; importación/rangos/proxy y audio íntegro tras recrearlo.
+Dump real pg_dump/pg_restore hacia echobeats_restore_p28 en ese PostgreSQL aislado:
+fuente/restaurada una pista y 0009. Copia de un medio aparte con hash coincidente.
+Demo detenida, datos/credenciales/volúmenes conservados en data/<proyecto>; informe
+resultado.json y backup.json. Intentos previos guardados: fallo HTTP/harness y
+limitación MEDIA_ROOT relativo que no acreditaba persistencia fuera del contenedor.
+Ruta absoluta/recreación verificadas en el intento final; principal ya las fijaba.
+
+No nueva corrida backend: conservar última P27 241/62 y sus límites. Sin API real,
+--live ni corpus indexado personalmente. No escucha/navegador/máquina externa
+validados; instalación nativa queda opcional no verificada como limpia. Conservar
+506 MP3 sin fila y todos los datos privados. P28 no cierra el MVP; siguen
+pendientes P08/P15/P16/audio/P20–P27, API/evaluación y definición docente.
+Siguiente trabajo: cerrar esos pendientes cuando herramientas/créditos lo permitan
+y el usuario lo solicite; no activar Oxx ni inventar P29. Sin commits creados.
+
+## Avance vigente: P27 — 14 de noviembre de 2026
+
+Revisión automática/correcciones listas: páginas de pistas 98→4 sentencias SQL y
+álbumes 74→4 en fixture de 24, conservando contrato/créditos/portadas manuales e
+heredadas; metadatos solo se montan al abrir el editor por primera vez y después
+conservan borrador; imágenes verifican regularidad/tamaño/apertura con 404/503
+seguros; lazy/async de imágenes; nombre de diálogo de álbum y cierre nativo de
+ficha, foco visible frente al reproductor y sobre fondos personalizados.
+241 pruebas backend/62 frontend y build aprobados. Sin migración, paquetes ni
+regla nueva de ranking. Auditoría acotada de árbol/build/valores privados y últimas
+2000 líneas de logs sin coincidencias; no imprime claves ni certifica historia
+completa o seguridad comercial. scripts/revisar_secretos.mjs; ver
+REVISION_CALIDAD_P27.md y VALIDACION_P27.md para mediciones y límites.
+
+Sin llamadas reales OpenAI, solo proveedor simulado (1 embedding + 1 selección,
+5 fuentes/599 bytes en fixture). Conservar clave privada, 506 MP3 sin fila,
+medios, volúmenes y respaldos. Visual/lector de pantalla/teclado/densos/360–1280,
+escucha/seek y API real siguen pendientes; no declarar WCAG, latencia real ni
+MVP completo. P26 y pendientes anteriores vigentes, P27 abierto para revisión
+visual. Próximo P28 cuando lo solicite el usuario; no se creó commit.
+
 ## Avance vigente: P26 — 14 de noviembre de 2026
 
 Integración verificada con servidor HTTP real en BD/medios aislados, tres procesos

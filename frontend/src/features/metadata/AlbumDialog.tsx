@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import type { Album } from '../../shared/api/metadata'
 import { editOptions, metadataRequest } from '../../shared/api/metadata'
 
 export function AlbumDialog({ albumId, disabled, onSaved }: { albumId: string; disabled: boolean; onSaved: () => Promise<void> }) {
   const dialog = useRef<HTMLDialogElement>(null)
+  const headingId = useId()
   const [title, setTitle] = useState('')
   const [artists, setArtists] = useState('')
   const [etag, setEtag] = useState('')
@@ -39,9 +40,9 @@ export function AlbumDialog({ albumId, disabled, onSaved }: { albumId: string; d
   return <>
     <button type="button" disabled={disabled || busy} onClick={load}>Editar nombre y artistas del álbum</button>
     {error && !dialog.current?.open && <p role="alert">{error}</p>}
-    <dialog ref={dialog} className="album-dialog" onCancel={event => { if (busy) event.preventDefault() }}>
+    <dialog ref={dialog} className="album-dialog" aria-labelledby={headingId} aria-busy={busy} onCancel={event => { if (busy) event.preventDefault() }}>
       <form onSubmit={event => { event.preventDefault(); void save() }}>
-        <h3>Editar álbum</h3>
+        <h3 id={headingId}>Editar álbum</h3>
         <p>Estos cambios se aplican a todas las canciones de este álbum.</p>
         <label>Nombre del álbum<input required maxLength={255} value={title} onChange={event => setTitle(event.target.value)} disabled={busy} /></label>
         <label>Artistas del álbum (uno por línea)<textarea value={artists} onChange={event => setArtists(event.target.value)} disabled={busy} /></label>
