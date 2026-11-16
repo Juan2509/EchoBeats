@@ -76,6 +76,7 @@ album_artist = Table(
 )
 track = Table(
     "track", metadata, identity(),
+    Column('deleted_at', DateTime(timezone=True)),
     Column("audio_asset_id", Uuid, ForeignKey("media_asset.id", ondelete="RESTRICT"), nullable=False, unique=True),
     Column("content_sha256", String(64), nullable=False, unique=True),
     Column("album_id", Uuid, ForeignKey("album.id", ondelete="RESTRICT"), nullable=False, index=True),

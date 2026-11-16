@@ -7,6 +7,11 @@ import { usePlayer } from '../player/Player'
 import { ProcessingPanel } from '../processing/ProcessingPanel'
 import { DescriptionEditor } from '../descriptions/DescriptionEditor'
 import { FavoriteButton, useFavoritesRevision } from '../favorites/Favorites'
+import { useAppearance } from '../appearance/Appearance'
+import { presentationFor } from '../appearance/theme'
+import {AlbumTrackTools} from './AlbumTrackTools'
+import {DeleteTrackButton} from './DeleteTrackButton'
+import {ImportPanel} from '../import/ImportPanel'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
 type Navigate = (path: string) => void
@@ -47,7 +52,7 @@ export function Pagination({ offset, total, move }: { offset: number; total: num
     <button disabled={offset + 24 >= total} onClick={() => move(offset + 24)}>Siguiente</button>
   </nav> : null
 }
-function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[]; navigate: Navigate; queuePath: string; queueLabel: string }) {
+function TrackList({ tracks, navigate, queuePath, queueLabel,inAlbum=false }: { tracks: Track[]; navigate: Navigate; queuePath: string; queueLabel: string;inAlbum?:boolean }) {
   const player = usePlayer()
   return <ul className="track-list">{tracks.map(item => <li key={item.id} className={player.state.track?.id === item.id ? 'active-track' : undefined}>
     <button className="track-play" aria-label={`${player.state.track?.id === item.id && (player.state.playing || player.state.loading) ? 'Pausar' : 'Reproducir'} ${item.title}`}
@@ -56,15 +61,16 @@ function TrackList({ tracks, navigate, queuePath, queueLabel }: { tracks: Track[
         else player.select(item, { path: queuePath, label: queueLabel }, tracks)
       }}>{player.state.track?.id === item.id && (player.state.playing || player.state.loading) ? 'Ⅱ' : '▶'}</button>
     <Cover url={item.cover_url} title={item.title} />
-    <div><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><span>{artists(item)}</span>
-      <a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a>
-      <ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} />
-      <DescriptionEditor trackId={item.id} title={item.title} /><a href={`/explorar?similar=${item.id}`} onClick={event => { event.preventDefault(); navigate(`/explorar?similar=${item.id}`) }}>Buscar similares</a><FavoriteButton trackId={item.id} title={item.title} /></div>
+    <div><div className="track-title-row"><strong>{item.track_number ? `${item.track_number}. ` : ''}{item.title}</strong><FavoriteButton iconOnly trackId={item.id} title={item.title}/></div><span>{artists(item)}</span>
+      {!inAlbum&&<><a href={`/albumes/${item.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{item.album_title}</a>
+      <details className="track-actions"><summary>Ficha y opciones</summary><ProcessingPanel key={`${item.id}-${item.revision}`} trackId={item.id} revision={item.revision} />
+      <DescriptionEditor trackId={item.id} title={item.title} /><a href={`/explorar?similar=${item.id}`} onClick={event => { event.preventDefault(); navigate(`/explorar?similar=${item.id}`) }}>Buscar similares</a><DeleteTrackButton id={item.id} title={item.title}/></details></>}</div>
     <time aria-label={`Duración ${duration(item.duration_ms)}`}>{duration(item.duration_ms)}</time>
   </li>)}</ul>
 }
 
 export function Library({ refresh, navigate, search }: { refresh: number; navigate: Navigate; search: string }) {
+  const {appearance,change}=useAppearance()
   const favoritesRevision = useFavoritesRevision()
   const params = new URLSearchParams(search)
   const query = params.get('q') ?? ''
@@ -88,13 +94,14 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
     </form>
     <div className="view-switch" aria-label="Mostrar colección"><button aria-pressed={view === 'albumes'} onClick={() => move('albumes')}>Álbumes</button><button aria-pressed={view === 'canciones'} onClick={() => move('canciones')}>Canciones</button><button aria-pressed={view === 'playlists'} onClick={() => move('playlists')}>Playlists</button></div>
     <div className="view-switch"><button aria-pressed={view === 'favoritos'} onClick={() => move('favoritos')}>♥ Favoritos</button></div>
+    {view==='albumes'&&<label className="album-presentation-control">Apariencia de la colección<select value={appearance.albumPresentation} onChange={event=>change({albumPresentation:event.target.value as 'vinyl'|'image'})}><option value="vinyl">Vinilos</option><option value="image">Portadas</option></select></label>}
     {view === 'favoritos' && <p className="note">Canciones que guardaste expresamente. Puedes marcarlas en la biblioteca, el reproductor o Explorar. Todavía no cambian el orden de las recomendaciones.</p>}
     {view === 'playlists' && <PlaylistLibrary refresh={refresh} navigate={navigate} search={search} />}
     {view !== 'playlists' && <ReadState {...result} />}
     {view !== 'playlists' && result.data && <><p role="status" className="note">{result.data.total} {view === 'albumes' ? 'álbumes' : 'canciones'}{query ? ` para «${query}»` : ' en tu colección'}</p>
       {!result.data.items.length && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : view === 'favoritos' ? 'Todavía no guardaste favoritos' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : view === 'favoritos' ? 'Pulsa el corazón de una canción para encontrarla aquí.' : 'Importa tus archivos de audio para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
       {view === 'albumes' ? <div className="album-grid">{(result.data.items as Album[]).map(item => <a className="album-card" key={item.id} href={`/albumes/${item.id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>
-        <Cover url={item.cover_url} title={item.title} /><h2>{item.title}</h2><p>{artists(item)}</p><span>{item.track_count} pistas</span>
+        <div className={`collection-art ${presentationFor(appearance,item.id)}`}><Cover url={item.cover_url} title={item.title} /></div><h2>{item.title}</h2><p>{artists(item)}</p><span>{item.track_count} pistas</span>
       </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} queuePath={`/${view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query })}`} queueLabel={view === 'favoritos' ? 'Mis favoritos' : query ? `Búsqueda: ${query}` : 'Mi biblioteca'} />}
       <Pagination offset={offset} total={result.data.total} move={value => move(view, query, value)} />
     </>}
@@ -102,13 +109,18 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
 }
 
 export function AlbumView({ id, refresh, navigate, onDirty }: { id: string; refresh: number; navigate: Navigate; onDirty: (dirty: boolean) => void }) {
+  const {appearance,change}=useAppearance()
   const [offset, setOffset] = useState(0)
+  const [importOpen,setImportOpen]=useState(false)
   const info = useRead<Album>(`/albums/${encodeURIComponent(id)}`, refresh)
   const songs = useRead<Page<Track>>(`/tracks?album_id=${encodeURIComponent(id)}&limit=24&offset=${offset}`, refresh)
   return <section><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a>
-    <ReadState {...info} />{info.data && <div className="album-room"><aside className="album-sidebar"><div className="album-heading"><Cover url={info.data.cover_url} title={info.data.title} /><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
-      <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
+    <ReadState {...info} />{info.data && <div className="album-room"><aside className="album-sidebar"><div className="album-heading"><div className={`album-art collection-art ${presentationFor(appearance,id)}`}><Cover url={info.data.cover_url} title={info.data.title} /></div><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
+      <label className="album-presentation-control">Apariencia del álbum<select value={presentationFor(appearance,id)} onChange={event=>change({albumPresentations:{...appearance.albumPresentations,[id]:event.target.value as 'vinyl'|'image'}})}><option value="vinyl">Vinilo</option><option value="image">Portada</option></select></label>
+      <details className="album-import-tools" onToggle={event=>setImportOpen(event.currentTarget.open)}><summary>Añadir música a este álbum</summary>{importOpen&&<ImportPanel albumId={id} albumTitle={info.data.title} onImported={()=>window.dispatchEvent(new Event('echobeats:library-changed'))}/>}</details>
+      <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList inAlbum tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
       <p className="note">Abrir este álbum no cambia la canción que está sonando.</p>
+      <AlbumTrackTools albumId={id} refresh={refresh} navigate={navigate}/>
     </aside><WallView key={id} albumId={id} title={info.data.title} onDirty={onDirty} /></div>}
   </section>
 }

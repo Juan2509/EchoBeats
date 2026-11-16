@@ -14,8 +14,8 @@ def require_playlist(connection, identity, lock=False):
 
 def data(connection, identity, include_items=True):
     row = require_playlist(connection, identity)
-    ids = connection.scalars(select(playlist_track.c.track_id).where(
-        playlist_track.c.playlist_id == identity).order_by(playlist_track.c.position)).all()
+    ids = connection.scalars(select(playlist_track.c.track_id).join(track,track.c.id==playlist_track.c.track_id).where(
+        playlist_track.c.playlist_id == identity,track.c.deleted_at.is_(None)).order_by(playlist_track.c.position)).all()
     result = {key: getattr(row, key) for key in ('id', 'name', 'appearance', 'image_asset_id', 'revision')}
     result.update(image_url=f'/api/v1/assets/{row.image_asset_id}/content' if row.image_asset_id else None, track_count=len(ids))
     if include_items:
@@ -37,7 +37,7 @@ def update(engine, identity, values, expected, ids=None):
         if 'image_asset_id' in values:
             require_cover(connection, values['image_asset_id'])
         if ids is not None:
-            existing = set(connection.scalars(select(track.c.id).where(track.c.id.in_(ids))).all())
+            existing = set(connection.scalars(select(track.c.id).where(track.c.id.in_(ids),track.c.deleted_at.is_(None))).all())
             if existing != set(ids):
                 raise MetadataError('invalid_tracks', 'Una de las canciones ya no existe. Recarga la biblioteca.')
             connection.execute(playlist_track.delete().where(playlist_track.c.playlist_id == identity))

@@ -30,7 +30,7 @@ def get_audio(track_id: UUID, request: Request):
     with engine_for(request).connect() as connection:
         resource = connection.execute(
             select(media_asset).join(track, track.c.audio_asset_id == media_asset.c.id)
-            .where(track.c.id == track_id),
+            .where(track.c.id == track_id,track.c.deleted_at.is_(None)),
         ).first()
         if resource is None:
             raise MetadataError('track_not_found', 'No existe esa canción.', 404)

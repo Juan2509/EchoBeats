@@ -90,7 +90,7 @@ def claim(engine, settings):
         candidates=connection.execute(select(job.c.id,job.c.track_id).where(job.c.operation=='index_description',job.c.status=='pending').order_by(job.c.created_at,job.c.id).limit(32)).all()
         for candidate in candidates:
             from app.models.catalog import track
-            if connection.execute(select(track.c.id).where(track.c.id==candidate.track_id).with_for_update(skip_locked=True)).first() is None:
+            if connection.execute(select(track.c.id).where(track.c.id==candidate.track_id,track.c.deleted_at.is_(None)).with_for_update(skip_locked=True)).first() is None:
                 continue
             row=connection.execute(select(job).where(job.c.id==candidate.id,job.c.status=='pending').with_for_update(skip_locked=True)).first()
             if row is None: continue
@@ -117,7 +117,9 @@ def prepare(engine, claimed, settings, provider_factory=OpenAIProvider):
 
 def finish(engine, claimed, settings, result=None, error_code=None):
     with engine.begin() as connection:
-        require_track(connection,claimed.track_id,lock=True)
+        from app.models.catalog import track
+        current=connection.execute(select(track).where(track.c.id==claimed.track_id).with_for_update()).first()
+        if current is None or current.deleted_at is not None: return False
         row=processing.require_job(connection,claimed.id,lock=True)
         if row.status!='processing' or row.attempts!=claimed.attempts: return False
         record=descriptions.data(connection,row.track_id)[0]

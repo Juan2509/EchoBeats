@@ -1,5 +1,10 @@
 # PostgreSQL y pgvector — Operación local
 
+Head vigente: `0010_track_deletion` (15 de noviembre). Añade retirada lógica de
+pistas sin purgar originales ni historial. Aplicada tras respaldo privado y
+comprobada con Alembic; detalle y pruebas en [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md).
+Las referencias a 0009 siguientes describen la entrega histórica P28.
+
 P28: instalación/configuración actualizadas en INSTALACION.md/CONFIGURACION.md;
 head 0009_favorites. La demostración usa otro proyecto PostgreSQL/medios vacíos.
 El helper scripts/base_datos.py siempre opera desde compose.yaml de la raíz:

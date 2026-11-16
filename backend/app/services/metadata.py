@@ -76,7 +76,7 @@ def album_for_tags(connection, tags):
 
 
 def require_track(connection, track_id, lock=False):
-    statement = select(track).where(track.c.id == track_id)
+    statement = select(track).where(track.c.id == track_id, track.c.deleted_at.is_(None))
     row = connection.execute(statement.with_for_update() if lock else statement).first()
     if row is None:
         raise MetadataError("track_not_found", "No existe esa canción.", 404)
@@ -140,16 +140,16 @@ def tracks_data(connection, ids):
     rows = connection.execute(select(track, album.c.title.label('album_title'),
         album.c.cover_asset_id.label('album_cover'), media_asset.c.mime_type.label('audio_mime')).select_from(
         track.join(album, album.c.id == track.c.album_id).join(media_asset, media_asset.c.id == track.c.audio_asset_id))
-        .where(track.c.id.in_(ids))).all()
+        .where(track.c.id.in_(ids), track.c.deleted_at.is_(None))).all()
     artists = batch_credits(connection, track_artist, track_artist.c.track_id, ids)
     documents = {row.id: track_document(row, row.album_title, row.album_cover, artists[row.id], row.audio_mime) for row in rows}
-    return [documents[identity] for identity in ids]
+    return [documents[identity] for identity in ids if identity in documents]
 
 
 def album_data(connection, album_id):
     row = require_album(connection, album_id)
     return album_document(row, credits(connection, album_artist, album_artist.c.album_id, row.id),
-        connection.scalar(select(func.count()).select_from(track).where(track.c.album_id == row.id))), etag('album', row)
+        connection.scalar(select(func.count()).select_from(track).where(track.c.album_id == row.id, track.c.deleted_at.is_(None)))), etag('album', row)
 
 
 def album_document(row, artists, count):
@@ -165,7 +165,7 @@ def album_document(row, artists, count):
 def albums_data(connection, ids):
     if not ids: return []
     rows = connection.execute(select(album, func.count(track.c.id).label('track_count')).select_from(
-        album.outerjoin(track, track.c.album_id == album.c.id)).where(album.c.id.in_(ids)).group_by(album.c.id)).all()
+        album.outerjoin(track, (track.c.album_id == album.c.id)&track.c.deleted_at.is_(None))).where(album.c.id.in_(ids)).group_by(album.c.id)).all()
     artists = batch_credits(connection, album_artist, album_artist.c.album_id, ids)
     documents = {row.id: album_document(row, artists[row.id], row.track_count) for row in rows}
     return [documents[identity] for identity in ids]
@@ -257,15 +257,30 @@ def patch_track(engine, track_id, changes, expected):
         return track_data(connection, row.id)
 
 
-def create_album(engine, title, names):
+def create_album(engine, title, names, cover_asset_id=None, manual_cover=False):
     with engine.begin() as connection:
+        require_cover(connection, cover_asset_id)
         album_id = connection.scalar(album.insert().values(
-            title=title, metadata_sources={"title": "manual", "artists": "manual", "cover": "fallback"},
+            title=title, cover_asset_id=cover_asset_id, metadata_sources={"title": "manual", "artists": "manual", "cover": "manual" if manual_cover else "fallback"},
         ).returning(album.c.id))
         from app.services.walls import create_initial
         create_initial(connection, album_id)
         replace_credits(connection, album_artist, album_artist.c.album_id, album_id, artist_ids(connection, names))
         return album_data(connection, album_id)
+
+
+def delete_track(engine, track_id, expected):
+    from app.models.catalog import processing_job, playlist, playlist_track
+    with engine.begin() as connection:
+        # NO KEY UPDATE conserva la compatibilidad con FK de playlists concurrentes.
+        row = connection.execute(select(track).where(track.c.id==track_id,track.c.deleted_at.is_(None)).with_for_update(key_share=True)).first()
+        if row is None:
+            raise MetadataError('track_not_found','No existe esa canción.',404)
+        check_revision('track', row, expected)
+        connection.execute(track.update().where(track.c.id==track_id).values(deleted_at=func.now(),revision=row.revision+1,updated_at=func.now()))
+        connection.execute(processing_job.update().where(processing_job.c.track_id==track_id,processing_job.c.status.in_(['pending','processing'])).values(status='stale',error_code='input_changed',result=None,finished_at=func.now(),updated_at=func.now()))
+        connection.execute(playlist.update().where(playlist.c.id.in_(select(playlist_track.c.playlist_id).where(playlist_track.c.track_id==track_id))).values(revision=playlist.c.revision+1,updated_at=func.now()))
+        return {'track_id':track_id,'deleted':True,'original_preserved':True}
 
 
 def patch_album(engine, album_id, changes, expected):

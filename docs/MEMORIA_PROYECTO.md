@@ -1,6 +1,216 @@
 # Memoria de EchoBeats
 
+## Limpieza de temporales — 16 de noviembre de 2026
+
+A petición del usuario se retiraron 27 carpetas regenerables: perfiles cerrados
+de Chrome de pruebas, __pycache__ del código backend y frontend/dist. 8732 archivos,
+1482,06 MiB. Manifiesto local: data/validation/limpieza_2026-11-16.json.
+Se conservaron código (incluidos cambios sin commit), dependencias instaladas,
+documentación, capturas/informes/scripts de validación, .env, respaldos, bases y
+todos los medios. No se purgaron volúmenes Docker ni los 506 MP3 sin fila.
+No hubo cambios funcionales ni nuevas pruebas de aplicación por esta limpieza.
+
+## Álbumes como carpetas, retirada y encuadre — 15 de noviembre de 2026
+
+Implementación y evidencia en [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md).
+Inicio permite crear álbum vacío con nombre, imagen y Vinilo/Portada. Importación
+UI obliga destino y respeta carpeta frente a etiquetas; duplicados no se mueven.
+Retirada lógica de pista con revisión/confirmación, detención del reproductor y
+exclusión de catálogo/audio/playlists/búsqueda, conservando originales e historia.
+Reimportar mismo hash restaura el ID. Migración 0010 aplicada tras respaldo privado.
+X sobre imágenes propias sin borrar presets ni archivos; lienzo interactivo de
+fondo con movimiento, giro y zoom no destructivos, preferencias locales.
+244 backend/95 frontend/build aprobados; navegador aislado con mutaciones simuladas,
+incluidos creación 360/768, destino obligatorio y giro guardado. No borrados de prueba
+en principal ni llamadas reales IA. Pendientes anteriores vigentes. Sin commit.
+
 Registro inicial: 12 de noviembre de 2026.
+
+## Fichas centralizadas y corazones en canciones — 15 de noviembre de 2026
+
+Usuario pidió quitar álbum redundante de filas, mover Ficha y opciones al fondo
+del panel y corazón junto al nombre. En vista del álbum desaparecen enlaces al
+propio álbum y desplegables por canción. Corazón junto a título en TrackList usa
+FavoritesController compartido: ♡/♥, aria-pressed, guardado confirmado y consulta
+ante fallo sin reintentar PUT. En listado general se conserva enlace al álbum.
+Fichas y opciones del álbum al final del sidebar contiene selector de todas las
+pistas (páginas de100, no solo24 visibles), carga solo al abrir, cancelación y
+rechazo de datos duplicados/ajenos/listado cambiado. Editor original de descripción
+con procedencia, versiones, confirmación de descarte e indexación opt-in intactos;
+también preparación y similares para pista elegida. Sin llamadas reales IA/audio.
+91 pruebas/build; Chrome aislado verificó 125 opciones/edición última pista,
+corazón añadir/quitar y móviles768/360, con catálogo/favoritos/fichas simulados.
+Paginación ajustada al sidebar. Sin cambios backend/migraciones/datos personales.
+
+## Contorno personalizable por sticker — 15 de noviembre de 2026
+
+Solicitud implementada: seleccionar sticker → Objeto → Editar contorno. Color y
+grosor 0–12, paso .5, preview inmediata; 0 oculta. Vista separada mantiene cómodo
+el panel móvil. Filtro SVG feMorphology/SourceAlpha sigue silueta transparente,
+escala con muro de referencia, sin tocar archivo/geometría. Antes era blanco fijo.
+Preferencias por navegador/origen y clave álbumUUID:elementoUUID; no en BD/otros PCs.
+Volver a Imagen oculta efecto sin perder ajustes; Sticker los recupera. Valores
+hex/numéricos e identificadores estrictamente validados; migración de prefs antiguas
+usa blanco/grosor2. 88 pruebas/build y Chrome aislado check-sticker.cjs aprobados:
+contorno fino/grueso/cero, color, independencia, cambios de modo, recarga y móvil
+360x640 sin scroll. Muro/guardados de tipo simulados, preferencias reales en perfil
+aislado; sin backend/migraciones/escritura en principal. Ver APARIENCIA.md.
+
+## Rehacer con Ctrl+Y — 15 de noviembre de 2026
+
+Petición implementada: Ctrl+Y/Cmd+Y y botón Rehacer recuperan pasos de geometría
+deshechos por Ctrl+Z. Orden posición/giro/tamaño, conserva atributos y autoguardado
+versionado. Cambios geométricos nuevos vacían rehacer; clic/gesto cancelado no.
+Bloqueado durante gesto activo, conflicto, carga o fuera de edición. Los mismos
+campos editables/diálogos se excluyen del atajo. Recarga/salida/reset exitoso limpian
+historial. 86 pruebas frontend/build aprobados, incluyendo guardado en vuelo y
+persistencia con gateway simulado. Sin backend/migraciones/datos personales.
+
+## Deshacer geometría y exclusión de tamaño en rotación — 15 de noviembre de 2026
+
+Ctrl+Z/Cmd+Z y botón Deshacer revierten posición/giro/tamaño por pasos en edición.
+Un arrastre completo produce una entrada (máximo 50 por controlador); conserva
+asset/estilo/capas actuales, no deshace archivos ni elimina/restaura imágenes.
+Puede revertir después de autoguardado o mientras una escritura está en vuelo:
+se conserva borrador nuevo y se guarda con siguiente revisión. Si está arrastrando,
+cancela ese gesto sin consumir entrada anterior. No intercepta campos editables ni
+diálogos modales. Recarga/salida/reset exitoso limpian historial, no se guarda en BD.
+Rotación oculta ocho tiradores y bloquea handlers de redimensionado; contorno/icono
+se mantienen. Otro doble clic los recupera. 83 pruebas y build aprobados; Chrome
+aislado check-undo.cjs verificó cursor/atajo, undo de geometría, cancelación, foco de
+input y rotación sin cambio de tamaño, con muro/guardados simulados. Ver APARIENCIA.md.
+
+## Tiradores de tamaño y Shift — 15 de noviembre de 2026
+
+Usuario autorizó redimensionar directamente con ocho tiradores sobre selección:
+cuatro esquinas y cuatro lados, libres o proporcionales manteniendo Shift. Esta
+petición sustituye el tamaño fijo anterior; sin campos numéricos. Imagen usa fill
+para estirar sus píxeles, no añadir espacio de lienzo; original intacto. Ancla
+opuesta/ejes locales respetan giro, límites existentes 3–60% y encaje dentro del
+muro. Snapshot por gesto, guardado al soltar, Escape/cancelación restaura. Handles
+accesibles con flechas y Shift, desaparecen al deseleccionar. Overlay mantiene ocho
+tiradores visibles sobre objetos superpuestos sin cambiar sus capas guardadas.
+78 pruebas frontend/build aprobados. Chrome aislado check-resize.cjs verificó
+cursor real por lado/esquina, Shift, ancla, borde superior, no guardado durante
+gesto, Escape y deselección; muro/guardados simulados sin tocar la principal.
+Ver APARIENCIA.md. Sin backend/migración/dependencias/API IA; pendientes previos.
+
+## Selección directa y límites temporales — 15 de noviembre de 2026
+
+El usuario pidió retirar por completo el desplegable Seleccionar objeto y elegir
+mediante clic en las imágenes. Implementado sin selector/lista; el panel refleja
+el objeto pulsado, conserva acceso por foco de teclado. Contorno temporal de la
+caja real (incluye transparencia del archivo) sigue posición/giro solo mientras
+está seleccionado en edición. Clic en vacío o terminar edición lo oculta; no altera
+tamaño ni marcos del recurso. 74 pruebas y build aprobados. check-floating.cjs
+Chrome aislado verificó un único contorno al seleccionar, cambio a otra imagen,
+ausencia de selector y desaparición al pulsar vacío, con guardados simulados.
+Sin backend/migraciones/escrituras en muros principales. Ver APARIENCIA.md.
+
+## Panel flotante movible — 15 de noviembre de 2026
+
+El usuario pidió editar sin que la ventana opaque/bloquee el muro. Herramientas
+convertidas a panel no modal a derecha: sin backdrop/desenfoque/bloqueo de página,
+movible por cabecera con ratón/táctil o flechas; restringido a área visible y resize.
+Minimizar/Expandir, cerrar conserva edición, terminar guarda/bloquea. Al seleccionar
+imagen en muro se muestra Objeto automáticamente; se puede arrastrar mientras panel
+está abierto. Ubicación solo durante esta apertura, no BD. 74 pruebas/build y
+check-floating.cjs Chrome aislado aprobados (muro y guardados simulados), con
+arrastre de panel/imagen, selección/cambio de apariencia, teclado y páginas 768/360.
+Ver APARIENCIA.md. Sin backend/migraciones/cambios de datos personales ni commit.
+
+## Herramientas emergentes del muro — 15 de noviembre de 2026
+
+Usuario pidió retirar configuración inferior que exige scroll. Editar pared abre
+diálogo con Añadir/Objeto/Capas/Guardar; no hay herramientas desplegadas bajo muro.
+Volver al muro/Escape conserva edición, Terminar edición guarda y bloquea; fallo
+mantiene ventana. GIF en Añadir, recuperación/reset en Guardar. Estado visible,
+foco restaurado y scroll de página bloqueado temporalmente. Las cuatro secciones
+caben sin scroll en Chrome aislado 1280x800, 768x800 y 360x640; fallback de scroll
+para pantallas menores/zoom/errores largos. check-popup.cjs usó muro/guardado
+simulados, verificó selección, cambio Imagen/Sticker, cierre/reapertura y bloqueo.
+74 pruebas y build aprobados; sin backend/migraciones/escrituras en principal.
+Ver APARIENCIA.md; pendientes previos conservados. Sin commit creado.
+
+## Cambiar apariencia del objeto seleccionado — 15 de noviembre de 2026
+
+En Editar pared, seleccionar PNG/JPEG permite alternar Imagen sin marco o Sticker
+con contorno sin volver a subirlo. Conserva ID, recurso, posición, tamaño, giro y
+capas; se usa el autoguardado versionado existente. Bloqueado durante gesto/fallo
+que exige recarga. Póster heredado se puede convertir; GIF conserva modo animado,
+según compatibilidad actual del backend. 74 pruebas y build aprobados; persistencia
+probada con gateway simulado. Sin cambios backend ni escrituras en principal.
+
+## Configuración por vista y rotación directa — 14 de noviembre de 2026
+
+Solicitud implementada: quitar fondos personalizados por ámbito (selección local,
+sin purgar archivos compartidos), predeterminados protegidos. Inicio/Biblioteca
+solo fondo principal; álbum solo su fondo/muro. Transparente/color/imagen/ampliación
+en Configuración, cabecera del muro solo Editar pared/Bloquear diseño.
+Decoraciones nuevas Imagen sin marco o Sticker con contorno alfa; Póster retirado
+del selector, heredados mostrados como imagen. Sin ajustes independientes ancho/alto
+ni campo Giro. Doble clic activa ↻ y arrastre gira; otro doble clic vuelve a mover.
+R/flechas/Escape como alternativa teclado. Gesto con snapshot, cancelación y guardado
+solo al soltar. No cambian geometría/contrato/migraciones/medios existentes.
+73 pruebas frontend y build aprobados; check-rotation.cjs en Chrome aislado verificó
+flujos, transparencia/contorno y cursor real, con datos/guardados simulados; diálogos
+360/768 correctos. Corregida consulta de estado actual al recibir doble clic.
+Ver APARIENCIA.md. Persistencia de preferencias sigue por navegador/origen;
+pendientes de audio, aceptación y API real continúan. Sin commit creado.
+
+## Tarjetas de fondos, muro y vinilos — 14 de noviembre de 2026
+
+Nueva solicitud implementada: todos los controles con marco/superficie opaca,
+incluidos Inicio/Biblioteca/Explorar; selector de fondos en dos columnas con
+miniaturas y marca de selección como captura adjunta. Imagen del muro separada
+del fondo del álbum, ajustable y reversible con Transparente/Color del muro.
+Lienzo sin tope de altura de ventana, mayor anchura y botón Ampliar muro; conserva
+10:7 y datos BD. Presentación Vinilos/Portadas en biblioteca, con elección por
+álbum en detalle y herencia de la predeterminada; preferencias por navegador/origen.
+La apariencia de playlists en BD permanece disponible, sin cambio de API.
+71 pruebas y build aprobados. Chrome aislado verificó galería, controles sobre
+blanco, imagen del muro, ampliación y vinilos/portadas/recarga; Canvas real,
+upload/lectura del asset simulados para evitar datos de prueba en principal.
+Capturas escritorio y 360/768 revisadas. Ver APARIENCIA.md. Sin cambios backend,
+migraciones, audio automático o API IA; pendientes anteriores conservados.
+
+## Fondos y transparencia — ampliación del 14 de noviembre de 2026
+
+Petición vigente: quitar recuadro de personalización, recuperar transparencia,
+volver a estilos predeterminados y ajustar imágenes como wallpaper, con fondo
+principal y otro opcional por álbum. Implementado diálogo desde Configuración o
+Fondo del álbum; eliminado marcador vacío/marco de edición. Transparente y Color
+del muro son reversibles por álbum sin borrar el color/composición en BD.
+Principal y overrides con herencia; estilos synthwave/vaporwave/imagen recuerdan
+imagen guardada al cambiar de modo. Ajustar/rellenar, zoom/posición y preview con
+proporción de ventana. Preparación Canvas de copia JPEG <=2560px/5MiB desde
+PNG/JPEG/WebP <=25MiB/48MP/16384 por lado; original intacto. Almacenamiento de
+preferencias por navegador/origen, no sincronización en BD ni otros equipos.
+69 pruebas frontend/build aprobados. Chrome aislado comprobó transparencia,
+herencia/estilos, copia 4000x2000 a 2560x1280, encuadre y recarga. Subida/respuesta
+de imagen simuladas explícitamente para evitar recursos de prueba en principal;
+no acreditan upload HTTP real. Capturas 1280 y diálogo 360/768 inspeccionadas.
+Ver APARIENCIA.md. Sin backend/migración/llamadas IA; pendientes previos vigentes.
+
+## Solicitud visual posterior a P28 — 14 de noviembre de 2026
+
+Ahora el usuario pide aproximar apariencia a Refrencia.png: vaporwave/synthwave,
+paleta/degradados/fondo editables y muro abierto como referencia. Reemplaza la
+restricción anterior de referencia solo estructural; mantener nombre EchoBeats.
+Implementados paneles neón azul/morado/rosa/cian, rejilla estática en perspectiva,
+sidebar compacta con vinilo, portada provisional SVG original, muro integrado con
+escena y reproductor compacto. No se insertaron objetos ni se tocaron diseños BD.
+
+Configuración → Tu atmósfera: seis colores, ángulo, presets, rejilla, PNG/JPEG y
+modo muro escena/color de álbum. Preferencias localStorage por navegador/origen,
+no BD ni otros PCs; imagen gestionada por backend y selección local. Fallo de
+persistencia informa sesión; quitar/reset no borra archivos. Elegir color desde
+editor activa modo álbum sin perder valores previos. Validación CSS/URLs estricta.
+65 pruebas frontend y build aprobados. Capturas headless de escritorio y marcos
+360/768 inspeccionados; no teclado/escucha/recorrido de configuración completo.
+Ver APARIENCIA.md. Vite polling corrige módulos obsoletos en Docker/Windows.
+Sin backend/migración/dependencias/API real; pendientes anteriores y 506 MP3 sin
+fila conservados. Página temporal de revisión retirada. Sin commit creado.
 
 ## Avance vigente: P28 — 14 de noviembre de 2026
 

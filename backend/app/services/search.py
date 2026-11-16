@@ -34,7 +34,7 @@ def eligible(settings, conditions=()):
         embedding.c.id.label('embedding_id')).select_from(track.join(description,description.c.track_id==track.c.id)
         .join(revision,(revision.c.description_id==description.c.id)&(revision.c.version==description.c.version))
         .join(embedding,(embedding.c.description_id==description.c.id)&(embedding.c.description_version==description.c.version)&(embedding.c.content_hash==description.c.content_hash)))\
-        .where(embedding.c.model_key==indexing.model_key(settings),embedding.c.input_format==indexing.INPUT_FORMAT,
+        .where(track.c.deleted_at.is_(None),embedding.c.model_key==indexing.model_key(settings),embedding.c.input_format==indexing.INPUT_FORMAT,
                func.length(func.trim(description.c.text))>0,or_(not_(derived),basis==cast(track.c.revision,Text)),*conditions)
 
 

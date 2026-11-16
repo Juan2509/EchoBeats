@@ -5,9 +5,9 @@ import { IndexPanel } from './IndexPanel'
 
 const names = { tempo_bpm: 'Tempo (BPM)', timbre: 'Timbre', instruments: 'Instrumentos', energy: 'Energía', mood: 'Emoción', genre: 'Género', context: 'Contexto', mode: 'Modo', percussion: 'Percusión', voice: 'Voz', note_density: 'Densidad de notas' }
 const sources = [['manual', 'Anotación manual'], ['verified', 'Verificado con fuente'], ['metadata', 'Metadatos existentes']]
-export function DescriptionEditor({ trackId, title }: { trackId: string; title: string }) {
+export function DescriptionEditor({ trackId, title,label='Ficha musical' }: { trackId: string; title: string;label?:string }) {
   const [open, setOpen] = useState(false)
-  return <><button type="button" className="secondary" aria-haspopup="dialog" aria-expanded={open} aria-label={`Ficha musical de ${title}`} onClick={() => setOpen(true)}>Ficha musical</button>{open && <Editor key={trackId} trackId={trackId} title={title} close={() => setOpen(false)} />}</>
+  return <><button type="button" className="secondary" aria-haspopup="dialog" aria-expanded={open} aria-label={`Ficha musical de ${title}`} onClick={() => setOpen(true)}>{label}</button>{open && <Editor key={trackId} trackId={trackId} title={title} close={() => setOpen(false)} />}</>
 }
 function Editor({ trackId, title, close }: { trackId: string; title: string; close: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)

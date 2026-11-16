@@ -1,0 +1,2 @@
+import type {Wallpaper} from './theme'
+export function imageStyle(image:string,settings:Wallpaper){return {backgroundImage:`url("${image}")`,backgroundSize:settings.fit,backgroundPosition:`${settings.x}% ${settings.y}%`,transform:`translate(${(settings.panX??0)*100}%, ${(settings.panY??0)*100}%) rotate(${settings.rotation??0}deg) scale(${settings.zoom})`,transformOrigin:`${settings.x}% ${settings.y}%`}}

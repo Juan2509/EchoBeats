@@ -1,3 +1,5 @@
+import {resizeWithinWall} from './resize.ts'
+import type {ResizeHandle} from './resize.ts'
 export type WallElement = {
   id: string; asset_id: string; kind: 'poster' | 'sticker' | 'image' | 'gif'
   cx: number; cy: number; width: number; height: number; rotation_deg: number; z_index: number; content_url: string; static_preview_url?: string | null
@@ -77,6 +79,29 @@ export class WallController {
   private saveTask: Promise<boolean> | null = null
   private resetting = false
   private autosaveMs: number | undefined
+  private undoHistory:WallElement[]=[]
+  private redoHistory:WallElement[]=[]
+  private rememberGeometry(before:WallElement,after:WallElement){
+    if(['cx','cy','width','height','rotation_deg'].every(key=>before[key as keyof WallElement]===after[key as keyof WallElement]))return
+    this.redoHistory=[];this.undoHistory.push({...before});if(this.undoHistory.length>50)this.undoHistory.shift()
+  }
+  get canUndo(){return this.editable()&&(this.state.moving||this.undoHistory.some(before=>this.state.elements.some(item=>item.id===before.id)))}
+  undo(){
+    if(!this.editable())return false
+    if(this.state.moving){this.cancelMove();return true}
+    while(this.undoHistory.length){const before=this.undoHistory.pop()!;if(!this.state.elements.some(item=>item.id===before.id))continue
+      this.redoHistory.push({...this.state.elements.find(item=>item.id===before.id)!})
+      this.update({elements:this.state.elements.map(item=>item.id===before.id?{...item,cx:before.cx,cy:before.cy,width:before.width,height:before.height,rotation_deg:before.rotation_deg}:item),selectedId:before.id,notice:'Cambio deshecho.'});return true
+    }return false
+  }
+  get canRedo(){return this.editable()&&!this.state.moving&&this.redoHistory.some(before=>this.state.elements.some(item=>item.id===before.id))}
+  redo(){
+    if(!this.editable()||this.state.moving)return false
+    while(this.redoHistory.length){const next=this.redoHistory.pop()!,current=this.state.elements.find(item=>item.id===next.id);if(!current)continue
+      this.undoHistory.push({...current});if(this.undoHistory.length>50)this.undoHistory.shift()
+      this.update({elements:this.state.elements.map(item=>item.id===next.id?{...item,cx:next.cx,cy:next.cy,width:next.width,height:next.height,rotation_deg:next.rotation_deg}:item),selectedId:next.id,notice:'Cambio rehecho.'});return true
+    }return false
+  }
   constructor(albumId: string, gateway: WallGateway = requestWall, uploader: VisualUploader = uploadVisual, options: { autosaveMs?: number } = {}) { this.albumId = albumId; this.gateway = gateway; this.uploader = uploader; this.autosaveMs = options.autosaveMs }
   private editable() { return this.alive && !!this.state.wall && this.state.editing && !this.state.loading && (!this.state.saving || this.autosaveMs !== undefined) && !this.resetting && !this.state.uploading && !this.state.needsReload }
   get canEdit() { return this.editable() }
@@ -91,7 +116,7 @@ export class WallController {
   private accept(result: WallResult) { this.update({ wall: result.wall, elements: result.wall.elements.map(item => ({ ...item })), selectedId: null, etag: result.etag, color: result.wall.background_color, loading: false, error: '', needsReload: false }) }
   async load() {
     if (!this.alive || this.state.saving || this.state.uploading || this.state.moving) return
-    this.pending?.abort()
+    this.undoHistory=[];this.redoHistory=[];this.pending?.abort()
     const abort = new AbortController(); this.pending = abort
     const token = ++this.operation, timeout = setTimeout(() => abort.abort(), 15000)
     this.update({ loading: true, error: '', editing: false, notice: '' })
@@ -156,6 +181,7 @@ export class WallController {
     try {
       this.saveTask = this.persist(true)
       const ok = await this.saveTask
+      if(ok){this.undoHistory=[];this.redoHistory=[]}
       if (!ok && this.alive) this.update(previous)
       return ok
     } finally { this.saveTask = null; this.resetting = false; this.update({}) }
@@ -163,7 +189,7 @@ export class WallController {
   select(id: string | null) { if (this.editable() && !this.state.moving) this.update({ selectedId: id && this.state.elements.some(item => item.id === id) ? id : null }) }
   move(id: string, cx: number, cy: number) {
     if (!this.editable()) return
-    this.update({ elements: this.state.elements.map(item => item.id === id ? moveWithinWall(item, cx, cy) : item), selectedId: id, notice: '' })
+    this.update({ elements: this.state.elements.map(item => {if(item.id!==id)return item;const next=moveWithinWall(item,cx,cy);if(!this.state.moving)this.rememberGeometry(item,next);return next}), selectedId: id, notice: '' })
   }
   nudge(id: string, dx: number, dy: number) {
     if (this.state.moving) return
@@ -172,7 +198,19 @@ export class WallController {
   }
   transform(id: string, changes: Partial<Pick<WallElement, 'width' | 'height' | 'rotation_deg'>>) {
     if (!this.editable() || this.state.moving) return
-    this.update({ elements: this.state.elements.map(item => item.id === id ? transformWithinWall(item, changes) : item), notice: '' })
+    this.update({ elements: this.state.elements.map(item => {if(item.id!==id)return item;const next=transformWithinWall(item,changes);this.rememberGeometry(item,next);return next}), notice: '' })
+  }
+  rotateGesture(id:string,rotation_deg:number){
+    if(!this.editable()||!this.state.moving||this.gesture?.id!==id)return
+    this.update({elements:this.state.elements.map(item=>item.id===id?transformWithinWall(this.gesture!,{rotation_deg}):item),notice:''})
+  }
+  resizeGesture(id:string,handle:ResizeHandle,dx:number,dy:number,proportional:boolean){
+    if(!this.editable()||!this.state.moving||this.gesture?.id!==id)return
+    this.update({elements:this.state.elements.map(item=>item.id===id?resizeWithinWall(this.gesture!,handle,dx,dy,proportional):item),notice:''})
+  }
+  setKind(id:string,kind:'image'|'sticker'){
+    if(!this.editable()||this.state.moving||!['image','sticker'].includes(kind))return
+    this.update({elements:this.state.elements.map(item=>item.id===id&&item.kind!=='gif'?{...item,kind}:item),notice:''})
   }
   reorder(id: string, direction: 'back' | 'backward' | 'forward' | 'front') {
     if (!this.editable() || this.state.moving) return
@@ -189,7 +227,7 @@ export class WallController {
     if (!this.gesture) return false
     this.update({ selectedId: id, moving: true }); return true
   }
-  finishMove() { this.gesture = null; this.update({ moving: false }) }
+  finishMove() { const before=this.gesture,after=this.state.elements.find(item=>item.id===before?.id);if(before&&after)this.rememberGeometry(before,after);this.gesture = null; this.update({ moving: false }) }
   cancelMove() {
     if (!this.gesture) return
     const original = this.gesture; this.gesture = null
@@ -218,5 +256,5 @@ export class WallController {
       if (this.alive && token === this.operation) this.update({ error: cause instanceof WallRequestError ? cause.message : 'No se pudo confirmar la importación. La composición anterior se conserva.' })
     } finally { clearTimeout(timeout); if (token === this.operation) this.update({ uploading: false }) }
   }
-  dispose() { this.clearTimer(); this.alive = false; ++this.operation; this.pending?.abort(); this.listeners.clear() }
+  dispose() { this.clearTimer(); this.undoHistory=[];this.redoHistory=[];this.alive = false; ++this.operation; this.pending?.abort(); this.listeners.clear() }
 }

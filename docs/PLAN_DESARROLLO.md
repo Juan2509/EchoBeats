@@ -1,5 +1,12 @@
 # Plan de desarrollo de EchoBeats
 
+Actualización posterior a P28, 15 de noviembre: ampliación solicitada de álbumes
+como carpetas, creación desde Inicio, importación dirigida, retirada lógica de pistas
+y lienzo de encuadre/X de fondo implementada. Ver [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md)
+para comportamiento y validación (244 backend/95 frontend/build y UI aislada).
+No es cierre global del MVP: los pendientes de API real, audio y aceptación siguen
+abiertos. No se creó commit ni se inició un nuevo paso opcional.
+
 Fecha inicial: 12 de noviembre de 2026. Estado: P14 implementado; muros con carga/movimiento/borrado, playlists y reproductor
 compartido disponibles. Recorrido manual de audio y revisiones P08/P09 pendientes.
 O06 habilitado por el usuario: soporte multiformato implementado; navegador pendiente.
@@ -678,6 +685,49 @@ por autorización y alcance explícitos. Sin commits creados.
 la documentación corresponde al código y la matriz de requisitos está actualizada.
 
 ## 11. Ampliaciones condicionadas
+
+Solicitud visual posterior a P28 (14 de noviembre): apariencia semejante a
+Refrencia.png, ahora autorizada expresamente. Degradados/paleta/fondo ajustables,
+sidebar/muro abierto y tema synthwave; configuración local por navegador.
+Ampliación: diálogo sin recuadro permanente, transparencia reversible por álbum,
+principal/override/herencia, synthwave/vaporwave/imagen con ajuste/recorte/zoom y
+preparación local de copia compatible. Preferencias por navegador/origen.
+Nueva ampliación: controles con marco y superficie opaca, galería de fondos con
+miniaturas, imagen independiente del muro y opción a todo el ancho. Vinilos/portadas
+en biblioteca/detalle con selección heredada o por álbum (preferencia local).
+Último ajuste: eliminación de selección de fondos personalizados, configuración
+por vista y controles del muro reunidos allí. Imagen sin marco/sticker con contorno,
+sin Póster ni ancho/alto/Giro numéricos; doble clic y arrastre para rotar.
+15 de noviembre: selector Imagen/Sticker para objeto PNG/JPEG ya añadido, conservando
+geometría/asset y autoguardado. 74 pruebas frontend y build aprobados con gateway simulado.
+Herramientas inferiores ahora en diálogo Añadir/Objeto/Capas/Guardar, con retorno al
+muro o guardado/bloqueo al terminar. Chrome aislado: cuatro secciones sin scroll a
+1280x800/768x800/360x640, guardados simulados, sin escrituras en principal.
+Ampliación: panel no modal a derecha, movible/minimizable, sin opacar ni bloquear
+muro. Selección directa abre sección Objeto; posición acotada al viewport. Chrome
+aislado verificó arrastre simultáneo, apariencia, teclado y 768/360; 74 pruebas/build.
+Selección directa solicitada: eliminado desplegable de objetos; contorno temporal
+de caja real solo mientras seleccionado, oculto al pulsar vacío. Chrome aislado
+comprobó selección/cambio/deselección; 74 pruebas y build aprobados.
+Nueva petición: ocho tiradores para estirar esquinas/lados, Shift proporcional,
+ancla opuesta/ejes girados y límites existentes. Reemplaza tamaño fijo; sin campos
+numéricos. 78 pruebas/build y cursor real en Chrome con guardados simulados aprobados.
+Ctrl+Z para geometría (50 pasos por álbum/sesión, gesto agrupado, seguro ante guardado
+en vuelo); rotación sin tiradores ni redimensionado. 83 pruebas/build y Chrome aislado
+con guardados simulados aprobados. Sin escrituras de prueba en principal.
+Ctrl+Y y botón Rehacer añadidos; nuevo cambio geométrico invalida rehacer, guardado
+en vuelo conserva borrador. 86 pruebas frontend y build, con gateway simulado.
+Contorno por sticker: color/nivel0–12 en vista Objeto → Editar contorno, alfa SVG,
+preferencia local por álbum/elemento. 88 pruebas/build y Chrome aislado: preview,
+fino/grueso/cero, independencia, recarga y móvil. Sin backend/BD principal.
+Filas de álbum sin enlace redundante ni fichas por fila; corazones junto al título.
+Fichas y opciones centralizadas al final del panel con selector completo/perezoso
+y editor existente. 91 pruebas/build y Chrome aislado con125 pistas/guardados
+simulados, última ficha y corazones/móvil aprobados. Sin backend/migraciones/IA.
+73 pruebas frontend y build; capturas y controles headless inspeccionados,
+Canvas real y subida de fondo simulada sin escrituras en la principal.
+Detalles/límites en APARIENCIA.md. No cambia cierre real/visual pendiente del MVP
+ni activa Oxx; sin API real ni diseños BD sobrescritos. Sin commit creado.
 
 Estos bloques no se marcan como pendientes del MVP por defecto. Se habilitan al
 acordar su alcance o confirmar que la evaluación los exige. Entonces se detallan

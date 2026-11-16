@@ -61,7 +61,7 @@ def claim(engine):
     with engine.begin() as connection:
         candidates = connection.execute(select(job.c.id, job.c.track_id).where(job.c.status == 'pending', job.c.operation == 'prepare_metadata').order_by(job.c.created_at, job.c.id).limit(32)).all()
         for candidate in candidates:
-            current = connection.execute(select(track).where(track.c.id == candidate.track_id).with_for_update(skip_locked=True)).first()
+            current = connection.execute(select(track).where(track.c.id == candidate.track_id,track.c.deleted_at.is_(None)).with_for_update(skip_locked=True)).first()
             if current is None:
                 continue
             row = connection.execute(select(job).where(job.c.id == candidate.id, job.c.status == 'pending').with_for_update(skip_locked=True)).first()
@@ -88,7 +88,9 @@ def prepare(engine, claimed):
 def finish(engine, claimed, result=None, failed=False):
     """CAS por estado/intento: un ejecutor antiguo nunca publica sobre un reintento."""
     with engine.begin() as connection:
-        current = require_track(connection, claimed.track_id, lock=True)
+        current = connection.execute(select(track).where(track.c.id==claimed.track_id).with_for_update()).first()
+        if current is None or current.deleted_at is not None:
+            return False
         row = require_job(connection, claimed.id, lock=True)
         if row.status != 'processing' or row.attempts != claimed.attempts:
             return False

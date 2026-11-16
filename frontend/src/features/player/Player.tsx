@@ -25,8 +25,10 @@ export function PlayerProvider({ children, refresh }: { children: ReactNode; ref
     const player = new PlayerController(audio.current!)
     controller.current = player
     const unsubscribe = player.subscribe(() => setState(player.state))
+    const removed=(event:Event)=>{pending.current?.abort();player.removeTrack((event as CustomEvent<string>).detail)}
+    window.addEventListener('echobeats:track-deleted',removed)
     setState(player.state)
-    return () => { pending.current?.abort(); unsubscribe(); player.dispose(); controller.current = null }
+    return () => { window.removeEventListener('echobeats:track-deleted',removed);pending.current?.abort(); unsubscribe(); player.dispose(); controller.current = null }
   }, [])
   useEffect(() => {
     const id = controller.current?.state.track?.id
@@ -37,7 +39,7 @@ export function PlayerProvider({ children, refresh }: { children: ReactNode; ref
       if (response.ok) {
         const track: Track = await response.json()
         if (!abort.signal.aborted) controller.current?.updateTrack(track)
-      }
+      }else if(response.status===404&&!abort.signal.aborted)controller.current?.removeTrack(id)
     }).catch(() => { /* La edición no interrumpe el audio ya cargado. */ }).finally(() => window.clearTimeout(timeout))
     return () => { abort.abort(); window.clearTimeout(timeout) }
   }, [refresh])

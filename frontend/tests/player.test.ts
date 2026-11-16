@@ -26,6 +26,9 @@ const song = (id: string): Track => ({
   id, title: `Pista ${id}`, artists: [], album_id: 'album', album_title: 'Álbum', audio_url: `/api/v1/tracks/${id}/audio`,
   duration_ms: 12000, track_number: 1, cover_url: null, cover_asset_id: null, cover_source: 'fallback', metadata_sources: {}, revision: 1,
 })
+test('retirar pista actual detiene y vacía audio; retirar otra ajusta cola sin interrumpir',()=>{
+  const audio=new AudioDouble(),c=new PlayerController(audio);c.startQueue(song('a'),[song('a'),song('b'),song('c')],'prueba');c.removeTrack('b');assert.deepEqual(c.state.queue.map(t=>t.id),['a','c']);assert.equal(c.state.track?.id,'a');c.removeTrack('a');assert.equal(c.state.track,null);assert.equal(c.state.playing,false);assert.equal(audio.src,'');c.dispose()
+})
 function setup() { const audio = new AudioDouble(); return { audio, player: new PlayerController(audio as unknown as AudioPort) } }
 function deferred() { let resolve!: () => void; let reject!: (error: unknown) => void; const promise = new Promise<void>((yes, no) => { resolve = yes; reject = no }); return { promise, resolve, reject } }
 const flush = async () => { await Promise.resolve(); await Promise.resolve() }

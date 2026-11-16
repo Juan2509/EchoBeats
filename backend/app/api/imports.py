@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
@@ -32,11 +32,15 @@ def error_response(code, message, status):
         },
     }}}},
 })
-async def import_audio(request: Request):
+async def import_audio(request: Request,album_id:UUID|None=Query(None)):
     config = request.app.state.settings
     engine = request.app.state.database_engine
     if engine is None:
         return error_response("database_unavailable", "La base de datos no está configurada.", 503)
+    if album_id is not None:
+        from app.services.metadata import require_album
+        with engine.connect() as connection:
+            require_album(connection,album_id)
     if request.headers.get("content-type", "").split(";", 1)[0].lower() != "multipart/form-data":
         return error_response("invalid_multipart", "Envía los archivos como formulario multipart.", 415)
     # Contar bytes recibidos, sin confiar únicamente en Content-Length.
@@ -61,7 +65,7 @@ async def import_audio(request: Request):
             results = []
             for index, (_, upload) in enumerate(parts):
                 result = await run_in_threadpool(
-                    import_file, engine, store, upload.file, upload.filename, config.import_max_file_bytes,
+                    import_file, engine, store, upload.file, upload.filename, config.import_max_file_bytes,album_id,
                 )
                 if result["status"] in {"imported", "duplicate"}:
                     try:

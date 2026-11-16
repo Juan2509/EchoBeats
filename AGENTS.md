@@ -1,5 +1,121 @@
 # EchoBeats: contexto del proyecto
 
+15 noviembre: álbumes como carpetas, botón Crear álbum en Inicio con nombre,
+portada opcional y Vinilo/Portada (sin opción redundante predeterminada). Importar
+en UI exige destino; dentro del álbum lo fija. API album_id opcional por compatibilidad;
+etiquetas no mueven destino manual y duplicados activos no se trasladan. DELETE pista
+con If-Match hace retirada lógica, detiene reproducción y filtra catálogo/playlists/
+favoritos/audio/búsqueda; conserva archivo, historia y asociaciones. Reimportar hash
+restaura mismo ID. Trabajos obsoletos no publican. 0010_track_deletion aplicada tras
+respaldo privado; downgrade protegido solo probado en BD aislada. X solo en miniatura
+propia, jamás presets/herencia; lienzo de fondo con arrastre/giro/rueda/teclado.
+244 pruebas backend aisladas, 95 frontend y build aprobados. Chrome con mutaciones
+simuladas verificó flujo, destino, X, giro y creación 360/768; sin borrados personales.
+Leer docs/ALBUMES_CARPETA.md. Sin API real, purga de medios ni commit; pendientes
+previos de audio/aceptación vigentes.
+
+Filas del álbum ya no repiten enlace al propio álbum ni Ficha y opciones por pista.
+Corazón junto a título usa favoritos existentes (estado compartido, confirmación,
+sin reintentos PUT). Fichas y opciones del álbum al final del panel: selector de
+todas las pistas, incluso más de 100, carga perezosa/cancelable; editor original
+con procedencia/versiones, preparación y similares. No indexa/genera al abrir.
+91 pruebas frontend/build y Chrome aislado con 125 pistas/guardados simulados
+aprobados; edición de última pista y corazones/móvil. Ver docs/APARIENCIA.md.
+
+Stickers: Objeto → Editar contorno permite color hexadecimal y grosor 0–12, paso .5,
+con preview inmediata; 0 sin contorno. Filtro SVG dilata alfa del PNG sin marco ni
+modificar archivo. Preferencias por álbum+elemento UUID en localStorage, no BD ni
+otros PCs; volver a Imagen oculta efecto y volver a Sticker lo recupera. No altera
+geometría/CAS ni historial de undo de geometría. 88 pruebas frontend/build, Chrome
+aislado verificó color/fino/grueso/cero/aislamiento/recarga/móvil con muro simulado.
+
+Ctrl+Y (Cmd+Y) y botón Rehacer recuperan geometría deshecha por Ctrl+Z, manteniendo
+CAS/autoguardado incluso en vuelo. Nuevo cambio geométrico invalida rehacer; clic
+sin cambio y gesto cancelado no. Recarga/salida/reset exitoso limpian ambos historiales.
+86 pruebas frontend/build aprobados; pruebas de persistencia con gateway simulado.
+
+Ctrl+Z (Cmd+Z) deshace geometría del muro en edición: un gesto completo por entrada,
+hasta 50, también después de autoguardado y durante escritura en vuelo sin perder
+borrador nuevo/CAS. Durante gesto cancela snapshot sin consumir historia previa.
+No intercepta campos editables ni diálogos modales; no revierte archivos/alta/baja/
+apariencia. Recarga/salida/reset exitoso limpian historial. En rotación se ocultan
+tiradores y se bloquean sus handlers; contorno/icono de giro siguen visibles.
+83 pruebas frontend/build y Chrome aislado (guardados simulados) aprobados.
+
+Nueva directriz: imagen seleccionada muestra ocho tiradores (esquinas/lados).
+Arrastre libre estira los píxeles; Shift conserva proporción inicial. Usa ancla
+opuesta/ejes girados, limita a geometría existente 3–60% y muro, snapshot por gesto,
+sin guardar hasta soltar; Escape/cancelar restaura. Tiradores/foco y flechas accesibles,
+solo selección; overlay por encima sin cambiar capas. Sustituye restricción previa
+de tamaño fijo; no reintroduce campos numéricos. 78 pruebas frontend/build y Chrome
+aislado con cursor/Shift/guardados simulados aprobados. Ver docs/APARIENCIA.md.
+
+Selección del muro ahora solo directa sobre imágenes (también foco de teclado),
+sin desplegable Seleccionar objeto. El objeto seleccionado muestra contorno de
+su caja real, girado con la imagen, solo durante selección/edición. Clic en vacío
+lo oculta. No cambia geometría ni añade marco permanente. 74 pruebas/build y Chrome
+aislado con mocks: selección, cambio de imagen y deselección comprobados.
+
+Herramientas son ahora panel flotante no modal a derecha, movible por cabecera,
+sin backdrop/desenfoque/bloqueo del muro. Minimizar/Expandir y movimiento por teclado;
+posición acotada a viewport/resize, solo durante apertura. Selección sobre muro
+muestra Objeto automáticamente sin impedir arrastre/rotación. 74 pruebas/build;
+Chrome aislado verificó panel/imagen móviles a la vez, cambio de apariencia con
+guardado simulado, teclado y 768/360 sin desbordamiento. Ver docs/APARIENCIA.md.
+
+Herramientas inferiores trasladadas a diálogo desde Editar pared, con páginas
+Añadir/Objeto/Capas/Guardar. Volver al muro/Escape conserva edición; Terminar edición
+guarda y bloquea. Scroll/foco restaurados al cerrar. Chrome aislado verificó cuatro
+páginas sin scroll a 1280x800/768x800/360x640 con muro/guardados simulados; fallback
+de scroll para zoom/ventana menor/errores extensos. 74 pruebas/build aprobados.
+Ver docs/APARIENCIA.md. No se modificaron muros principales ni backend.
+
+Ajuste del 15 de noviembre: objeto seleccionado permite cambiar Imagen sin marco /
+Sticker con contorno en edición; conserva ID/asset/geometría/capas y autoguardado.
+GIF mantiene modo animado (contrato actual exige kind=gif). 74 pruebas frontend y
+build aprobados; persistencia con gateway simulado, sin editar muros principales.
+
+Directriz más reciente: Configuración por vista (principal fuera del álbum;
+solo álbum/muro dentro). Quitar imagen personalizada de la selección, sin purgar
+assets compartidos; predeterminados no eliminables. Cabecera del muro solo Editar
+pared; transparencia/color/imagen/ampliación trasladados a Configuración.
+Imagen sin marco y sticker con contorno alfa; Póster oculto, heredados como imagen.
+Sin ancho/alto independientes ni campo Giro. Doble clic activa/desactiva ↻; arrastre
+rota o mueve; R/flechas/Escape accesibles. rotateGesture conserva snapshot y guarda
+al soltar, mantiene CAS/autosave/encaje. 73 pruebas/build y Chrome aislado con mocks
+de muro/guardado aprobados; no escrituras en principal. Ver docs/APARIENCIA.md.
+
+Última ampliación: controles/navegación con bordes y superficie opaca; galería de
+fondos con miniaturas/selección inspirada en captura adjunta. Imagen del muro es
+independiente del fondo del álbum (wallBackgrounds y wallSurfaces=image); conserva
+transparencia/color reversibles. Lienzo más ancho y Ampliar muro, sin modificar
+geometría ni composiciones BD. Vinilo/Portada recuperados en biblioteca y detalle,
+selección predeterminada y por álbum en preferencias locales, no BD/multi-PC.
+71 pruebas frontend y build; Chrome aislado con Canvas real y upload simulado,
+galería móvil/imagen del muro/ampliación/vinilos/recarga comprobados. Ver APARIENCIA.md.
+
+Ampliación de apariencia del 14 de noviembre: sin recuadro vacío del muro ni panel
+inline de personalización. Configuración abre diálogo; Fondo del álbum ofrece
+principal/herencia o fondo propio. Synthwave/vaporwave/imagen, encuadre cover/contain,
+zoom y posición no destructivos. Transparente/Color del muro reversibles por álbum,
+sin borrar color BD. Preferencias siguen locales por navegador/origen, no multi-PC.
+PNG/JPEG/WebP se preparan en navegador como copia JPEG <=2560 px/5 MiB; original
+intacto, entrada <=25 MiB/48 MP/16384 por lado. Ver docs/APARIENCIA.md.
+69 pruebas frontend/build aprobados; interacción headless con Canvas real y subida
+simulada (no prueba de upload real). Capturas diálogo 360/768 y fondo 1280 revisadas.
+No cerrar pendientes previos de audio/aceptación ni llamadas reales OpenAI.
+
+Solicitud posterior a P28: el usuario ahora pide parecido visual con Refrencia.png,
+vaporwave/synthwave y colores/fondo ajustables. Sustituye su directriz previa de
+referencia solo estructural. Ver docs/APARIENCIA.md. Tema neón inicial con CSS vars,
+Configuración/Tu atmósfera, localStorage por navegador/origen (no sincronizado BD),
+fondo opcional como asset local y escena del muro transparente o color por álbum.
+Elegir color en editor activa modo álbum; no sobrescribir diseños/recursos.
+65 pruebas frontend y build aprobados; capturas headless 1280 y marcos 360/768
+inspeccionados, no interacción/escucha completa. No cerrar pendientes anteriores.
+Vite polling resuelve estilos obsoletos en carpetas compartidas. Sin migraciones,
+OpenAI ni borrado de medios; conservar 506 MP3 sin fila. No se creó commit.
+
 P28 prepara entrega: README, INSTALACION/CONFIGURACION/ARQUITECTURA y
 GUIA_DEMOSTRACION. Leer VALIDACION_P28.md. Arranque final aislado
 echobeats_p28_83f7845a aprobado desde BD/medios vacíos, pip/alembic check,

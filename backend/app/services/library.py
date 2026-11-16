@@ -22,17 +22,19 @@ def track_filter(query):
 
 def album_filter(query):
     credits = select(album_artist.c.album_id).join(artist).where(matches(artist.c.name, query))
-    songs = select(track.c.album_id).where(track_filter(query))
+    songs = select(track.c.album_id).where(track_filter(query),track.c.deleted_at.is_(None))
     return or_(matches(album.c.title, query), album.c.id.in_(credits), album.c.id.in_(songs))
 
 
 def page(connection, kind, limit, offset, query='', album_id=None, include_empty_system=True, favorites_only=False):
     table = {'tracks': track, 'albums': album, 'playlists': playlist}[kind]
     statement = select(table.c.id)
+    if kind=='tracks':
+        statement=statement.where(track.c.deleted_at.is_(None))
     if favorites_only:
         statement = statement.where(track.c.id.in_(select(favorite.c.track_id)))
     if kind == 'albums' and not include_empty_system:
-        statement = statement.where(or_(album.c.system_key.is_(None), album.c.id.in_(select(track.c.album_id))))
+        statement = statement.where(or_(album.c.system_key.is_(None), album.c.id.in_(select(track.c.album_id).where(track.c.deleted_at.is_(None)))))
     if query:
         statement = statement.where({'tracks': track_filter, 'albums': album_filter,
                                      'playlists': lambda q: matches(playlist.c.name, q)}[kind](query))

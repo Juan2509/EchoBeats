@@ -164,6 +164,11 @@ export class PlayerController {
   updateTrack(track: Track) {
     if (track.id === this.state.track?.id && track.revision >= this.state.track.revision) this.patch({ track, queue: this.state.queue.map(item => item.id === track.id ? track : item) })
   }
+  removeTrack(id:string){
+    this.generation++;this.endedPending=false
+    if(this.state.track?.id===id){this.intent++;this.wantsPlay=false;this.audio.pause();this.audio.removeAttribute('src');this.audio.load();this.patch({...initialPlayer,volume:this.state.volume,notice:'La canción se retiró de la biblioteca.'})}
+    else{const queue=this.state.queue.filter(item=>item.id!==id);this.patch({queue,index:queue.findIndex(item=>item.id===this.state.track?.id),pendingQueue:false})}
+  }
   dispose() {
     this.disposed = true; this.intent += 1
     this.events.forEach(([type, handler]) => this.audio.removeEventListener(type, handler))

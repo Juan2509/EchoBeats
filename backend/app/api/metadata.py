@@ -60,6 +60,7 @@ class TrackPatch(InputModel):
 class AlbumCreate(InputModel):
     title: Name
     artist_names: Names = Field(default_factory=list)
+    cover_asset_id: UUID | None = None
 
 
 class AlbumPatch(InputModel):
@@ -99,6 +100,11 @@ def patch_track(track_id: UUID, changes: TrackPatch, request: Request, if_match:
     return response(service.patch_track(engine_for(request), track_id, changes.model_dump(exclude_unset=True), if_match))
 
 
+@router.delete('/tracks/{track_id}')
+def delete_track(track_id: UUID, request: Request, if_match: str | None = Header(None)):
+    return service.delete_track(engine_for(request),track_id,if_match)
+
+
 @router.post("/tracks/{track_id}/extract-metadata")
 def extract_metadata(track_id: UUID, request: Request, if_match: str | None = Header(None)):
     if if_match is None:
@@ -136,7 +142,7 @@ def get_album(album_id: UUID, request: Request):
 
 @router.post("/albums")
 def create_album(body: AlbumCreate, request: Request):
-    return response(service.create_album(engine_for(request), body.title, body.artist_names), 201)
+    return response(service.create_album(engine_for(request), body.title, body.artist_names, body.cover_asset_id, 'cover_asset_id' in body.model_fields_set), 201)
 
 
 @router.patch("/albums/{album_id}")

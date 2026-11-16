@@ -19,7 +19,7 @@ class FavoriteInput(BaseModel):
 
 
 def exists(connection, track_id, lock=False):
-    statement = select(track.c.id).where(track.c.id == track_id)
+    statement = select(track.c.id).where(track.c.id == track_id,track.c.deleted_at.is_(None))
     if lock:
         statement = statement.with_for_update()
     if connection.scalar(statement) is None:
