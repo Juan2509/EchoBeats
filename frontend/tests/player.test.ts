@@ -30,6 +30,25 @@ test('retirar pista actual detiene y vacía audio; retirar otra ajusta cola sin 
   const audio=new AudioDouble(),c=new PlayerController(audio);c.startQueue(song('a'),[song('a'),song('b'),song('c')],'prueba');c.removeTrack('b');assert.deepEqual(c.state.queue.map(t=>t.id),['a','c']);assert.equal(c.state.track?.id,'a');c.removeTrack('a');assert.equal(c.state.track,null);assert.equal(c.state.playing,false);assert.equal(audio.src,'');c.dispose()
 })
 function setup() { const audio = new AudioDouble(); return { audio, player: new PlayerController(audio as unknown as AudioPort) } }
+test('bucle repite la pista al acabar, siguiente manual avanza y pausa impide reinicio', async () => {
+  const {audio,player}=setup()
+  player.startQueue(song('a'),[song('a'),song('b')],'prueba');audio.metadata();await flush()
+  player.toggleRepeat();audio.currentTime=12;audio.emit('ended');await flush()
+  assert.equal(player.state.track?.id,'a');assert.equal(audio.currentTime,0);assert.equal(audio.calls,2)
+  player.next();assert.equal(player.state.track?.id,'b');audio.metadata();await flush()
+  player.pause();const calls=audio.calls;audio.emit('ended');await flush();assert.equal(audio.calls,calls)
+  player.dispose()
+})
+test('aleatorio mantiene pista y audio, visita la cola sin duplicados y restaura orden',()=>{
+  const {audio,player}=setup(),queue=['a','b','c','d'].map(song)
+  player.startQueue(queue[1],queue,'prueba');const calls=audio.calls
+  player.toggleShuffle();assert.equal(audio.calls,calls);assert.equal(player.state.track?.id,'b');assert.equal(player.state.index,0)
+  assert.equal(new Set(player.state.queue.map(t=>t.id)).size,4)
+  const order=player.state.queue.map(t=>t.id)
+  for(const id of order.slice(1)){player.next();assert.equal(player.state.track?.id,id)}
+  const active=player.state.track?.id;player.toggleShuffle();assert.deepEqual(player.state.queue.map(t=>t.id),['a','b','c','d']);assert.equal(player.state.track?.id,active)
+  player.dispose()
+})
 function deferred() { let resolve!: () => void; let reject!: (error: unknown) => void; const promise = new Promise<void>((yes, no) => { resolve = yes; reject = no }); return { promise, resolve, reject } }
 const flush = async () => { await Promise.resolve(); await Promise.resolve() }
 

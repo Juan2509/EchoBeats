@@ -283,6 +283,29 @@ def delete_track(engine, track_id, expected):
         return {'track_id':track_id,'deleted':True,'original_preserved':True}
 
 
+def delete_album(engine, album_id, expected):
+    from app.models.catalog import processing_job, playlist, playlist_track, wall, wall_element
+    with engine.begin() as connection:
+        row = require_album(connection, album_id, lock=True)
+        check_revision('album', row, expected)
+        if row.system_key is not None:
+            raise MetadataError('system_album', 'El álbum de sistema no se puede eliminar.')
+        # El bloqueo del álbum impide nuevas referencias FK durante la retirada.
+        rows = connection.execute(select(track).where(track.c.album_id == album_id).order_by(track.c.id).with_for_update(key_share=True)).all()
+        ids = [item.id for item in rows]
+        active = [item.id for item in rows if item.deleted_at is None]
+        if ids:
+            connection.execute(playlist.update().where(playlist.c.id.in_(select(playlist_track.c.playlist_id).where(playlist_track.c.track_id.in_(active)))).values(revision=playlist.c.revision+1,updated_at=func.now()))
+            connection.execute(processing_job.update().where(processing_job.c.track_id.in_(ids),processing_job.c.status.in_(['pending','processing'])).values(status='stale',error_code='input_changed',result=None,finished_at=func.now(),updated_at=func.now()))
+            # Conserva filas, originales e historia; el contenedor retirado ya no existe.
+            connection.execute(track.update().where(track.c.id.in_(ids)).values(album_id=UNKNOWN_ALBUM_ID,deleted_at=func.coalesce(track.c.deleted_at,func.now()),revision=track.c.revision+1,updated_at=func.now()))
+        connection.execute(wall_element.delete().where(wall_element.c.wall_id.in_(select(wall.c.id).where(wall.c.album_id == album_id))))
+        connection.execute(wall.delete().where(wall.c.album_id == album_id))
+        connection.execute(album_artist.delete().where(album_artist.c.album_id == album_id))
+        connection.execute(album.delete().where(album.c.id == album_id))
+        return {'album_id': str(album_id), 'deleted': True, 'track_ids': [str(identity) for identity in active], 'original_preserved': True}
+
+
 def patch_album(engine, album_id, changes, expected):
     with engine.begin() as connection:
         row = require_album(connection, album_id, lock=True)

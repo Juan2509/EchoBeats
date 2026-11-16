@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import {createPortal} from 'react-dom'
 import type { ButtonHTMLAttributes, KeyboardEvent, PointerEvent } from 'react'
 import { initialWallState, isDirty, orderedElements, WallController } from './controller'
 import type { WallElement } from './controller'
-import { useAppearance } from '../appearance/Appearance'
+import { useAppearance,AppearanceSettings } from '../appearance/Appearance'
 import { wallSurfaceFor,stickerOutlineFor,defaultStickerOutline } from '../appearance/theme'
 import type {StickerOutline} from '../appearance/theme'
 import { imageStyle } from '../appearance/BackgroundEditor'
@@ -27,12 +28,12 @@ function Decoration({ item, index, animated, editable, selected, rotating, handl
     </button>
   </li>{selected&&editable&&<li className="wall-selection-overlay" style={geometry}>{!rotating&&resizeHandles.map(handle=><button type="button" key={handle} className="wall-resize-handle" data-handle={handle} aria-label={`Cambiar tamaño: ${handleNames[handle]}`} title="Arrastra para estirar. Shift conserva proporciones. Flechas para ajustar." style={{left:handle.includes('w')?'0%':handle.includes('e')?'100%':'50%',top:handle.includes('n')?'0%':handle.includes('s')?'100%':'50%',cursor:handle.length===1?(handle==='n'||handle==='s'?'ns-resize':'ew-resize'):(handle==='nw'||handle==='se'?'nwse-resize':'nesw-resize')}} {...resizeHandlers(handle)}><span aria-hidden="true"/></button>)}</li>}</>
 }
-export function WallView({ albumId, title, onDirty }: { albumId: string; title: string; onDirty: (dirty: boolean) => void }) {
+export function WallView({ albumId, title, onDirty,toolbar }: { albumId: string; title: string; onDirty: (dirty: boolean) => void;toolbar?:HTMLElement|null }) {
   const {appearance,registerWall,setStickerOutline,notice:appearanceNotice}=useAppearance()
   const [rotationId,setRotationId]=useState<string|null>(null)
   const [expanded,setExpanded]=useState(false)
   const [toolsOpen,setToolsOpen]=useState(false)
-  const [toolPage,setToolPage]=useState<'add'|'object'|'layers'|'save'|'outline'>('add')
+  const [toolPage,setToolPage]=useState<'add'|'object'|'layers'|'save'|'outline'|'wall'>('add')
   const surface=wallSurfaceFor(appearance,albumId)
   const wallBackground=appearance.wallBackgrounds[albumId]
   const controller = useRef<WallController | null>(null)
@@ -125,6 +126,7 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
   useEffect(()=>{if(toolPage==='outline'&&selected?.kind!=='sticker')setToolPage('object')},[toolPage,selected?.kind])
   const ordered = orderedElements(state.elements), layer = ordered.findIndex(item => item.id === state.selectedId)
   const status = state.loading ? 'Cargando pared…' : state.uploading ? 'Importando recurso…' : state.saving ? 'Guardando pared…' : state.moving ? 'Moviendo objeto…' : state.error ? 'No se pudo completar la operación' : dirty ? 'Cambios pendientes' : state.notice || 'Sin cambios'
+  const editActions=wall&&<><button disabled={state.loading || busy} aria-expanded={toolsOpen} aria-controls={`wall-tools-${albumId}`} onClick={() => void openTools()}>Editar pared</button>{expanded&&<button type="button" className="secondary" onClick={()=>setExpanded(false)}>Ver panel del álbum</button>}</>
   return <section className="wall-panel" data-expanded={expanded} onFocusCapture={event => {
     const target = event.target
     if (target.closest('dialog, .wall-tools-floating')) return
@@ -134,10 +136,9 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
       if (player && control.bottom > player.top - 16 && control.top < player.bottom) window.scrollBy(0, control.bottom - player.top + 24)
     })
   }} aria-labelledby={`wall-title-${albumId}`}>
-    <div className="wall-heading"><div><p className="eyebrow">Tu espacio</p><h2 id={`wall-title-${albumId}`}>La pared de {title}</h2></div>
-      {wall && <button disabled={state.loading || busy} aria-expanded={toolsOpen} aria-controls={`wall-tools-${albumId}`} onClick={() => void openTools()}>Editar pared</button>}
-    </div>
-    <p className="wall-status" role="status">{status}{wall && !state.loading ? ` · ${state.editing ? 'Edición activada' : 'Diseño bloqueado'}` : ''}</p>
+    <h2 className="visually-hidden" id={`wall-title-${albumId}`}>La pared de {title}</h2>
+    {toolbar?createPortal(editActions,toolbar):<div className="wall-heading">{editActions}</div>}
+    <p className="visually-hidden" role="status">{status}{wall && !state.loading ? ` · ${state.editing ? 'Edición activada' : 'Diseño bloqueado'}` : ''}</p>
     {state.error && <div className="wall-error" role="alert"><p>{state.error}</p><button className="secondary" disabled={busy} onClick={reload}>Recargar pared guardada</button></div>}
     {wall && !state.loading && <>
       <div ref={canvas} className="wall-canvas" data-surface={surface} data-mode={state.editing ? 'editing' : 'locked'} style={{ backgroundColor: surface==='scene'?'transparent':state.color }} role="group" aria-label={`Muro de ${title}, ${state.elements.length} elementos decorativos`} onPointerDown={event => { if (event.target === event.currentTarget || (event.target as HTMLElement).classList.contains('wall-elements')) controller.current?.select(null) }}>
@@ -145,7 +146,8 @@ export function WallView({ albumId, title, onDirty }: { albumId: string; title: 
         <ul className="wall-elements" aria-label="Composición de la pared">{ordered.map((item, index) => <Decoration key={`${item.id}-${item.content_url}`} item={item} index={index} animated={animated} editable={editable} selected={item.id === state.selectedId} rotating={rotationId===item.id} outline={stickerOutlineFor(appearance,albumId,item.id)} resizeHandlers={handle=>({onPointerDown:event=>resizeDown(item,handle,event),onPointerMove:move,onPointerUp:finish,onPointerCancel:cancel,onLostPointerCapture:()=>{if(drag.current)cancel()},onKeyDown:event=>resizeKeys(item,handle,event),onDoubleClick:event=>event.stopPropagation()})} handlers={{ onClick: () => selectOnWall(item.id), onDoubleClick:()=>toggleRotation(item.id), onFocus: () => selectOnWall(item.id), onPointerDown: event => down(item, event), onPointerMove: move, onPointerUp: finish, onPointerCancel: cancel, onLostPointerCapture: () => { if (drag.current) cancel() }, onKeyDown: event => keyboard(item, event) }} />)}</ul>
       </div>
       {state.editing && toolsOpen && <WallToolsDialog close={()=>setToolsOpen(false)}><div className="wall-tools" data-page={toolPage} id={`wall-tools-${albumId}`}>
-        <nav className="wall-tools-pages" aria-label="Herramientas de la pared">{([['add','Añadir'],['object','Objeto'],['layers','Capas'],['save','Guardar']] as const).map(([page,label])=><button key={page} type="button" aria-pressed={toolPage===page||page==='object'&&toolPage==='outline'} onClick={()=>setToolPage(page)}>{label}</button>)}</nav>
+        <nav className="wall-tools-pages" aria-label="Herramientas de la pared">{([['add','Añadir'],['object','Objeto'],['layers','Capas'],['wall','Fondo'],['save','Guardar']] as const).map(([page,label])=><button key={page} type="button" aria-pressed={toolPage===page||page==='object'&&toolPage==='outline'} onClick={()=>setToolPage(page)}>{label}</button>)}</nav>
+        {toolPage==='wall'&&<div className="appearance-settings wall-appearance-settings"><AppearanceSettings albumId={albumId} wallOnly/></div>}
         {state.error&&<p role="alert">{state.error}</p>}
         <div className="wall-add" hidden={toolPage!=='add'}><label>Añadir como<select value={kind} disabled={!editable || state.moving} onChange={event => setKind(event.target.value as typeof kind)}><option value="image">Imagen sin marco</option><option value="sticker">Sticker con contorno</option></select></label>
           <label>Añadir recurso PNG, JPEG o GIF<input ref={upload} type="file" accept="image/png,image/jpeg,image/gif" disabled={!editable || busy || state.elements.length >= 30} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void controller.current?.addFile(file, kind) }} /></label>

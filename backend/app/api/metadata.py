@@ -150,6 +150,11 @@ def patch_album(album_id: UUID, changes: AlbumPatch, request: Request, if_match:
     return response(service.patch_album(engine_for(request), album_id, changes.model_dump(exclude_unset=True), if_match))
 
 
+@router.delete('/albums/{album_id}')
+def delete_album(album_id: UUID, request: Request, if_match: str | None = Header(None)):
+    return service.delete_album(engine_for(request), album_id, if_match)
+
+
 @router.get("/assets/{asset_id}/content")
 def cover_content(asset_id: UUID, request: Request):
     with engine_for(request).connect() as connection:

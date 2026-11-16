@@ -4,10 +4,12 @@ export type PlayerState = {
   track: Track | null; queue: Track[]; index: number; context: string
   playing: boolean; loading: boolean; ready: boolean; pendingQueue: boolean
   position: number; duration: number; volume: number; error: string; notice: string
+  repeatOne: boolean; shuffle: boolean
 }
 export const initialPlayer: PlayerState = {
   track: null, queue: [], index: -1, context: '', playing: false, loading: false,
   ready: false, pendingQueue: false, position: 0, duration: 0, volume: .7, error: '', notice: '',
+  repeatOne: false, shuffle: false,
 }
 export type AudioPort = Pick<HTMLAudioElement, 'src' | 'currentSrc' | 'currentTime' | 'duration' |
   'volume' | 'paused' | 'ended' | 'readyState' | 'error' | 'play' | 'pause' | 'load' |
@@ -23,6 +25,7 @@ export class PlayerController {
   private wantsPlay = false
   private endedPending = false
   private disposed = false
+  private orderedQueue: Track[] = []
   private audio: AudioPort
 
   constructor(audio: AudioPort) {
@@ -76,6 +79,7 @@ export class PlayerController {
   }
   start(track: Track, context: string): number {
     this.generation += 1
+    this.orderedQueue = [track]
     this.patch({ queue: [track], index: 0, context, pendingQueue: true, notice: '' })
     this.load(track)
     return this.generation
@@ -104,6 +108,8 @@ export class PlayerController {
     queue = queue.map(item => item.id === active.id ? active : item)
     const index = queue.findIndex(track => track.id === this.state.track?.id)
     this.patch({ queue: index >= 0 ? queue : [this.state.track], index: Math.max(0, index), pendingQueue: false, notice })
+    this.orderedQueue = [...this.state.queue]
+    if (this.state.shuffle) this.applyShuffle()
     if (this.endedPending && this.wantsPlay) { this.endedPending = false; this.ended() }
   }
   play() {
@@ -145,6 +151,22 @@ export class PlayerController {
     catch { this.patch({ error: 'No se pudo cambiar la posición. Vuelve a intentarlo.' }) }
   }
   setVolume(value: number) { if (Number.isFinite(value)) { this.audio.volume = Math.max(0, Math.min(value, 1)); this.patch({ volume: this.audio.volume }) } }
+  toggleRepeat() { this.patch({ repeatOne: !this.state.repeatOne }) }
+  toggleShuffle() {
+    this.patch({ shuffle: !this.state.shuffle })
+    if (this.state.shuffle) this.applyShuffle()
+    else this.patch({ queue: [...this.orderedQueue], index: this.orderedQueue.findIndex(item => item.id === this.state.track?.id) })
+  }
+  private applyShuffle() {
+    const active = this.state.track
+    if (!active) return
+    const rest = this.orderedQueue.filter(item => item.id !== active.id)
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[rest[i], rest[j]] = [rest[j], rest[i]]
+    }
+    this.patch({ queue: [active, ...rest], index: 0 })
+  }
   previous() {
     if (!this.state.track || this.state.pendingQueue) return
     if (this.state.index === 0) { this.seek(0); return }
@@ -157,14 +179,21 @@ export class PlayerController {
   private ended() {
     this.patch({ playing: false, loading: false, position: this.state.duration })
     if (!this.wantsPlay) return
+    if (this.state.repeatOne) {
+      try { this.audio.currentTime = 0; this.patch({ position: 0 }); this.play() }
+      catch { this.wantsPlay = false; this.patch({ error: 'No se pudo repetir la canción. Pulsa Reproducir para reintentar.' }) }
+      return
+    }
     if (this.state.pendingQueue) { this.endedPending = true; return }
     if (this.state.index < this.state.queue.length - 1) this.next()
     else this.wantsPlay = false
   }
   updateTrack(track: Track) {
+    this.orderedQueue = this.orderedQueue.map(item => item.id === track.id && track.revision >= item.revision ? track : item)
     if (track.id === this.state.track?.id && track.revision >= this.state.track.revision) this.patch({ track, queue: this.state.queue.map(item => item.id === track.id ? track : item) })
   }
   removeTrack(id:string){
+    this.orderedQueue = this.orderedQueue.filter(item => item.id !== id)
     this.generation++;this.endedPending=false
     if(this.state.track?.id===id){this.intent++;this.wantsPlay=false;this.audio.pause();this.audio.removeAttribute('src');this.audio.load();this.patch({...initialPlayer,volume:this.state.volume,notice:'La canción se retiró de la biblioteca.'})}
     else{const queue=this.state.queue.filter(item=>item.id!==id);this.patch({queue,index:queue.findIndex(item=>item.id===this.state.track?.id),pendingQueue:false})}

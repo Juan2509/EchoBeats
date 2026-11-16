@@ -1,5 +1,10 @@
 # Configuración efectiva — P28
 
+La sección visual **Configuración** de la aplicación tiene Fondo principal,
+Álbumes (selector del que se quiere editar), Colores y estilo y Conexión y estado.
+El muro se configura desde **Editar pared → Fondo**. Ver [APARIENCIA.md](APARIENCIA.md).
+Este documento describe las variables operativas del servidor.
+
 Fuente de verdad: .env.example, backend/app/config.py y compose.yaml. No pegar
 valores privados en incidencias, documentación o capturas. La instalación local
 es de un usuario; no existe autenticación/tenant que la haga apta para Internet.

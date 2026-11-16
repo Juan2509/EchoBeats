@@ -1,5 +1,128 @@
 # Apariencia vaporwave/synthwave
 
+16 noviembre, ajuste posterior del álbum: Editar pared ahora comparte toolbar con
+Mi biblioteca, sobre el vinilo. La zona álbum usa la altura restante entre toolbar
+y player (observa resize, alturas y escala). Desde651px, sidebar y wall-panel ocupan
+esa zona; el lienzo se limita por ancho y alto conservando10:7. No se cambia modelo
+1000x700, posiciones, encuadre ni imágenes. Se elimina margen superior heredado del
+player que producía6px de scroll. Sidebar conserva scroll interno y llega hasta
+7–10px antes del reproductor. Ampliar muro oculta temporalmente sidebar y Ver panel
+del álbum lo restaura, siempre con navegación/player visibles. En móvil angosto,
+panel y muro siguen apilados y requieren scroll vertical, sin overflow horizontal.
+
+97 pruebas frontend/build aprobados. Chrome aislado con24 pistas simuladas verificó
+1920x1080,1440x900,1280x720,768x900 sin scroll exterior ni recorte de muro; proporción
+10:7, botón junto al enlace, scroll de lista sin mover muro y ampliar/restaurar.
+360x800 revisado con flujo vertical. Capturas fitted-wall-*.png y reporte local en
+data/validation. Sin cambios en diseños personales ni llamadas IA.
+
+16 noviembre: se restaura scroll interno del panel izquierdo aprovechando toda la
+altura útil medida entre cabecera y reproductor; sustituye crecimiento sin límite.
+ResizeObserver/resize/scroll recalculan altura compensando zoom CSS. Panel sticky
+en escritorio/tablet, en flujo normal móvil, con scroll contenido y margen inferior.
+Barra superior sticky en todas las rutas (altura observada, offset superior12px,
+z-index40). El muro y su encuadre siguen independientes del número de pistas.
+Workspace al75% usa width100%, no133%, corrigiendo overflow de álbum a1280.
+Build y revisión Chrome1440/1280/768/360 con24 pistas simuladas aprobados: muro y
+scroll de página inmóviles al desplazar el panel; player sin cubrir panel, menú
+visible al bajar y cero overflow horizontal. Datos y medios sin cambios.
+
+## Configuración como sección — 16 de noviembre de 2026
+
+La navegación superior abre `/configuracion`, con Fondo principal, Álbumes,
+Colores y estilo, Conexión y estado. Sustituye AppearanceDialog y la restricción
+anterior de editar solo el álbum de la vista. URL conserva apartado y álbum:
+`/configuracion?seccion=albumes&album=<uuid>`, con atrás/adelante.
+
+Álbumes carga todas las páginas, excluye el técnico y permite elegir el álbum,
+ver portada/vinilo y fondo actual, cambiar presentación y fondo propio/heredado.
+Mantiene X solo para imágenes propias, lienzo y enlace para abrir el álbum.
+Estados vacío/error/álbum inexistente visibles. Menú lateral pasa a tarjetas móvil.
+
+Editar pared → Fondo reúne transparencia, color, imagen del muro y ampliación;
+no aparecen en Configuración. Color conserva autosave/CAS backend, superficies e
+imágenes siguen locales. No modifica archivos, geometría ni preferencias existentes.
+El editor de fondo impide navegar con un borrador/carga pendiente y ofrece Aplicar
+o Descartar ajustes; no sube imágenes pendientes automáticamente.
+
+97 pruebas frontend/build aprobados. Chrome aislado con dos álbumes simulados:
+navegación como sección, independencia de fondos principal/álbum, colores, estado,
+controles de pared trasladados y autosave de color simulado;360/768 sin overflow.
+Capturas settings-principal/album/colores/sistema/wall-controls y settings-section-
+360/768 inspeccionadas. Sin diálogos nativos ni escrituras personales en esta prueba.
+No se hicieron migraciones ni llamadas reales a IA; pendientes previos vigentes.
+
+16 noviembre, efecto cristal: paneles de información con84% de superficie oscura
+y16% transparente, desenfoque del fondo18px y saturación110%. Afecta contenedores
+de Inicio/Biblioteca/Explorar, sidebar, tarjetas, reproductor y diálogos; el texto
+no se desenfoca, controles y cabecera conservan fondo estable. Preserva colores
+personalizados mediante mezcla oscura. Fallback opaco con @supports para navegadores
+sin backdrop-filter. Build aprobado; no es nueva certificación de contraste para
+todos los wallpapers. Preferencias e imágenes originales intactas.
+
+Corrección posterior16 noviembre: el usuario pidió alejar más porque el primer
+ajuste fue insuficiente. Ahora workspace de escritorio (>1000px) usa escala CSS
+0.75, máximo1520px (álbum1760px) y altura compensada133.333svh. La escena queda
+sin escalar y el zoom del navegador sigue100%; móvil/tablet sin este alejamiento.
+Se sustituye la decisión previa de no usar zoom CSS. Las medidas anteriores de
+controles son previas a esta escala:44px se muestran como33px en escritorio.
+Build y revisión Chrome1920/1440/1280/768/360 aprobados: zoom de workspace0.75
+en escritorio/1 en móvil, body/visualViewport1, sin overflow; reproductor dentro
+de pantalla. Capturas density-*.png actualizadas. Sin cambios BD ni preferencias.
+
+16 noviembre: densidad normal compacta para aproximar al100% la distribución que
+el usuario prefería al75%. Workspace1440px/álbum1640px centrados, márgenes visibles;
+h1 de colección hasta48px, hero64px, intro16px y botones14px; menor espacio entre
+secciones, formularios y tarjetas. No se fuerza zoom ni escala CSS, se mantiene la
+accesibilidad de zoom del navegador, select16px/min44px y portadas grandes.
+Verificación Chrome de Inicio/Biblioteca/Explorar a1920/1440/1280/768/360 con zoom1
+y escala visual1, sin overflow horizontal; capturas1440/360 inspeccionadas.
+Build aprobado; sin interacciones de escritura, IA ni prueba de escucha.
+
+16 noviembre: reproductor hasta1160px y portada88px/72px móvil; textos y tiempo
+ampliados. Controles SVG de aleatorio y repetir canción con estado seleccionado
+legible. Aleatorio usa la cola actual y no cambia la pista al activarse; desactivar
+restaura orden. Bucle solo de pista, no de álbum. Ambos son de sesión, no persistidos.
+97 pruebas frontend y build aprobados; comportamiento con doble de audio, escucha
+y revisión visual de esta ampliación aún pendientes.
+
+16 noviembre, controles de formulario: select global en workspace/diálogos con
+fuente 1rem, altura mínima44px, padding y borde. Explorar usa textarea y número
+con tipografía heredada, etiquetas de16px y notas espaciadas; filtros responsivos.
+Favoritos comparte fila después de Playlists. Crear álbum corregido a UTF-8 sin
+signos de interrogación dañados. Build y revisión Chrome1280/768/360 aprobados:
+cuatro select de Explorar miden45px/16px, sin desbordamiento horizontal. Sin
+llamadas IA, importación ni cambios del catálogo en esta revisión.
+
+Ajuste posterior del 16 de noviembre: retirado el recuadro visible de estado
+debajo de Editar pared (Sin cambios/Pared guardada). Se conserva como región
+accesible oculta y dentro de herramientas; los avisos de error siguen visibles.
+
+## Legibilidad sobre fondos personalizados — 16 de noviembre de 2026
+
+readability.css se carga después de los estilos anteriores para corregir estados
+seleccionados que heredaban texto verde oscuro. Navegación en azul grisáceo opaco;
+inicio, tarjetas informativas, formularios, importación, playlists, avisos y pie
+tienen superficies de lectura. Paneles y diálogos mezclan 88% de base oscura con
+12% del color elegido: conservan el matiz sin volver blanco el fondo del texto.
+Acentos de texto con luminancia acotada, campos opacos, botones con borde y estados
+seleccionado/hover/foco explícitos. Los colores del wallpaper y las imágenes del
+muro siguen editables. No se alteran archivos, diseños ni preferencias guardadas.
+
+Corrección posterior pedida por el usuario: se quitó el recuadro grande «La pared
+de…». El título sigue solo para lectores de pantalla; Editar pared y el estado de
+guardado permanecen compactos y con superficie propia. No se añadió fondo al lienzo.
+
+95 pruebas frontend y build aprobados; recorrido de carpetas/fondos con datos
+simulados aprobado. Chrome aislado revisó inicio/biblioteca/explorar/álbum, diálogos
+de apariencia/creación y móvil 360/768. Auditoría local de texto renderizado con
+paletas blanca/negra/magenta y patrón de alto contraste: mínimo 4,5:1 sin hallazgos
+en los estados examinados ni desbordamiento horizontal. Se consideran los colores
+del degradado de lectura, no el borde decorativo; se excluye texto oculto accesible.
+Capturas readability-*.png y reporte readability-report.json en data/validation.
+Esto no certifica accesibilidad universal ni cubre todos los resultados posibles de
+IA/errores/medios personales. Pendientes de audio/API real/aceptación siguen abiertos.
+
 15 de noviembre: [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md) registra la creación con
 vista previa y Vinilo/Portada sin opción redundante, X sobre miniaturas propias
 (presets e herencia protegidos) y encuadre mediante lienzo con arrastre, giro y zoom.

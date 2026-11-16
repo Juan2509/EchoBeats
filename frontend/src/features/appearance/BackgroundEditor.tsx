@@ -22,6 +22,7 @@ export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherite
   const stamp=JSON.stringify(value)
   useEffect(()=>{if(!dirty&&!prepared)setDraft(JSON.parse(stamp))},[stamp,dirty,prepared])
   useEffect(()=>{alive.current=true;return()=>{alive.current=false;pending.current?.abort()}},[])
+  useEffect(()=>{const guard=(event:Event)=>{if(busy||dirty){event.preventDefault();setNotice(busy?'Espera a que termine la preparación o el guardado.':'Aplica o descarta los ajustes del fondo antes de cambiar de apartado.')}};window.addEventListener('echobeats:before-navigation',guard);return()=>window.removeEventListener('echobeats:before-navigation',guard)},[busy,dirty])
   useEffect(()=>()=>{if(preview)URL.revokeObjectURL(preview)},[preview])
   useEffect(()=>{const resize=()=>setRatio(window.innerWidth/window.innerHeight);window.addEventListener('resize',resize);return()=>window.removeEventListener('resize',resize)},[])
   function edit(changes:Partial<Wallpaper>){setDraft(current=>({...current,...changes}));setDirty(true);setNotice('Vista previa · pulsa Aplicar fondo para guardar.')}
@@ -65,7 +66,7 @@ export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherite
       <label>Zoom / recorte · {draft.zoom.toFixed(2)}×<input type="range" min={1} max={3} step={.05} value={draft.zoom} onChange={event=>edit({zoom:Number(event.target.value),mode:'image'})}/></label>
       <button type="button" className="secondary" onClick={()=>edit({fit:'cover',x:50,y:50,zoom:1,panX:0,panY:0,rotation:0,mode:'image'})}>Centrar imagen</button>
     </>}
-    <button type="button" disabled={!dirty} onClick={()=>void apply()}>Aplicar fondo</button></fieldset>
+    <button type="button" disabled={!dirty} onClick={()=>void apply()}>Aplicar fondo</button>{dirty&&<button type="button" className="secondary" onClick={()=>{setDraft(value);setPrepared(null);setPreview(null);setDirty(false);setError('');setNotice('Ajustes descartados. El fondo guardado se conserva.')}}>Descartar ajustes</button>}</fieldset>
     <p role="status">{busy?'Preparando o guardando fondo…':notice}</p>{error&&<p role="alert">{error}</p>}
   </section>
 }

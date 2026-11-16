@@ -1,5 +1,68 @@
 # EchoBeats: contexto del proyecto
 
+Directriz posterior: álbum cabe entero en viewport desde651px. Editar pared junto
+a Mi biblioteca mediante portal. Room/sidebar alto adaptativo entre toolbar/player;
+canvas máximo sin perder ratio10:7, sin scroll exterior. Sidebar llena hasta margen
+7–10px y conserva scroll interno. Ampliar muro oculta sidebar temporalmente, botón
+Ver panel del álbum lo restaura. Móvil angosto sigue apilado/scroll natural.97 tests/
+build y Chrome24 pistas1920/1440/1280/768 sin scroll exterior y360 sin overflow
+horizontal aprobados. Sin cambios en geometría, medios ni diseños personales.
+
+Directriz posterior: scroll interno del panel de álbum restaurado, alto adaptativo
+entre menú y player mediante useAlbumPanelSpace, compensando escala75%. Sticky en
+escritorio/tablet y flujo normal móvil. Navegación superior sticky en todas las rutas.
+Muro independiente de cantidad de pistas. Width100% del workspace escalado evita
+overflow. Build y Chrome con24 pistas1440/1280/768/360 aprobados (scroll sin mover
+muro, panel no cubierto por player, menú fijo). Sin datos personales modificados.
+
+Directriz más reciente: Configuración es sección /configuracion, no modal ni
+limitada al álbum abierto. Selector de álbum, fondo principal, colores/estilo y
+conexión/IA por apartados; URL conserva seccion/album. Controles del muro (color,
+transparencia/imagen/ampliación) solo Editar pared → Fondo. Fondos independientes,
+preferencias locales y autosave/CAS del color intactos. Borradores requieren
+Aplicar/Descartar al navegar.97 tests/build y Chrome con dos álbumes y color de
+muro simulado,360/768/desktop aprobados. Sin escrituras personales ni IA real.
+
+Directriz más reciente de densidad: usuario pidió alejar más que la compactación
+inicial. Workspace de escritorio >1000px ahora escala CSS .75, máximo1520px/
+álbum1760px, altura133.333svh. Fondo no escala, navegador conserva su zoom y móvil
+sin escala. Sustituye regla anterior de evitar CSS zoom. Build y revisión de
+Inicio/Biblioteca/Explorar1920/1440/1280/768/360 sin overflow y player visible.
+
+Directriz posterior16 noviembre: eliminación con modales HTML internos, sustituye
+confirmación nativa anterior. Eliminar pistas bajo Fichas y opciones abre selección
+múltiple paginada completa; sin botones por fila ni en ficha central. Lote secuencial
+con revisión, parada ante fallo y consulta de resultados inciertos sin reintento DELETE.
+Play de filas/corazón iconOnly sin marcos, foco accesible conservado.97 tests frontend/
+build y Chrome con catálogo simulado (cancelar, dos pistas, error incierto, álbum,
+360/768) aprobados. Sin borrados personales ni cambios backend en este ajuste.
+
+16 noviembre: icono de repetir sin1 y centrado. Delete de pista visible en filas
+del álbum; Eliminar álbum al final de su panel. Ambos con confirmación nativa.
+DELETE álbum versionado/atómico retira sus pistas y las reasigna al álbum técnico,
+invalida jobs/playlists y elimina muro/créditos/álbum; conserva assets e historial
+musical. Álbum de sistema protegido. Sin migración. Cinco tests de carpetas en
+aislamiento/build aprobados; sin borrados personales de prueba. Ver ALBUMES_CARPETA.
+
+Directriz posterior: Crear álbum está en Biblioteca junto al título, sin recuadro
+promocional. Retirado de Inicio. Las referencias anteriores a crearlo desde Inicio
+son históricas; mantener indicaciones de importación acordes a esta ubicación.
+
+16 noviembre: usuario solicitó vaciar toda música/álbumes. Catálogo personal vaciado
+tras backup echobeats_before_empty_catalog_1794836211847.dump: 8 pistas/3 álbumes
+eliminados junto a fichas, trabajos y muros asociados. Cero playlists existentes;
+álbum técnico vacío permanece oculto. 19 assets y todos los archivos conservados.
+No reimportar automáticamente ni restaurar el catálogo sin petición del usuario.
+
+16 noviembre: readability.css cargado al final protege lectura sobre wallpapers:
+paneles oscurecidos, navegación azul grisáceo opaca, textos/acento de luminancia
+acotada y selección/foco/hover explícitos sin verde oscuro heredado. Pedido posterior:
+quitar recuadro/título visible La pared de…, mantener Editar pared y estado compactos;
+título solo accesible. No poner panel detrás del lienzo. 95 pruebas frontend/build,
+flujo de carpetas simulado y contraste acotado 4,5:1 con blanco/negro/magenta en
+inicio/biblioteca/explorar/álbum/diálogos y 360/768 aprobados. Ver APARIENCIA.md.
+Sin certificación universal, escrituras personales, API real ni cierre de pendientes.
+
 15 noviembre: álbumes como carpetas, botón Crear álbum en Inicio con nombre,
 portada opcional y Vinilo/Portada (sin opción redundante predeterminada). Importar
 en UI exige destino; dentro del álbum lo fija. API album_id opcional por compatibilidad;

@@ -27,8 +27,11 @@ export function PlayerProvider({ children, refresh }: { children: ReactNode; ref
     const unsubscribe = player.subscribe(() => setState(player.state))
     const removed=(event:Event)=>{pending.current?.abort();player.removeTrack((event as CustomEvent<string>).detail)}
     window.addEventListener('echobeats:track-deleted',removed)
+    window.addEventListener('echobeats:track-retired',removed)
+    const albumRemoved=(event:Event)=>{const id=(event as CustomEvent<string>).detail;for(const item of [...player.state.queue])if(item.album_id===id)player.removeTrack(item.id)}
+    window.addEventListener('echobeats:album-deleted',albumRemoved)
     setState(player.state)
-    return () => { window.removeEventListener('echobeats:track-deleted',removed);pending.current?.abort(); unsubscribe(); player.dispose(); controller.current = null }
+    return () => { window.removeEventListener('echobeats:track-deleted',removed);window.removeEventListener('echobeats:track-retired',removed);window.removeEventListener('echobeats:album-deleted',albumRemoved);pending.current?.abort(); unsubscribe(); player.dispose(); controller.current = null }
   }, [])
   useEffect(() => {
     const id = controller.current?.state.track?.id
@@ -78,12 +81,14 @@ export function PlayerBar({ navigate }: { navigate: (path: string) => void }) {
   function commit() { if (scrub !== null) { control()?.seek(scrub); setScrub(null) } }
   return <section className="player-bar" aria-label="Reproductor de música">
     <div className="player-track">{track && <img src={track.cover_url ?? defaultCover} alt="" onError={event => { if (!event.currentTarget.src.endsWith(defaultCover)) event.currentTarget.src = defaultCover }} />}
-      <div><p className="player-status" role="status">{status}</p>{track ? <><strong>{track.title}</strong><span>{track.artists.map(item => item.name).join(', ') || 'Artista desconocido'}</span>
-        <a href={`/albumes/${track.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{track.album_title}</a><FavoriteButton trackId={track.id} title={track.title} /></> : <span>Elige una canción en tu biblioteca.</span>}</div></div>
+      <div><p className="visually-hidden" role="status">{status}</p>{track ? <><div className="track-title-row"><strong>{track.title}</strong><FavoriteButton iconOnly trackId={track.id} title={track.title} /></div><span>{track.artists.map(item => item.name).join(', ') || 'Artista desconocido'}</span>
+        <a href={`/albumes/${track.album_id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>{track.album_title}</a></> : <span>Elige una canción en tu biblioteca.</span>}</div></div>
     <div className="player-controls"><div className="transport">
+      <button className="playback-mode" aria-label="Reproducción aleatoria" title={state.shuffle ? 'Desactivar reproducción aleatoria' : 'Activar reproducción aleatoria'} aria-pressed={state.shuffle} disabled={!track || state.pendingQueue || state.queue.length < 2} onClick={() => control()?.toggleShuffle()}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c2 0 4-3 6-6s4-6 6-6h3m-4-4 4 4-4 4"/></svg></button>
       <button aria-label={state.index === 0 ? 'Volver al inicio de la canción' : 'Canción anterior'} disabled={!track || state.pendingQueue} onClick={() => control()?.previous()}>◀◀</button>
       <button className="play-primary" aria-label={state.playing || state.loading ? 'Pausar' : 'Reproducir'} disabled={!track} onClick={() => control()?.toggle()}>{state.playing || state.loading ? 'Ⅱ' : '▶'}</button>
-      <button aria-label="Canción siguiente" disabled={!track || state.pendingQueue || state.index >= state.queue.length - 1} onClick={() => control()?.next()}>▶▶</button></div>
+      <button aria-label="Canción siguiente" disabled={!track || state.pendingQueue || state.index >= state.queue.length - 1} onClick={() => control()?.next()}>▶▶</button>
+      <button className="playback-mode repeat-mode" aria-label="Repetir canción" title={state.repeatOne ? 'Desactivar bucle de la canción' : 'Repetir esta canción en bucle'} aria-pressed={state.repeatOne} disabled={!track} onClick={() => control()?.toggleRepeat()}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V7a3 3 0 0 1 3-3h13m-3-3 3 3-3 3M20 15v2a3 3 0 0 1-3 3H4m3-3-3 3 3 3"/></svg></button></div>
       <div className="timeline"><time>{formatTime(scrub ?? state.position)}</time><input type="range" aria-label="Posición de reproducción" aria-valuetext={`${formatTime(scrub ?? state.position)} de ${formatTime(state.duration)}`}
         min="0" max={state.duration || 0} step="0.1" value={scrub ?? state.position} disabled={!state.ready || !!state.error}
         onChange={event => setScrub(Number(event.target.value))} onPointerUp={commit} onPointerCancel={() => setScrub(null)} onKeyUp={commit} onBlur={commit} /><time>{formatTime(state.duration)}</time></div>

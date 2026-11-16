@@ -1,0 +1,326 @@
+/* Superficies de lectura independientes del wallpaper y de los colores elegidos.
+   Los acentos siguen siendo personalizables, pero su luminancia está acotada. */
+:root {
+  --ink: #f5f7ff;
+  --ink-muted: #c7cede;
+  --read-edge: #7886a4;
+  --read-base: #111827;
+  --read-surface: linear-gradient(var(--panel-angle),
+    color-mix(in srgb, #111827 88%, var(--panel-top)),
+    color-mix(in srgb, #111827 88%, var(--panel-bottom)));
+  --glass-surface: linear-gradient(var(--panel-angle),
+    color-mix(in srgb, color-mix(in srgb, #111827 88%, var(--panel-top)) 84%, transparent),
+    color-mix(in srgb, color-mix(in srgb, #111827 88%, var(--panel-bottom)) 84%, transparent));
+  --read-cyan: color-mix(in srgb, #d3f6ff 85%, var(--neon-cyan));
+  --read-pink: color-mix(in srgb, #ffd5f1 85%, var(--neon-pink));
+  --muted: var(--ink-muted);
+  --surface: var(--read-surface);
+}
+body { color: var(--ink); }
+.workspace .skip-link { background: #151e30; color: #fff; border: 1px solid #d3f6ff; }
+.workspace input:is([type=range],[type=checkbox]), dialog input:is([type=range],[type=checkbox]) { accent-color: #ef98d0; }
+.workspace .site-header {
+  background: #151e30;
+  border: 1px solid var(--read-edge);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 22px #0006;
+}
+.workspace main > section:not(:has(.album-room)),
+.workspace .dashboard-actions,
+.workspace footer,
+.workspace .wall-status {
+  background: var(--read-surface);
+  border: 1px solid var(--read-edge);
+  border-radius: 14px;
+  padding: clamp(14px, 2vw, 28px);
+}
+.workspace .dashboard-actions { margin-bottom: 18px; }
+.workspace .hero { padding-top: clamp(20px, 3vw, 40px); }
+.workspace .pillars { border-top-color: var(--read-edge); }
+.workspace .pillars > div { background: #151e30; border: 1px solid #65728d; border-radius: 12px; padding: 18px; min-width: 0; }
+.workspace .pillars p { color: var(--ink-muted); }
+.workspace .pillars span { color: var(--read-cyan); }
+.workspace .wall-heading { padding: 0; margin-bottom: 10px; background: transparent; border: 0; box-shadow: none; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.workspace .wall-status { padding: 10px 14px; width: fit-content; max-width: 100%; box-sizing: border-box; }
+.workspace .wall-empty { background: #151e30; color: var(--ink); border: 1px solid var(--read-edge); text-shadow: none; }
+.workspace :is(.import-panel,.metadata-editor,.playlist-editor,.playlist-create,.preference-comparison,.empty-state,.track-actions[open]),
+dialog.appearance-dialog, dialog.album-dialog, dialog.description-dialog,
+.wall-tools-dialog {
+  background: var(--read-surface); color: var(--ink); border-color: var(--read-edge);
+}
+.workspace :is(.import-panel,.metadata-editor,.playlist-create) { padding: 20px; border: 1px solid var(--read-edge); border-radius: 14px; }
+.workspace .playlist-editor { padding: 16px; }
+.workspace :is([role=alert],[role=status]):not(:empty) { background: #151e30; color: var(--ink); border: 1px solid #7886a4; border-radius: 8px; padding: 10px 12px; overflow-wrap: anywhere; }
+.workspace :is(h1,h2,h3,h4), dialog :is(h1,h2,h3,h4) { color: var(--ink); }
+.workspace :is(.intro,.note,footer,.album-card p,.album-card span,.track-list span,.track-list time,.player-track span,.wall-status,.wall-animation,.volume,.timeline time,.player-controls small,.import-results span,.search-form label,.dashboard-actions span),
+dialog :is(p,small,label,legend,output) { color: var(--ink-muted); }
+.workspace :is(.eyebrow,.hero em), dialog .eyebrow { color: var(--read-pink); }
+.workspace :is(a,legend,.player-status,.metadata-editor small,.active-track strong), dialog a { color: var(--read-cyan); }
+.workspace .track-title-row strong { color: var(--ink); }
+.workspace .track-list li.active-track strong { color: var(--read-cyan); }
+.workspace .appearance-settings legend { color: var(--read-cyan); }
+.workspace .wall-tools-dialog :is(p,label,output,small), dialog .appearance-settings :is(p,legend) { color: var(--ink-muted); }
+/* Explicit state colors override the old light-theme green text rules. */
+.workspace .site-header a,
+.workspace .site-header a[aria-current],
+.workspace button:not(.background-choice):not(.wall-swatch):not(.wall-object):not(.wall-resize-handle),
+dialog button:not(.background-choice):not(.wall-swatch),
+.workspace .button-link,
+.workspace summary, dialog summary {
+  color: var(--ink); background: #202d45; border: 1px solid #9aaaca;
+  -webkit-text-fill-color: currentColor;
+}
+.workspace .site-header a[aria-current=page],
+.workspace button[aria-pressed=true]:not(.wall-object):not(.wall-swatch):not(.background-choice),
+dialog button[aria-pressed=true]:not(.background-choice):not(.wall-swatch) {
+  color: #fff; background: #3a496b; border-color: #c5edff;
+  outline: 2px solid #b6e8ff; outline-offset: 2px;
+}
+.workspace .site-header .brand { color: #d3f6ff; }
+.workspace .brand .mark { color: #ffd5f1; -webkit-text-fill-color: currentColor; }
+.workspace button:not(.wall-object):not(.wall-swatch):not(.background-choice):not(.wall-resize-handle):hover,
+dialog button:not(.wall-swatch):not(.background-choice):hover,
+.workspace .site-header a:hover, .workspace .button-link:hover,
+.workspace summary:hover, dialog summary:hover { color: #fff; background: #3a496b; border-color: #fff; }
+.workspace button:disabled, dialog button:disabled { opacity: 1; color: #bbc5d8; background-color: #273044; cursor: not-allowed; }
+.workspace input:not([type=checkbox]):not([type=range]):not([type=color]),
+.workspace :is(textarea,select), dialog input:not([type=checkbox]):not([type=range]):not([type=color]),
+dialog :is(textarea,select) { background: #101827; color: var(--ink); border-color: #8a98b4; color-scheme: dark; }
+input::placeholder,textarea::placeholder { color: #b8c2d7; opacity: 1; }
+select option { background: #101827; color: #f5f7ff; }
+/* Tamaño legible común, también en los filtros que no tenían estilos propios. */
+.workspace select, dialog select {
+  display: block; width: 100%; max-width: 100%; min-width: 0;
+  min-height: 44px; padding: 10px 36px 10px 12px;
+  font: inherit; font-size: 1rem; line-height: 1.4;
+  border: 1px solid #8a98b4; border-radius: 8px; box-sizing: border-box;
+}
+.workspace select option, dialog select option { font-size: 1rem; }
+.workspace .explore-form { max-width: 1040px; margin-top: 28px; }
+.workspace .explore-form fieldset { display: grid; gap: 18px; margin: 0; }
+.workspace .explore-form label { display: grid; gap: 9px; margin: 0; font-size: 1rem; line-height: 1.5; }
+.workspace .explore-form textarea {
+  font: inherit; font-size: 1rem; line-height: 1.6;
+  min-height: 144px; padding: 14px; border-radius: 8px;
+}
+.workspace .explore-form input:not([type=checkbox]) {
+  font: inherit; font-size: 1rem; min-height: 44px; padding: 10px 12px;
+  border: 1px solid #8a98b4; border-radius: 8px; box-sizing: border-box;
+}
+.workspace .explore-filters { gap: 18px; align-items: end; }
+.workspace .explore-form > fieldset > label > select { max-width: 520px; }
+.workspace .explore-form .explore-checkbox { display: flex; gap: 10px; align-items: center; }
+.workspace .explore-form .explore-checkbox input { width: 18px; height: 18px; flex-shrink: 0; }
+.workspace .explore-form .note { font-size: .95rem; line-height: 1.7; max-width: 78ch; margin: 0; }
+.workspace .explore-form button { justify-self: start; margin: 0; }
+.workspace :is(a,button,summary,input,select,textarea):focus-visible,
+dialog :is(a,button,summary,input,select,textarea):focus-visible { outline: 3px solid #d3f6ff; outline-offset: 4px; }
+.workspace .wall-object:disabled { background: transparent; opacity: 1; }
+.workspace .player-bar {
+  width: min(1160px, 100%); padding: 18px 22px; gap: 24px;
+  grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.4fr) 130px;
+}
+.workspace .player-track { gap: 16px; }
+.workspace .player-track > img { width: 88px; height: 88px; border-radius: 10px; }
+.workspace .player-track > div { flex: 1; min-width: 0; }
+.workspace .player-track strong { font-size: .95rem; line-height: 1.4; }
+.workspace .player-track > div > span, .workspace .player-track a { font-size: .8rem; line-height: 1.5; }
+.workspace .transport { gap: 12px; }
+.workspace .transport button { min-width: 44px; min-height: 44px; }
+.workspace .playback-mode svg { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.workspace .transport .playback-mode { display: inline-flex; align-items: center; justify-content: center; padding: 8px; }
+/* Iconos sin caja; la fila ya proporciona una superficie de lectura opaca. */
+.workspace .track-list .track-play,
+.workspace .favorite-icon-control .favorite-button {
+  background: transparent !important; border: 0 !important; box-shadow: none !important;
+  color: #f5f7ff; border-radius: 50%;
+}
+.workspace .favorite-icon-control .favorite-button[aria-pressed=true] { color: #ff9bca; outline: none; }
+.workspace .track-list .track-play[aria-pressed=true] { color: #b6e8ff; outline: none; }
+.workspace .track-list .track-play:hover,
+.workspace .favorite-icon-control .favorite-button:hover { color: #b6e8ff; }
+.workspace .favorite-icon-control .favorite-button:focus-visible { outline: 3px solid #d3f6ff; }
+.workspace .track-list .track-play:focus-visible { outline: 3px solid #d3f6ff; }
+.album-delete-tracks { margin: 12px 0; }
+/* El panel del álbum crece con su contenido: evita el recorte y el scroll anidado. */
+.workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar {
+  max-height: none;
+  min-height: max(320px, calc(100dvh - 210px));
+  overflow: visible;
+}
+.workspace .album-sidebar .track-list { max-height: none; overflow: visible; }
+@media(max-width:650px) {
+  .workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar { min-height: 0; }
+}
+.deletion-dialog { width: min(600px, calc(100vw - 24px)); box-sizing: border-box; }
+.deletion-dialog p { line-height: 1.6; }
+.deletion-dialog > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.deletion-dialog h2 { margin: 0; font-size: 1.4rem; }
+.workspace .deletion-dialog h2 { border: 0; padding: 0; margin: 0; text-transform: none; font-size: 1.4rem; }
+.deletion-dialog .editor-actions { margin-top: 18px; }
+.deletion-dialog fieldset { min-width: 0; border: 0; padding: 0; }
+.delete-track-options { max-height: 38dvh; overflow: auto; margin-top: 12px; }
+.deletion-dialog .delete-track-options label { display: flex; gap: 12px; align-items: center; padding: 12px; margin: 0; border-bottom: 1px solid #66728e; cursor: pointer; }
+.deletion-dialog .delete-track-options input { width: 20px; height: 20px; margin: 0; padding: 0; flex-shrink: 0; }
+.delete-track-options label > span { min-width: 0; overflow-wrap: anywhere; }
+.delete-track-options small { display: block; margin-top: 4px; }
+.workspace .player-controls small, .workspace .timeline time, .workspace .volume { font-size: .8rem; }
+@media(max-width:1000px) {
+  .workspace .player-bar { grid-template-columns: minmax(220px, 1fr) minmax(280px, 1.4fr); gap: 16px; }
+  .workspace .player-bar .volume { grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 12px; }
+  .workspace .player-bar .volume input { width: 140px; margin: 0; }
+}
+@media(max-width:650px) {
+  .workspace .player-bar { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 10px; }
+  .workspace .player-track > img { width: 72px; height: 72px; }
+  .workspace .transport { gap: 8px; }
+}
+@media(max-width:650px) {
+  .workspace .site-header { padding: 12px; gap: 14px; }
+  .workspace .site-header nav { gap: 10px; }
+  .workspace main > section:not(:has(.album-room)) { padding: 16px; }
+  .workspace .pillars { gap: 12px; }
+}
+
+/* Densidad de escritorio al 100%: más escena visible sin escalar el navegador. */
+.workspace { max-width: 1440px; gap: 18px; padding: 20px 32px; }
+.workspace[data-view=album] { max-width: 1640px; }
+.workspace .site-header { padding: 10px 14px; min-height: 64px; }
+.workspace main > section:not(:has(.album-room)) { padding: 22px 24px; }
+.workspace main > section > h1 { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.15; margin: 14px 0 18px; }
+.workspace .hero h1 { font-size: clamp(3rem, 5vw, 4rem); line-height: 1.05; margin: 18px 0; }
+.workspace .hero { padding-top: 24px; }
+.workspace .intro { font-size: 1rem; line-height: 1.65; margin: 16px 0; max-width: 68ch; }
+.workspace .eyebrow { font-size: .75rem; margin: 8px 0 14px; }
+.workspace .pillars { margin-top: 28px; padding-top: 20px; gap: 18px; }
+.workspace .pillars > div { padding: 14px 16px; }
+.workspace .pillars h2 { font-size: 1rem; margin: 12px 0 8px; }
+.workspace .pillars p { font-size: .9rem; margin: 0; }
+.workspace .search-form { margin: 20px 0 16px; }
+.workspace .search-form input { min-height: 44px; padding: 10px 12px; }
+.workspace .view-switch { margin-bottom: 14px; gap: 10px; }
+.workspace .album-presentation-control { margin: 12px 0; }
+.workspace .explore-form { margin-top: 22px; }
+.workspace .explore-form textarea { min-height: 112px; }
+.workspace .explore-form fieldset { gap: 14px; }
+.workspace button:not(.favorite-button):not(.track-play):not(.wall-object):not(.wall-resize-handle),
+.workspace .button-link { font-size: .875rem; }
+.workspace .button-link { margin-top: 10px; }
+@media(max-width:900px) {
+  .workspace { padding: 16px; }
+  .workspace main > section:not(:has(.album-room)) { padding: 20px; }
+}
+@media(max-width:650px) {
+  .workspace { padding: 12px; }
+  .workspace main > section:not(:has(.album-room)) { padding: 16px; }
+  .workspace .hero h1 { font-size: 2.6rem; }
+  .workspace .pillars { gap: 12px; }
+}
+
+/* Escala solicitada: equivale visualmente a alejar la interfaz en escritorio.
+   La escena queda a tamaño completo y el zoom accesible del navegador sigue libre. */
+@media(min-width:1001px) {
+  .workspace {
+    zoom: .75;
+    width: 100%;
+    max-width: 1520px;
+    min-height: 133.333333svh;
+  }
+  .workspace[data-view=album] { max-width: 1760px; }
+  .workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar {
+    min-height: max(320px, calc(133.333333dvh - 210px));
+  }
+}
+
+/* Cristal suave: desenfoca lo que queda detrás, nunca el texto o los controles.
+   Sin soporte de backdrop-filter se conservan las superficies opacas anteriores. */
+@supports ((backdrop-filter: blur(18px)) or (-webkit-backdrop-filter: blur(18px))) {
+  .workspace main > section:not(:has(.album-room)),
+  .workspace :is(.album-sidebar,.player-bar,.import-panel,.metadata-editor,.playlist-editor,.playlist-create,.preference-comparison,.empty-state,.explore-result,.album-card),
+  dialog:is(.appearance-dialog,.album-dialog,.description-dialog),
+  .workspace .wall-tools-dialog {
+    background: var(--glass-surface);
+    backdrop-filter: blur(18px) saturate(110%);
+    -webkit-backdrop-filter: blur(18px) saturate(110%);
+    border-color: #8a98b4;
+  }
+}
+
+.settings-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 24px; }
+.workspace .site-header { position: sticky; top: 12px; z-index: 40; }
+.workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar {
+  position: sticky; top: calc(var(--navigation-height, 84px) + 28px);
+  height: var(--album-panel-height, calc(100dvh - 320px));
+  max-height: var(--album-panel-height, calc(100dvh - 320px));
+  min-height: 0; overflow: auto; overscroll-behavior: contain;
+  scrollbar-gutter: stable; scroll-padding: 16px;
+}
+.workspace .album-room:has(.wall-panel[data-expanded=true]) > .album-sidebar { overflow: auto; }
+html { scroll-padding-top: calc(var(--navigation-height, 84px) + 24px); }
+@media(max-width:650px) {
+  .workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar { position: static; }
+}
+.workspace[data-view=album] { gap: 12px; padding-block: 16px 12px; }
+.workspace[data-view=album] .player-bar { margin-top: 0; }
+.album-toolbar, .album-wall-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.album-toolbar button { margin: 0; }
+.workspace .album-view .album-room { margin-top: 12px; min-height: 0; }
+.workspace .album-view .wall-panel { min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; }
+.workspace .album-view .wall-canvas {
+  width: min(100%, calc(var(--album-room-height, 700px) * 10 / 7));
+  height: auto; aspect-ratio: 10 / 7; max-width: 100%; max-height: 100%; margin: 0;
+  flex-shrink: 0;
+}
+.workspace .album-view .wall-error { position: absolute; inset: 0 0 auto; z-index: 5; }
+.workspace .album-view .album-room:has(.wall-panel[data-expanded=true]) > .album-sidebar { display: none; }
+@media(min-width:651px) {
+  .workspace .album-view .album-room { height: var(--album-room-height, calc(100dvh - 300px)); align-items: stretch; }
+  .workspace .album-view .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar {
+    position: static; height: 100%; max-height: 100%; min-height: 0;
+  }
+  .workspace .album-view .wall-panel { height: 100%; }
+}
+.settings-navigation { display: grid; gap: 12px; }
+.workspace .settings-page nav.settings-navigation > a { display: grid; gap: 8px; padding: 16px; line-height: 1.5; background: #192338; }
+.workspace .settings-page nav.settings-navigation > a[aria-current=page] { color: #fff; background: #364563; border-color: #c5edff; outline: 2px solid #b6e8ff; outline-offset: 2px; }
+.settings-navigation a span { color: #c7cede; font-size: .85rem; }
+.settings-content { min-width: 0; padding: 0 0 30px; }
+.settings-content > div > h2 { margin: 0 0 12px; font-size: 1.5rem; }
+.settings-content.appearance-settings { max-width: none; }
+.settings-content .note { max-width: 85ch; }
+.settings-content .background-editor { padding-top: 0; }
+.settings-content .background-gallery { gap: 18px; }
+.workspace .background-custom-choice button.background-remove {
+  position: absolute; top: 8px; right: 8px; z-index: 3; width: 44px; height: 44px;
+  min-height: 44px; margin: 0; padding: 0; font-size: 1.6rem !important;
+  border-radius: 50% !important; background: #251527 !important; color: #fff;
+}
+.settings-content .background-thumbnail { aspect-ratio: 16 / 8; }
+.settings-content .background-editor input[type=file] { padding: 12px; }
+.settings-content .settings-album-select { margin: 20px 0; }
+.settings-album-overview { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 24px; align-items: center; margin: 24px 0; padding: 18px; background: #151e30; border: 1px solid #7886a4; border-radius: 12px; }
+.settings-album-overview h3 { font-size: 1.3rem; margin: 0; overflow-wrap: anywhere; }
+.settings-album-overview .collection-art { max-width: 160px; }
+.settings-current-background { display: grid; grid-template-columns: 180px minmax(0, 1fr); align-items: center; gap: 18px; margin: 20px 0; }
+.settings-current-background > .background-thumbnail { border: 1px solid #7886a4; border-radius: 10px; }
+.workspace .wall-tools-pages { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.wall-appearance-settings { min-width: 0; }
+.wall-appearance-settings .background-gallery { grid-template-columns: 1fr; }
+.wall-appearance-settings .background-thumbnail { aspect-ratio: 16 / 7; }
+.wall-appearance-settings input[type=color] { width: 70px; height: 44px; padding: 3px; border: 1px solid #7886a4; border-radius: 8px; }
+@media(max-width:900px) {
+  .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .settings-navigation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media(max-width:480px) {
+  .settings-navigation { gap: 10px; }
+  .workspace .settings-page nav.settings-navigation > a { padding: 10px; }
+  .settings-album-overview { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .settings-album-overview .collection-art { width: 110px; }
+  .settings-current-background { grid-template-columns: minmax(0, 1fr); }
+  .settings-current-background > .background-thumbnail { max-width: 220px; }
+  .settings-content .background-gallery { gap: 12px; }
+  .workspace .wall-tools-pages button { padding-inline: 2px; font-size: .75rem; }
+}

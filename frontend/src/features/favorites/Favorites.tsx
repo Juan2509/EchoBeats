@@ -13,8 +13,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     const focus = () => store.invalidate()
     window.addEventListener('focus', focus)
     window.addEventListener('echobeats:track-deleted',focus)
+    window.addEventListener('echobeats:track-retired',focus)
     update()
-    return () => { window.removeEventListener('focus', focus);window.removeEventListener('echobeats:track-deleted',focus); unsubscribe(); store.dispose() }
+    return () => { window.removeEventListener('focus', focus);window.removeEventListener('echobeats:track-deleted',focus);window.removeEventListener('echobeats:track-retired',focus); unsubscribe(); store.dispose() }
   }, [])
   return <Context.Provider value={value}>{children}</Context.Provider>
 }

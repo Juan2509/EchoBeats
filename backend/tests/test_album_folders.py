@@ -68,3 +68,36 @@ async def test_delete_is_versioned_hides_everywhere_preserves_history_and_origin
 async def test_deleted_track_rejected_by_playlist_edit(client):
     c,_=client;a=await folder(c);identity=(await import_to(c,a['id']))['track_id'];r=await c.get('/api/v1/tracks/'+identity);await c.delete('/api/v1/tracks/'+identity,headers={'If-Match':r.headers['etag']})
     p=await c.post('/api/v1/playlists',json={'name':'Prueba'});assert (await c.put('/api/v1/playlists/'+p.json()['id']+'/tracks',headers={'If-Match':p.headers['etag']},json={'track_ids':[identity]})).status_code==422
+
+
+async def test_delete_album_retires_tracks_preserves_media_and_restores_to_new_folder(client,catalog_engine):
+    from app.models.catalog import wall, UNKNOWN_ALBUM_ID
+    c,app=client;a=await folder(c);identity=(await import_to(c,a['id']))['track_id'];url='/api/v1/albums/'+a['id']
+    before=await c.get(url)
+    assert (await c.delete(url)).status_code==428
+    assert (await c.delete(url,headers={'If-Match':'"old"'})).status_code==412
+    await c.put('/api/v1/tracks/'+identity+'/favorite',json={'favorite':True})
+    await c.post('/api/v1/tracks/'+identity+'/processing-jobs',json={'operation':'prepare_metadata'})
+    claimed=processing.claim(catalog_engine)
+    result=await c.delete(url,headers={'If-Match':before.headers['etag']})
+    assert result.status_code==200;assert result.json()['track_ids']==[identity];assert result.json()['original_preserved']
+    assert (await c.get(url)).status_code==404
+    assert (await c.get('/api/v1/tracks/'+identity)).status_code==404
+    assert (await c.get('/api/v1/tracks/'+identity+'/audio')).status_code==404
+    assert (await c.get('/api/v1/albums?include_empty_system=false')).json()['total']==0
+    assert processing.finish(catalog_engine,claimed,result={}) is False
+    with catalog_engine.connect() as connection:
+        row=connection.execute(select(track).where(track.c.id==UUID(identity))).one()
+        assert row.album_id==UNKNOWN_ALBUM_ID and row.deleted_at is not None
+        assert connection.scalar(select(func.count()).select_from(wall).where(wall.c.album_id==UUID(a['id'])))==0
+        asset=connection.execute(select(media_asset).where(media_asset.c.id==row.audio_asset_id)).one()
+        assert MediaStore(app.state.settings.media_root).path_for(asset.storage_key).read_bytes()==audio()
+    other=await folder(c,'Nueva carpeta');restored=await import_to(c,other['id']);assert restored['track_id']==identity;assert restored['restored']
+
+
+async def test_delete_empty_album_and_protect_system(client):
+    from app.models.catalog import UNKNOWN_ALBUM_ID
+    c,_=client;a=await folder(c);url='/api/v1/albums/'+a['id'];before=await c.get(url)
+    assert (await c.delete(url,headers={'If-Match':before.headers['etag']})).json()['track_ids']==[]
+    system='/api/v1/albums/'+str(UNKNOWN_ALBUM_ID);before=await c.get(system)
+    assert (await c.delete(system,headers={'If-Match':before.headers['etag']})).status_code==422

@@ -1,5 +1,37 @@
 # Álbumes como carpetas y retirada de canciones
 
+Directriz posterior del16 noviembre: las confirmaciones ahora son ventanas HTML
+integradas en EchoBeats, con Cancelar/Eliminar, Escape y foco de diálogo. Se sustituye
+la confirmación nativa descrita históricamente abajo. Eliminar pistas, debajo de
+Fichas y opciones del álbum, carga todas sus pistas y permite seleccionar varias o
+todas. Se quitaron los botones de eliminación en cada fila y en la ficha central.
+Eliminar álbum conserva confirmación propia; listado general usa modal individual.
+
+La selección múltiple aplica DELETE secuencial con revisión y conserva originales.
+No es una transacción de lote: puede haber eliminaciones parciales. Al fallar se
+detiene, conserva lo pendiente y muestra cuántas fueron confirmadas. Ante respuesta
+incierta bloquea nuevas eliminaciones hasta consultar; no repite DELETE solo.
+El estado musical/favoritos se invalida de inmediato; el catálogo se refresca al
+cerrar si hubo retiradas. Cerrar/cancelar sin eliminar no refresca ni modifica datos.
+97 pruebas frontend/build y UI Chrome aislada con mutaciones simuladas aprobadas:
+dos pistas de tres, cancelación, estado incierto, eliminación de álbum y360/768.
+Capturas delete-tracks-*.png/delete-album-dialog.png en data/validation.
+
+Actualización16 noviembre: Eliminar canción aparece directamente en cada fila
+del álbum, además de las opciones existentes. Eliminar álbum está al final del
+panel del álbum. Ambos abren confirmación nativa del navegador con Cancelar;
+no se envía DELETE hasta aceptar. Para álbum se advierte que incluye todas sus
+pistas, listas y muro. Originales e historial musical se conservan, pero el muro
+y el contenedor se eliminan. Reimportar permite recuperar las pistas en otro álbum.
+
+`DELETE /api/v1/albums/{id}` exige If-Match y rechaza el álbum técnico. En una
+transacción bloquea álbum/pistas, retira pistas, las reasigna al álbum técnico,
+invalida trabajos pendientes y revisiones de playlists y quita muro/créditos/álbum.
+No purga assets ni favoritos/fichas/versiones/asociaciones históricas. La interfaz
+comprueba resultados inciertos sin repetir DELETE y actualiza biblioteca/audio.
+Cinco pruebas de carpetas aprobadas (dos nuevas sobre álbumes), exclusivamente en
+BD/medios temporales, y build aprobado. No hubo eliminaciones personales de prueba.
+
 Ampliación solicitada el 15 de noviembre de 2026, posterior a P28.
 
 ## Uso

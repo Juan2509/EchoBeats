@@ -10,7 +10,9 @@ import { FavoriteButton, useFavoritesRevision } from '../favorites/Favorites'
 import { useAppearance } from '../appearance/Appearance'
 import { presentationFor } from '../appearance/theme'
 import {AlbumTrackTools} from './AlbumTrackTools'
-import {DeleteTrackButton} from './DeleteTrackButton'
+import {DeleteTrackButton,DeleteAlbumButton} from './DeleteTrackButton'
+import {DeleteAlbumTracks} from './DeleteAlbumTracks'
+import {useAlbumPanelSpace} from './useAlbumPanelSpace'
 import {ImportPanel} from '../import/ImportPanel'
 
 type Page<T> = { items: T[]; total: number; limit: number; offset: number }
@@ -69,7 +71,7 @@ function TrackList({ tracks, navigate, queuePath, queueLabel,inAlbum=false }: { 
   </li>)}</ul>
 }
 
-export function Library({ refresh, navigate, search }: { refresh: number; navigate: Navigate; search: string }) {
+export function Library({ refresh, navigate, search, createAlbum }: { refresh: number; navigate: Navigate; search: string; createAlbum: () => void }) {
   const {appearance,change}=useAppearance()
   const favoritesRevision = useFavoritesRevision()
   const params = new URLSearchParams(search)
@@ -85,21 +87,20 @@ export function Library({ refresh, navigate, search }: { refresh: number; naviga
   }
   const result = useRead<Page<Album | Track>>(`/${view === 'albumes' ? 'albums' : view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query, limit: '24', offset: String(offset), include_empty_system: 'false' })}`, refresh + (view === 'favoritos' ? favoritesRevision : 0), view !== 'playlists')
   return <section aria-labelledby="library-title">
-    <p className="eyebrow">Tus discos, tus recuerdos</p><h1 id="library-title">Mi biblioteca</h1>
+    <p className="eyebrow">Tus discos, tus recuerdos</p><h1 id="library-title">Mi biblioteca</h1><button type="button" onClick={createAlbum}>Crear álbum</button>
     <p className="intro">Un espacio para toda la música que has hecho tuya.</p>
     <form className="search-form" role="search" onSubmit={event => { event.preventDefault(); move(view, draft.trim()) }}>
       <label htmlFor="library-query">Buscar por canción, artista, álbum o nombre de playlist</label>
       <div><input id="library-query" type="search" maxLength={200} value={draft} onChange={event => setDraft(event.target.value)} placeholder="¿Qué quieres encontrar?" /><button>Buscar</button></div>
       {query && <button type="button" className="secondary" onClick={() => { setDraft(''); move(view, '') }}>Limpiar búsqueda</button>}
     </form>
-    <div className="view-switch" aria-label="Mostrar colección"><button aria-pressed={view === 'albumes'} onClick={() => move('albumes')}>Álbumes</button><button aria-pressed={view === 'canciones'} onClick={() => move('canciones')}>Canciones</button><button aria-pressed={view === 'playlists'} onClick={() => move('playlists')}>Playlists</button></div>
-    <div className="view-switch"><button aria-pressed={view === 'favoritos'} onClick={() => move('favoritos')}>♥ Favoritos</button></div>
+    <div className="view-switch" aria-label="Mostrar colección"><button aria-pressed={view === 'albumes'} onClick={() => move('albumes')}>Álbumes</button><button aria-pressed={view === 'canciones'} onClick={() => move('canciones')}>Canciones</button><button aria-pressed={view === 'playlists'} onClick={() => move('playlists')}>Playlists</button><button aria-pressed={view === 'favoritos'} onClick={() => move('favoritos')}>♥ Favoritos</button></div>
     {view==='albumes'&&<label className="album-presentation-control">Apariencia de la colección<select value={appearance.albumPresentation} onChange={event=>change({albumPresentation:event.target.value as 'vinyl'|'image'})}><option value="vinyl">Vinilos</option><option value="image">Portadas</option></select></label>}
     {view === 'favoritos' && <p className="note">Canciones que guardaste expresamente. Puedes marcarlas en la biblioteca, el reproductor o Explorar. Todavía no cambian el orden de las recomendaciones.</p>}
     {view === 'playlists' && <PlaylistLibrary refresh={refresh} navigate={navigate} search={search} />}
     {view !== 'playlists' && <ReadState {...result} />}
     {view !== 'playlists' && result.data && <><p role="status" className="note">{result.data.total} {view === 'albumes' ? 'álbumes' : 'canciones'}{query ? ` para «${query}»` : ' en tu colección'}</p>
-      {!result.data.items.length && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : view === 'favoritos' ? 'Todavía no guardaste favoritos' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : view === 'favoritos' ? 'Pulsa el corazón de una canción para encontrarla aquí.' : 'Importa tus archivos de audio para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
+      {!result.data.items.length && (query || offset > 0 || view === 'favoritos') && <div className="empty-state"><h2>{query ? 'Sin coincidencias' : offset ? 'No hay más resultados' : view === 'favoritos' ? 'Todavía no guardaste favoritos' : 'Tu colección empieza aquí'}</h2><p>{query ? 'Prueba otro título, artista o álbum. La búsqueda conserva las tildes.' : offset ? 'Vuelve a la primera página para ver la colección actual.' : view === 'favoritos' ? 'Pulsa el corazón de una canción para encontrarla aquí.' : 'Importa tus archivos de audio para verlos en este espacio.'}</p>{offset > 0 && <button onClick={() => move()}>Primera página</button>}</div>}
       {view === 'albumes' ? <div className="album-grid">{(result.data.items as Album[]).map(item => <a className="album-card" key={item.id} href={`/albumes/${item.id}`} onClick={event => { event.preventDefault(); navigate(event.currentTarget.pathname) }}>
         <div className={`collection-art ${presentationFor(appearance,item.id)}`}><Cover url={item.cover_url} title={item.title} /></div><h2>{item.title}</h2><p>{artists(item)}</p><span>{item.track_count} pistas</span>
       </a>)}</div> : <TrackList tracks={result.data.items as Track[]} navigate={navigate} queuePath={`/${view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query })}`} queueLabel={view === 'favoritos' ? 'Mis favoritos' : query ? `Búsqueda: ${query}` : 'Mi biblioteca'} />}
@@ -112,15 +113,19 @@ export function AlbumView({ id, refresh, navigate, onDirty }: { id: string; refr
   const {appearance,change}=useAppearance()
   const [offset, setOffset] = useState(0)
   const [importOpen,setImportOpen]=useState(false)
+  const [wallToolbar,setWallToolbar]=useState<HTMLDivElement|null>(null)
   const info = useRead<Album>(`/albums/${encodeURIComponent(id)}`, refresh)
   const songs = useRead<Page<Track>>(`/tracks?album_id=${encodeURIComponent(id)}&limit=24&offset=${offset}`, refresh)
-  return <section><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a>
-    <ReadState {...info} />{info.data && <div className="album-room"><aside className="album-sidebar"><div className="album-heading"><div className={`album-art collection-art ${presentationFor(appearance,id)}`}><Cover url={info.data.cover_url} title={info.data.title} /></div><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
+  const sidebar=useAlbumPanelSpace(info.data?.id)
+  return <section className="album-view"><div className="album-toolbar"><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a><div ref={setWallToolbar} className="album-wall-actions"/></div>
+    <ReadState {...info} />{info.data && <div className="album-room"><aside ref={sidebar} className="album-sidebar"><div className="album-heading"><div className={`album-art collection-art ${presentationFor(appearance,id)}`}><Cover url={info.data.cover_url} title={info.data.title} /></div><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
       <label className="album-presentation-control">Apariencia del álbum<select value={presentationFor(appearance,id)} onChange={event=>change({albumPresentations:{...appearance.albumPresentations,[id]:event.target.value as 'vinyl'|'image'}})}><option value="vinyl">Vinilo</option><option value="image">Portada</option></select></label>
       <details className="album-import-tools" onToggle={event=>setImportOpen(event.currentTarget.open)}><summary>Añadir música a este álbum</summary>{importOpen&&<ImportPanel albumId={id} albumTitle={info.data.title} onImported={()=>window.dispatchEvent(new Event('echobeats:library-changed'))}/>}</details>
       <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList inAlbum tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
       <p className="note">Abrir este álbum no cambia la canción que está sonando.</p>
       <AlbumTrackTools albumId={id} refresh={refresh} navigate={navigate}/>
-    </aside><WallView key={id} albumId={id} title={info.data.title} onDirty={onDirty} /></div>}
+      <DeleteAlbumTracks albumId={id}/>
+      {!info.data.system_key&&<DeleteAlbumButton id={id} title={info.data.title} onDeleted={()=>navigate('/biblioteca')}/>}
+    </aside><WallView key={id} albumId={id} title={info.data.title} onDirty={onDirty} toolbar={wallToolbar}/></div>}
   </section>
 }

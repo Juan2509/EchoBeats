@@ -1,5 +1,148 @@
 # Memoria de EchoBeats
 
+16 noviembre: vista de álbum ajustada al viewport desde651px. Muro máximo que cabe
+manteniendo10:7, sin scroll de página ni estirar fondo/decoraciones. Alto de room y
+sidebar calculado entre toolbar y player; sidebar llena hasta un margen de7–10px.
+Editar pared movido mediante portal junto a Mi biblioteca. Ampliar muro oculta
+temporalmente sidebar y ofrece Ver panel del álbum para recuperarlo. En móvil
+angosto se conserva distribución vertical con scroll natural. Sin geometría/BD
+modificadas.97 tests/build y Chrome con24 pistas simuladas a1920x1080,1440x900,
+1280x720,768x900 sin scroll exterior, ratio intacto, controles arriba, player libre;
+360 sin overflow horizontal. Ver APARIENCIA.md. Sin escrituras personales ni IA.
+
+16 noviembre, directriz posterior: vuelve scroll interno del panel izquierdo del
+álbum, alto pero limitado al hueco entre navegación y reproductor. useAlbumPanelSpace
+mide ambos y compensa escala75%, resize y scroll; panel sticky en escritorio/tablet,
+estático en móvil para mantener flujo del muro. Barra superior sticky en todas las
+secciones con z-index40; herramientas de pared permanecen encima y diálogos en top
+layer. Muro no crece con número de canciones y no cambia al recorrer lista interna.
+Corregido ancho de workspace escalado a100% para evitar overflow de álbum a1280.
+Build y Chrome aislado con24 pistas a1440/1280/768/360 aprobados: scroll interno no
+mueve muro/página, panel por encima del player, barra visible al bajar. Sin escrituras
+personales ni IA. Capturas sticky-sidebar/header y reporte en data/validation.
+
+## Configuración como sección — 16 de noviembre de 2026
+
+Ruta /configuracion con Fondo principal/Álbumes/Colores y estilo/Conexión y estado,
+en lugar de modal. Selector de todos los álbumes con portada/presentación/fondo
+actual, URL conserva apartado y álbum; fondos independientes y herencia intactos.
+Color/transparencia/imagen/ampliación del muro solo Editar pared → Fondo.
+Autosave/CAS del color conservado; preferencias visuales locales. Guardia de
+navegación con Aplicar/Descartar para borradores de fondo. AppearanceDialog retirado.
+97 pruebas/build y Chrome aislado con dos álbumes y color del muro simulado,
+360/768/desktop aprobados; sin escrituras personales ni IA real. Ver APARIENCIA.md.
+
+16 noviembre: usuario pide paneles ligeramente difuminados para ver el fondo.
+Superficies de información con84% opacidad y backdrop-filter blur18px/saturate110%,
+conservando base oscura y texto nítido. Aplicado a secciones, tarjetas, sidebar,
+reproductor y diálogos; navegación, botones y campos mantienen superficies legibles.
+Fallback opaco si navegador no admite backdrop-filter. Sin cambios en preferencias,
+medios, geometría ni datos. Sustituye opacidad total anterior de esos paneles.
+
+16 noviembre, corrección posterior: usuario consideró insuficiente la compactación
+y pidió alejar más. Escritorio >1000px usa zoom CSS .75 solo en workspace, ancho
+máximo1520px (álbum1760) y altura compensada133.333svh para mantener reproductor
+abajo. Escena y zoom del navegador intactos; móvil/tablet hasta1000px sin escala.
+Esto sustituye la decisión anterior de evitar zoom CSS; no modifica preferencias.
+
+16 noviembre: distribución compacta solicitada para que zoom100% se parezca a la
+referencia75%. Sin CSS zoom/transform ni modificar zoom del navegador: workspace
+máximo1440px (álbum1640), más margen visible, títulos generales hasta48px e Inicio
+hasta64px, texto introductorio16px, botones14px, márgenes y rellenos reducidos.
+Desplegables conservan16px/44px mínimo y portadas/reproductor no se reducen.
+Build y Chrome aislado a1920/1440/1280/768/360 aprobados, zoom/escala1 medidos,
+sin desbordamiento horizontal. Inicio/biblioteca/explorar revisados y capturas
+density-*.png en data/validation. Solo lecturas; sin medios/BD/IA modificados.
+
+16 noviembre: panel izquierdo del álbum sin max-height ni scroll interno; crece
+con pistas/herramientas y ocupa al menos la altura útil de pantalla en escritorio.
+Listado sin límite móvil de280px. En móvil sin altura mínima artificial. Modo
+Ampliar muro conserva su disposición especial. Sin cambios de geometría/datos.
+
+16 noviembre, directriz posterior: confirmaciones de eliminación en dialog HTML
+de EchoBeats, nunca window.confirm. Botón Eliminar pistas debajo de Fichas y opciones
+abre selector con todas las páginas del álbum, casillas/seleccionar todas y acción
+Eliminar seleccionadas. Quitados botones individuales de las filas y de ficha
+centralizada; en listado general se mantiene eliminación individual con modal interno.
+Operación secuencial con If-Match/revisión, progreso y resultado parcial; detiene ante
+fallo, consulta respuesta incierta sin repetir DELETE. Eventos de retirada actualizan
+audio/favoritos inmediatamente y catálogo al cerrar, evitando desmontar selector
+durante el lote. Play de filas y corazones iconOnly sin marcos; foco accesible intacto.
+97 pruebas frontend y build; Chrome aislado con catálogo simulado verificó cancelar,
+dos de tres pistas, fallo incierto/consulta, álbum, ausencia de alertas nativas y
+diálogo360/768. No hubo eliminaciones personales ni cambios backend/migraciones.
+
+16 noviembre: icono de repetir sin1 y centrado con flex/SVG. Eliminación de pista
+ahora accesible directamente en filas del álbum y con confirmación nativa; botón
+Eliminar álbum al final de su panel con confirmación que incluye pistas y muro.
+DELETE /albums/{id} exige If-Match, bloquea contenedor/pistas, retira pistas
+lógicamente y las reasigna al álbum técnico, invalida trabajos y revisiones de
+playlists; borra álbum/muro/créditos del contenedor, conserva originales/fichas/
+historial/favoritos y asociaciones históricas. Protege álbum técnico. Eventos
+actualizan biblioteca y detienen audio del álbum incluso al verificar un404 tras
+respuesta incierta. Sin reintentos DELETE automáticos. Cinco pruebas backend
+de carpetas aprobadas en BD/medios temporales, incluidas dos nuevas; build aprobado.
+Sin migración ni borrados en biblioteca personal durante esta implementación.
+
+16 noviembre: reproductor ampliado hasta1160px con portadas88px (72px móvil),
+tipografía mayor y distribución responsiva. Añadidos bucle de pista y aleatorio
+con SVG, nombres accesibles y aria-pressed; estados solo de sesión. Bucle al acabar
+respeta pausa, siguiente manual continúa la cola. Aleatorio mezcla Fisher-Yates
+manteniendo pista actual al frente sin reiniciar audio, conserva orden original
+para desactivar y no modifica playlists guardadas. Cola finita sin repetir salvo
+bucle explícito. 97 pruebas frontend/build aprobados; dos pruebas nuevas usan
+doble de audio, no acreditan escucha real. Sin cambios BD/medios ni llamadas IA.
+
+16 noviembre: retirado a petición el pie de página global con EchoBeats y
+«Tu colección personal · Tu música, tu espacio». El reproductor y los pies de
+acciones de los diálogos permanecen intactos.
+
+16 noviembre: corregido texto dañado «? Crear ?lbum» mediante edición UTF-8; botón
+ahora Crear álbum. Favoritos integrado en la fila de Álbumes/Canciones/Playlists,
+inmediatamente después de Playlists, con ajuste de línea en móvil. Desplegables
+globales con mínimo 44px y fuente 16px; Explorar con textarea, número, etiquetas y
+notas más legibles y espaciados. Mensaje sin destino indica Biblioteca. Build
+aprobado y Chrome aislado a 1280/768/360, sin búsquedas IA ni escrituras en catálogo.
+
+16 noviembre: Crear álbum trasladado de Inicio a Biblioteca, junto al título,
+sin recuadro ni texto promocional adicional. Mismo diálogo y navegación al álbum
+creado. Mensaje de importación sin destinos actualizado para indicar Biblioteca.
+
+16 noviembre: retirado por petición el recuadro inicial «Tu colección empieza aquí»
+en biblioteca vacía. Se conservan avisos de búsqueda sin coincidencias, favoritos
+vacíos y paginación fuera de rango, que ofrecen acciones específicas.
+
+## Catálogo vaciado por solicitud expresa — 16 de noviembre de 2026
+
+Usuario pidió eliminar toda la música y álbumes del programa. Respaldo previo
+backups/echobeats_before_empty_catalog_1794836211847.dump (43469 bytes, SHA-256 en
+manifiesto adjunto). Transacción retiró 8 pistas y 3 álbumes de usuario, relaciones,
+favoritos, fichas/versiones/embeddings/trabajos y muros de esos álbumes. Cero playlists
+existentes. Se conserva álbum técnico Sin álbum, oculto estando vacío, y los 19
+assets registrados con todos sus archivos, incluidos los MP3 sin fila. Backend
+detenido durante respaldo/operación y reiniciado después. Sin cambios de esquema
+ni llamadas IA; las preferencias locales de navegador no se borraron.
+
+16 noviembre: reproductor sin etiqueta visible Sonando/En pausa; conserva anuncio
+accesible de estado. Favorito pasa a corazón iconOnly a la derecha del título,
+reutilizando estado compartido, confirmación y mensajes de error existentes.
+
+16 noviembre, ajuste posterior: se oculta también el recuadro de estado debajo de
+Editar pared por petición del usuario. El estado permanece anunciado a lectores
+de pantalla y visible en las herramientas de edición; los errores siguen visibles.
+
+## Legibilidad y cabecera compacta del muro — 16 de noviembre de 2026
+
+Usuario pidió impedir que textos/controles se camuflen al cambiar fondos. Nueva
+capa readability.css: superficies opacas, encabezado azul grisáceo, colores de
+lectura protegidos frente a paletas extremas, corrección del verde oscuro heredado
+en selección y controles con estados explícitos. A petición posterior se quitó el
+recuadro/título visible «La pared de…», conservando Editar pared y estado compactos.
+Título accesible oculto y lienzo transparente intactos. Ver APARIENCIA.md.
+95 pruebas frontend/build y flujo simulado de carpetas/fondos aprobados. Auditoría
+acotada de contraste 4,5:1 con blanco/negro/magenta y vistas 360/768/1280; sin cambios
+backend, datos, llamadas IA ni commits. No declarar certificación WCAG universal.
+
 ## Limpieza de temporales — 16 de noviembre de 2026
 
 A petición del usuario se retiraron 27 carpetas regenerables: perfiles cerrados
