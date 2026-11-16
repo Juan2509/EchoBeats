@@ -1,4 +1,4 @@
-import {resizeWithinWall} from './resize.ts'
+import {resizeWithinWall,fitWithinWall} from './resize.ts'
 import type {ResizeHandle} from './resize.ts'
 export type WallElement = {
   id: string; asset_id: string; kind: 'poster' | 'sticker' | 'image' | 'gif'
@@ -17,12 +17,15 @@ export function moveWithinWall(item: WallElement, cx: number, cy: number): WallE
 export function transformWithinWall(item: WallElement, changes: Partial<Pick<WallElement, 'width' | 'height' | 'rotation_deg'>>): WallElement {
   if (Object.values(changes).some(value => !Number.isFinite(value))) return item
   const next = { ...item, ...changes }
-  next.width = Math.max(.03, Math.min(.6, next.width))
-  next.height = Math.max(.03, Math.min(.6, next.height))
+  next.width = Math.max(.03, Math.min(1, next.width))
+  next.height = Math.max(.03, Math.min(1, next.height))
   next.rotation_deg = ((next.rotation_deg + 180) % 360 + 360) % 360 - 180
   const angle = next.rotation_deg * Math.PI / 180
-  const factor = Math.min(1, 1000 / (Math.abs(next.width * 1000 * Math.cos(angle)) + Math.abs(next.height * 700 * Math.sin(angle))), 700 / (Math.abs(next.width * 1000 * Math.sin(angle)) + Math.abs(next.height * 700 * Math.cos(angle))))
-  next.width *= factor; next.height *= factor
+  for(let i=0;i<40;i++){
+    const factor = Math.min(1, 1000 / (Math.abs(next.width * 1000 * Math.cos(angle)) + Math.abs(next.height * 700 * Math.sin(angle))), 700 / (Math.abs(next.width * 1000 * Math.sin(angle)) + Math.abs(next.height * 700 * Math.cos(angle))))
+    if(factor>=1-1e-14)break
+    next.width=Math.max(.03,next.width*factor);next.height=Math.max(.03,next.height*factor)
+  }
   return moveWithinWall(next, next.cx, next.cy)
 }
 // Coincide con el desempate del servidor; no depende del orden recibido.
@@ -199,6 +202,10 @@ export class WallController {
   transform(id: string, changes: Partial<Pick<WallElement, 'width' | 'height' | 'rotation_deg'>>) {
     if (!this.editable() || this.state.moving) return
     this.update({ elements: this.state.elements.map(item => {if(item.id!==id)return item;const next=transformWithinWall(item,changes);this.rememberGeometry(item,next);return next}), notice: '' })
+  }
+  fit(id:string){
+    if(!this.editable()||this.state.moving)return
+    this.update({elements:this.state.elements.map(item=>{if(item.id!==id)return item;const next=fitWithinWall(item);this.rememberGeometry(item,next);return next}),notice:'Imagen ajustada al máximo sin deformarla.'})
   }
   rotateGesture(id:string,rotation_deg:number){
     if(!this.editable()||!this.state.moving||this.gesture?.id!==id)return

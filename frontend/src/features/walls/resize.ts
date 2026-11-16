@@ -2,6 +2,12 @@ import type {WallElement} from './controller'
 
 export const resizeHandles=['nw','n','ne','e','se','s','sw','w'] as const
 export type ResizeHandle=typeof resizeHandles[number]
+/** Mayor tamaño proporcional que cabe, conservando giro y centrando el objeto. */
+export function fitWithinWall(item:WallElement):WallElement{
+  const a=item.rotation_deg*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a))
+  const scale=Math.min(1/item.width,1/item.height,1000/(item.width*1000*c+item.height*700*s),700/(item.width*1000*s+item.height*700*c))
+  return {...item,cx:.5,cy:.5,width:item.width*scale,height:item.height*scale}
+}
 /** Deltas en unidades del muro 1000x700. Ancla la esquina/lado opuesto. */
 export function resizeWithinWall(item:WallElement,handle:ResizeHandle,dx:number,dy:number,proportional:boolean):WallElement{
   if(!resizeHandles.includes(handle)||!Number.isFinite(dx)||!Number.isFinite(dy)||(dx===0&&dy===0))return item
@@ -12,9 +18,9 @@ export function resizeWithinWall(item:WallElement,handle:ResizeHandle,dx:number,
   if(proportional){
     const fx=width/w,fy=height/h
     const requested=!sx?fy:!sy?fx:Math.abs(fx-1)>=Math.abs(fy-1)?fx:fy
-    const scale=Math.max(Math.max(.03/item.width,.03/item.height),Math.min(Math.min(.6/item.width,.6/item.height),requested))
+    const scale=Math.max(Math.max(.03/item.width,.03/item.height),Math.min(Math.min(1/item.width,1/item.height),requested))
     width=w*scale;height=h*scale
-  }else{width=Math.max(30,Math.min(600,width));height=Math.max(21,Math.min(420,height))}
+  }else{width=Math.max(30,Math.min(1000,width));height=Math.max(21,Math.min(700,height))}
   function at(t:number){const dw=(width-w)*t,dh=(height-h)*t;return {...item,width:(w+dw)/1000,height:(h+dh)/700,cx:item.cx+(dw*sx*c-dh*sy*s)/2000,cy:item.cy+(dw*sx*s+dh*sy*c)/1400}}
   function inside(v:WallElement){const bx=(Math.abs(v.width*1000*c)+Math.abs(v.height*700*s))/2,by=(Math.abs(v.width*1000*s)+Math.abs(v.height*700*c))/2;return v.cx*1000>=bx-1e-8&&v.cx*1000<=1000-bx+1e-8&&v.cy*700>=by-1e-8&&v.cy*700<=700-by+1e-8}
   const wanted=at(1);if(inside(wanted))return wanted

@@ -1,5 +1,25 @@
 # Apariencia vaporwave/synthwave
 
+## Objetos del tamaño del muro — 16 de noviembre de 2026
+
+Se amplía límite de ancho/alto normalizado de0.60 a1.0 en editor, API y BD mediante
+0011_wall_full_size. Conserva límites del rectángulo girado, mínimo0.03, lienzo
+1000x700 y proporción visible10:7. No se mueve ni redimensiona ningún objeto existente.
+Objeto → Ajustar al muro centra y amplía al máximo conservando proporción y giro;
+es una acción explícita con undo/redo y autoguardado. Imagen cuadrada puede ocupar
+todo el alto; sobrante lateral corresponde a su proporción, sin estirar el original.
+Tiradores libres permiten modificarla sin Shift; Shift conserva proporciones.
+Contorno del lienzo visible solo al editar distingue su área del fondo general.
+
+Migración aplicada tras backup privado45820 bytes:
+backups/echobeats_before_wall_full_size_1794854472866.dump y manifiesto SHA-256.
+Huellas de wall/wall_element idénticas antes/después. Downgrade rechaza objetos
+mayores a0.60 en lugar de recortarlos, probado únicamente en BD aislada.
+27 pruebas backend de muros y102 frontend/build aprobados. Chrome con imagen y
+guardados simulados verificó imagen al100% del alto (657.48px), proporción intacta,
+centrado y undo/redo; sin scroll exterior900px. Capturas wall-full-before/after.
+No se modificaron diseños personales para la prueba ni se llamaron proveedores IA.
+
 16 noviembre, ajuste posterior del álbum: Editar pared ahora comparte toolbar con
 Mi biblioteca, sobre el vinilo. La zona álbum usa la altura restante entre toolbar
 y player (observa resize, alturas y escala). Desde651px, sidebar y wall-panel ocupan

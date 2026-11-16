@@ -1,11 +1,17 @@
 # EchoBeats
 
+Explorar ahora ofrece una conversación musical sencilla con sugerencias y tarjetas
+para escuchar. Usa favoritos y pistas iniciadas en esta sesión; mantiene búsqueda
+avanzada en Opciones. La IA es opt-in y su prueba real sigue pendiente por créditos;
+la alternativa local queda identificada. [Alcance y validación](docs/CONVERSACION_MUSICAL.md).
+
 Ampliación del 15 de noviembre: **Inicio → Crear álbum**, con nombre, portada
 opcional y apariencia Vinilo/Portada. Para importar música hay que elegir su álbum;
 desde el álbum el destino queda fijado. Fichas y opciones permite retirar canciones
 con confirmación, conservando originales e historial. Los fondos propios tienen X
 y un lienzo para mover, girar y ajustar el recorte. Ver [guía y validación](docs/ALBUMES_CARPETA.md).
-Head actual `0010_track_deletion`; 244 pruebas backend, 95 frontend y build aprobados.
+Head actual `0011_wall_full_size`. La validación actual de capacidad del muro está
+en [APARIENCIA.md](docs/APARIENCIA.md); las cifras de esta ampliación inicial son históricas.
 
 Biblioteca y reproductor de música propia, playlists, muros personalizables por álbum
 y exploración de fichas mediante OpenAI/pgvector. Aplicación académica **local de un

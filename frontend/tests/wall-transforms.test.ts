@@ -10,10 +10,10 @@ function inside(value: WallElement) {
   const by = (Math.abs(value.width * 1000 * Math.sin(a)) + Math.abs(value.height * 700 * Math.cos(a))) / 1400
   assert.ok(value.cx >= bx - 1e-10 && value.cx <= 1 - bx + 1e-10)
   assert.ok(value.cy >= by - 1e-10 && value.cy <= 1 - by + 1e-10)
-  assert.ok(value.width >= .03 && value.width <= .6 && value.height >= .03 && value.height <= .6)
+  assert.ok(value.width >= .03 && value.width <= 1 && value.height >= .03 && value.height <= 1)
 }
 test('tamaños extremos y giros mantienen el rectángulo completo dentro del lienzo', () => {
-  for (const width of [.03, .1, .6]) for (const height of [.03, .1, .6]) for (const rotation_deg of [-540, -180, -90, -45, 0, 45, 90, 180, 540]) {
+  for (const width of [.03, .1, .6, 1]) for (const height of [.03, .1, .6, 1]) for (const rotation_deg of [-540, -180, -90, -45, 0, 45, 90, 180, 540]) {
     const value = transformWithinWall(item, { width, height, rotation_deg })
     inside(value); assert.ok(value.rotation_deg >= -180 && value.rotation_deg < 180)
     assert.equal(value.id, item.id); assert.equal(value.asset_id, item.asset_id)
@@ -30,6 +30,11 @@ test('girar ajusta centro, reduce proporcionalmente solo si hace falta y conserv
   assert.equal(next.width, value.width); inside(next)
 })
 const initial = (): WallResult => ({ wall: { id: 'wall', album_id: 'album', schema_version: 1, revision: 1, background_color: '#242038', updated_at: '', elements: [item, { ...item, id: 'b' }, { ...item, id: 'c' }] }, etag: '1' })
+
+test('ajuste al muro es explícito y puede deshacerse y rehacerse sin perder recursos',async()=>{
+  const c=new WallController('album',async()=>initial());await c.load();c.fit('a');assert.equal(c.state.elements[0].width,.1)
+  await c.toggleEditing();c.fit('a');assert.equal(c.state.elements[0].width,1);assert.equal(c.state.elements[0].cx,.5);assert.ok(c.undo());assert.equal(c.state.elements[0].width,.1);assert.ok(c.redo());assert.equal(c.state.elements[0].width,1);assert.equal(c.state.elements[0].asset_id,item.asset_id);c.dispose()
+})
 test('cambiar imagen/sticker conserva geometría y recurso, respeta bloqueo y persiste',async()=>{
   let stored=initial()
   stored.wall.elements.push({...item,id:'gif',kind:'gif'})

@@ -1,5 +1,10 @@
 # Modelo inicial de datos de EchoBeats
 
+Actualización16 noviembre: wall_element.width/height admiten0.03–1.0 con
+0011_wall_full_size, ampliando el límite histórico0.60. Los bordes del rectángulo
+girado deben seguir dentro del lienzo1000x700. No cambia esquema_version ni se
+reescriben composiciones; downgrade protegido. Ver APARIENCIA.md.
+
 P02 · 12 de noviembre de 2026. P05/P06 implementan catálogo y recursos; P07
 añade procedencia de álbum, agrupación de importación y portada individual;
 P12 añade muros/elementos; preferencias e IA siguen siendo diseño para migraciones posteriores.

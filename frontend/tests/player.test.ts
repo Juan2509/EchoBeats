@@ -30,6 +30,13 @@ test('retirar pista actual detiene y vacía audio; retirar otra ajusta cola sin 
   const audio=new AudioDouble(),c=new PlayerController(audio);c.startQueue(song('a'),[song('a'),song('b'),song('c')],'prueba');c.removeTrack('b');assert.deepEqual(c.state.queue.map(t=>t.id),['a','c']);assert.equal(c.state.track?.id,'a');c.removeTrack('a');assert.equal(c.state.track,null);assert.equal(c.state.playing,false);assert.equal(audio.src,'');c.dispose()
 })
 function setup() { const audio = new AudioDouble(); return { audio, player: new PlayerController(audio as unknown as AudioPort) } }
+test('contexto reciente registra solo playing real, se acota, se puede borrar y no persiste al crear reproductor',()=>{
+  const {audio,player}=setup();player.startQueue(song('a'),[song('a')],'prueba');assert.deepEqual(player.state.recentTrackIds,[])
+  audio.emit('playing');assert.deepEqual(player.state.recentTrackIds,['a'])
+  for(let i=0;i<14;i++){player.startQueue(song(String(i)),[song(String(i))],'prueba');audio.emit('playing')}
+  assert.equal(player.state.recentTrackIds.length,12);assert.equal(player.state.recentTrackIds[0],'13');player.clearRecent();assert.deepEqual(player.state.recentTrackIds,[]);player.dispose()
+  const next=setup();assert.deepEqual(next.player.state.recentTrackIds,[]);next.player.dispose()
+})
 test('bucle repite la pista al acabar, siguiente manual avanza y pausa impide reinicio', async () => {
   const {audio,player}=setup()
   player.startQueue(song('a'),[song('a'),song('b')],'prueba');audio.metadata();await flush()

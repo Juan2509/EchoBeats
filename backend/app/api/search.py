@@ -12,6 +12,30 @@ from starlette.concurrency import run_in_threadpool
 router=APIRouter()
 PreferenceMode=Literal['off','favorites','discovery']
 
+class ChatMessage(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    role: Literal['user','assistant']
+    content: Annotated[str,StringConstraints(strip_whitespace=True,min_length=1,max_length=1000,pattern=r'^[^\x00]*$')]
+
+class ChatInput(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    messages: list[ChatMessage]=Field(min_length=1,max_length=6)
+    current_track_id: UUID | None=None
+    recent_track_ids: list[UUID]=Field(default_factory=list,max_length=12)
+    previous_track_ids: list[UUID]=Field(default_factory=list,max_length=20)
+    reference_track_id: UUID | None=None
+    use_ai: bool=Field(default=False,strict=True)
+
+@router.post('/explore/chat')
+async def chat(body:ChatInput,request:Request):
+    from app.services.music_chat import respond
+    if body.messages[-1].role!='user':
+        from app.services.metadata import MetadataError
+        raise MetadataError('chat_message','El último mensaje debe ser tu pregunta.')
+    result=await respond(engine_for(request),request.app.state.settings,request.app.state.ai_provider,
+        [m.model_dump() for m in body.messages],body.current_track_id,body.recent_track_ids,body.reference_track_id,body.use_ai,body.previous_track_ids)
+    return JSONResponse(jsonable_encoder(result),headers={'Cache-Control':'no-store'})
+
 
 class SearchInput(BaseModel):
     model_config=ConfigDict(extra='forbid')

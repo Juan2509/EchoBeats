@@ -64,6 +64,20 @@ async def test_initial_walls_for_manual_imported_and_system_albums(client, catal
     assert (await api.get(f'/api/v1/albums/{uuid4()}/wall')).status_code == 404
 
 
+async def test_full_size_wall_element_persists_and_downgrade_refuses_to_crop(client,catalog_engine):
+    api,_=client;url=await new_album(api);initial=await api.get(url)
+    body=composition(element(await image(api),width=1.0,height=1.0,rotation_deg=0))
+    saved=await api.put(url,headers={'If-Match':initial.headers['etag']},json=body)
+    assert saved.status_code==200,saved.text
+    assert (await api.get(url)).json()['elements'][0]['width']==1
+    with pytest.raises(RuntimeError,match='superan el límite anterior'):
+        with catalog_engine.begin() as connection:
+            config=migration_config();config.attributes['connection']=connection;command.downgrade(config,'0010_track_deletion')
+    assert (await api.get(url)).json()==saved.json()
+    body['elements'][0]['rotation_deg']=45
+    assert (await api.put(url,headers={'If-Match':saved.headers['etag']},json=body)).status_code==422
+
+
 async def test_full_composition_isolated_and_reset_keeps_shared_asset(client, catalog_engine):
     api, app = client
     a, b = await new_album(api), await new_album(api, 'Muro B')
@@ -97,7 +111,7 @@ async def test_full_composition_isolated_and_reset_keeps_shared_asset(client, ca
 
 
 @pytest.mark.parametrize('change', [
-    {'cx': 0.01}, {'cy': 0.01}, {'cx': 1.0}, {'width': 0.02}, {'height': 0.61},
+    {'cx': 0.01}, {'cy': 0.01}, {'cx': 1.0}, {'width': 0.02}, {'height': 1.01},
     {'cx': 0.11, 'rotation_deg': 45}, {'z_index': -1}, {'z_index': 30}, {'z_index': True},
     {'rotation_deg': 'NaN'}, {'rotation_deg': 'Infinity'}, {'cx': True}, {'height': None},
     {'kind': 'script'}, {'extra': 'no'},

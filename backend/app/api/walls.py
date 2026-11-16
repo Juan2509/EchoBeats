@@ -13,7 +13,7 @@ router = APIRouter()
 GEOMETRY_TOLERANCE = 1e-7
 Finite = Annotated[float, Field(strict=True, allow_inf_nan=False)]
 Unit = Annotated[Finite, Field(ge=0, le=1)]
-Size = Annotated[Finite, Field(ge=0.03, le=0.60)]
+Size = Annotated[Finite, Field(ge=0.03, le=1.0)]
 
 
 class Element(BaseModel):

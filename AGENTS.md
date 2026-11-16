@@ -1,5 +1,22 @@
 # EchoBeats: contexto del proyecto
 
+Última ampliación: objetos del muro hasta1.0 por eje, antes0.60.0011_wall_full_size
+aplicada con backup privado y huellas wall/elements sin cambios. Mínimo0.03 y límites
+rotados siguen; downgrade rechaza grandes sin recortar. Objeto → Ajustar al muro
+centra/maximiza proporcionalmente conservando giro, undo/redo/autosave. Contorno de
+lienzo solo en edición.27 pruebas backend muros/102 frontend/build y Chrome simulado
+de ajuste a100% del alto aprobados; no cambios en diseños personales ni IA real.
+
+Última ampliación: Explorar es chat sencillo con Opciones/Búsqueda avanzada P23–P25.
+Endpoint /explore/chat: plan IA estructurado opt-in (false inicial) y recuperación
+existente; fallback local explícito con metadatos/favoritos/álbumes, no prosa musical
+libre ni entrenamiento. Contexto de hasta8 favoritos, pista actual y12 iniciadas en
+sesión via playing, memoria sin BD/localStorage, opción olvidar. No enviar audios.
+Mensajes acotados; planes/referencias validados;500 candidatos de catálogo máximo,
+no anunciar pertinencia musical evaluada.251 backend aisladas/100 frontend/build y
+Chrome con respuestas simuladas360/768 aprobados. Sin API real ni migración; sigue
+pendiente por créditos. Leer docs/CONVERSACION_MUSICAL.md antes de ampliar IA.
+
 Directriz posterior: álbum cabe entero en viewport desde651px. Editar pared junto
 a Mi biblioteca mediante portal. Room/sidebar alto adaptativo entre toolbar/player;
 canvas máximo sin perder ratio10:7, sin scroll exterior. Sidebar llena hasta margen

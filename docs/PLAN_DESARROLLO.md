@@ -1,5 +1,10 @@
 # Plan de desarrollo de EchoBeats
 
+Ampliación posterior a P28,16 noviembre: Explorar conversacional implementado sobre
+catálogo/fichas y contexto explícito. Ver CONVERSACION_MUSICAL.md para validación y
+límites;251 backend aisladas/100 frontend/build y UI simulada aprobados. No cierra
+éxito real de OpenAI, pertinencia musical ni aceptación pendientes. Sin commit.
+
 Actualización posterior a P28, 15 de noviembre: ampliación solicitada de álbumes
 como carpetas, creación desde Inicio, importación dirigida, retirada lógica de pistas
 y lienzo de encuadre/X de fondo implementada. Ver [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md)

@@ -76,7 +76,7 @@ try{
   const ai=await (await request('/api/v1/ai/status')).json()
   check(ai.enabled===false,'La IA no está desactivada')
   const revision=compose(['exec','-T','backend','python','-m','alembic','current'],'verificar migración')
-  check(revision.includes('0010_track_deletion'),'Revisión inesperada')
+  check(revision.includes('0011_wall_full_size'),'Revisión inesperada')
   compose(['exec','-T','backend','python','-m','pip','check'],'verificar dependencias Python')
   compose(['exec','-T','backend','python','-m','alembic','check'],'comparar modelo y esquema')
   compose(['exec','-T','frontend','npm','run','build'],'build frontend en contenedor')
@@ -102,7 +102,7 @@ try{
   check(reopened.id===id,'Importación no persistente')
   const restoredAudio=await request(`/api/v1/tracks/${id}/audio`)
   check(Buffer.from(await restoredAudio.arrayBuffer()).equals(payload),'El medio no sobrevivió a recrear el contenedor')
-  report.result='passed';report.ready=ready;report.initial_tracks=0;report.final_tracks=1;report.revision='0010_track_deletion'
+  report.result='passed';report.ready=ready;report.initial_tracks=0;report.final_tracks=1;report.revision='0011_wall_full_size'
   report.limits='Sin navegador/escucha, sin OpenAI real, sin instalación sin caché ni máquina externa. Datos de demostración conservados.'
 }catch(error){report.result='failed';report.error=error.message;report.error_code=error.cause?.code??error.code??error.name;process.exitCode=1}
 finally{

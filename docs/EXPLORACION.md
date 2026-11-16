@@ -1,5 +1,10 @@
 # Explorar, fuentes y reproducción — P23
 
+Actualización16 noviembre: la entrada principal ahora es una conversación sencilla.
+El formulario siguiente se conserva en Opciones → Búsqueda avanzada. Véase
+[CONVERSACION_MUSICAL.md](CONVERSACION_MUSICAL.md) para contexto de favoritos/pistas
+de sesión, plan IA opt-in y alternativa local. No se activaron llamadas reales.
+
 P25 añade selector de preferencias off/favorites/discovery. El ajuste intercambia
 pares de candidatos, sin variar scores ni fuentes; descubrir excluye favoritos
 antes del límite. Razones de orden separadas de las citas musicales y comparación

@@ -144,7 +144,7 @@ wall_element = Table(
     Column("rotation_deg", Double, nullable=False), Column("z_index", Integer, nullable=False),
     CheckConstraint("kind IN ('poster','sticker','image','gif')", name="kind"),
     CheckConstraint("cx >= 0 AND cx <= 1 AND cy >= 0 AND cy <= 1", name="center"),
-    CheckConstraint("width >= 0.03 AND width <= 0.60 AND height >= 0.03 AND height <= 0.60", name="size"),
+    CheckConstraint("width >= 0.03 AND width <= 1.0 AND height >= 0.03 AND height <= 1.0", name="size"),
     CheckConstraint("rotation_deg >= -180 AND rotation_deg < 180", name="rotation"),
     CheckConstraint("z_index >= 0 AND z_index <= 29", name="z_index"),
 )

@@ -1,6 +1,11 @@
 # PostgreSQL y pgvector — Operación local
 
-Head vigente: `0010_track_deletion` (15 de noviembre). Añade retirada lógica de
+Head vigente: `0011_wall_full_size` (16 de noviembre): objetos de muro hasta1.0 por
+eje, sin actualizar filas ni archivos. Aplicada tras respaldo privado de45820bytes;
+huellas de composiciones idénticas. Downgrade rechaza tamaños mayores a0.60.
+Ver APARIENCIA.md para evidencia y límites.
+
+La migración anterior `0010_track_deletion` añade retirada lógica de
 pistas sin purgar originales ni historial. Aplicada tras respaldo privado y
 comprobada con Alembic; detalle y pruebas en [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md).
 Las referencias a 0009 siguientes describen la entrega histórica P28.

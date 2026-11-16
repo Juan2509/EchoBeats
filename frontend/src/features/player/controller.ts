@@ -5,11 +5,13 @@ export type PlayerState = {
   playing: boolean; loading: boolean; ready: boolean; pendingQueue: boolean
   position: number; duration: number; volume: number; error: string; notice: string
   repeatOne: boolean; shuffle: boolean
+  recentTrackIds: string[]
 }
 export const initialPlayer: PlayerState = {
   track: null, queue: [], index: -1, context: '', playing: false, loading: false,
   ready: false, pendingQueue: false, position: 0, duration: 0, volume: .7, error: '', notice: '',
   repeatOne: false, shuffle: false,
+  recentTrackIds: [],
 }
 export type AudioPort = Pick<HTMLAudioElement, 'src' | 'currentSrc' | 'currentTime' | 'duration' |
   'volume' | 'paused' | 'ended' | 'readyState' | 'error' | 'play' | 'pause' | 'load' |
@@ -36,7 +38,8 @@ export class PlayerController {
     this.listen('timeupdate', () => this.syncTime())
     this.listen('playing', () => {
       this.wantsPlay = !audio.paused
-      this.patch({ playing: !audio.paused, loading: false, error: '' })
+      const id=this.state.track!.id
+      this.patch({ playing: !audio.paused, loading: false, error: '',...(!audio.paused?{recentTrackIds:[id,...this.state.recentTrackIds.filter(value=>value!==id)].slice(0,12)}:{}) })
     })
     this.listen('pause', () => {
       if (!audio.paused) return
@@ -152,6 +155,7 @@ export class PlayerController {
   }
   setVolume(value: number) { if (Number.isFinite(value)) { this.audio.volume = Math.max(0, Math.min(value, 1)); this.patch({ volume: this.audio.volume }) } }
   toggleRepeat() { this.patch({ repeatOne: !this.state.repeatOne }) }
+  clearRecent() { this.patch({recentTrackIds:[]}) }
   toggleShuffle() {
     this.patch({ shuffle: !this.state.shuffle })
     if (this.state.shuffle) this.applyShuffle()
@@ -195,8 +199,8 @@ export class PlayerController {
   removeTrack(id:string){
     this.orderedQueue = this.orderedQueue.filter(item => item.id !== id)
     this.generation++;this.endedPending=false
-    if(this.state.track?.id===id){this.intent++;this.wantsPlay=false;this.audio.pause();this.audio.removeAttribute('src');this.audio.load();this.patch({...initialPlayer,volume:this.state.volume,notice:'La canción se retiró de la biblioteca.'})}
-    else{const queue=this.state.queue.filter(item=>item.id!==id);this.patch({queue,index:queue.findIndex(item=>item.id===this.state.track?.id),pendingQueue:false})}
+    if(this.state.track?.id===id){this.intent++;this.wantsPlay=false;this.audio.pause();this.audio.removeAttribute('src');this.audio.load();this.patch({...initialPlayer,volume:this.state.volume,recentTrackIds:this.state.recentTrackIds.filter(value=>value!==id),notice:'La canción se retiró de la biblioteca.'})}
+    else{const queue=this.state.queue.filter(item=>item.id!==id);this.patch({queue,index:queue.findIndex(item=>item.id===this.state.track?.id),pendingQueue:false,recentTrackIds:this.state.recentTrackIds.filter(value=>value!==id)})}
   }
   dispose() {
     this.disposed = true; this.intent += 1

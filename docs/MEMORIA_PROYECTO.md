@@ -1,5 +1,29 @@
 # Memoria de EchoBeats
 
+16 noviembre: usuario veía mucho espacio desaprovechado al agrandar imágenes.
+Límite de objetos pasa60%→100% por eje, con límites rotados intactos. Añadido
+Objeto → Ajustar al muro (centrar y maximizar proporcionalmente, conserva giro,
+undo/redo/autosave). Borde del lienzo visible en edición. No se modificó área lógica
+1000x700 ni geometría existente.0011_wall_full_size aplicada tras respaldo privado
+echobeats_before_wall_full_size_1794854472866.dump45820bytes; hashes de composiciones
+idénticos. Downgrade protegido si hay tamaños>0.60.27 tests backend muros/102 frontend/
+build y Chrome con imagen/guardado simulado aprobados. Ver APARIENCIA.md.
+
+## Explorar conversacional — 16 de noviembre de 2026
+
+Usuario pidió sustituir formulario complejo por conversación musical basada en
+gustos y escucha. ExploreView es chat simple; AdvancedExploreView conserva P23–P25
+como opción secundaria. /explore/chat usa favoritos, pista actual y hasta12 pistas
+iniciadas en esta sesión (solo evento playing, memoria, borrado manual disponible).
+IA opt-in inicial false: plan estructurado validado + recuperación existente, sin
+prosa musical libre; alternativa local claramente indicada con razones verificables
+y citas cuando existen. No entrenamiento ni historial persistente. Hasta500 pistas
+en alternativa de catálogo, señales limitadas; no fingir IA ni pertinencia validada.
+Conversación acotada20 turnos UI/dos turnos previos enviados, no guardada en BD.
+251 backend aisladas y100 frontend/build aprobados; cinco chat repetidas tras ajuste
+de excluir opciones previas. Chrome con respuestas simuladas,360/768 y cancelación
+aprobados. Sin API real, migraciones o escrituras personales. Leer CONVERSACION_MUSICAL.
+
 16 noviembre: vista de álbum ajustada al viewport desde651px. Muro máximo que cabe
 manteniendo10:7, sin scroll de página ni estirar fondo/decoraciones. Alto de room y
 sidebar calculado entre toolbar y player; sidebar llena hasta un margen de7–10px.

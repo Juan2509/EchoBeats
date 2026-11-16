@@ -1,5 +1,16 @@
 # Contrato inicial de API de EchoBeats
 
+Muros, actualización16 noviembre: cada elemento admite width/height0.03–1.0;
+se siguen validando los bordes rotados. La geometría continúa en unidades
+normalizadas de1000x700 y el guardado conserva If-Match/autosave. Ver APARIENCIA.md.
+
+Ampliación16 noviembre: `POST /api/v1/explore/chat`, conversación musical acotada.
+Entrada: messages (1–6, role user/assistant, content1–1000; último user),
+current_track_id opcional, recent_track_ids hasta12, previous_track_ids hasta20,
+reference_track_id opcional y use_ai=false. Salida: reply, mode local/ai,
+recommendations (track, reason, evidence), warnings y context. Sin historial
+persistente ni audio enviado. Ver [CONVERSACION_MUSICAL.md](CONVERSACION_MUSICAL.md).
+
 P27 conserva payloads/orden de páginas, con lectura agrupada interna. GET
 /assets/{id}/content valida archivo regular/tamaño/acceso antes de cabeceras:
 404 media_missing para faltante/inválido y 503 media_unavailable para OSError,

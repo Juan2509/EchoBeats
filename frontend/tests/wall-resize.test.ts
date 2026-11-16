@@ -1,12 +1,16 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {resizeWithinWall,resizeHandles} from '../src/features/walls/resize.ts'
+import {resizeWithinWall,resizeHandles,fitWithinWall} from '../src/features/walls/resize.ts'
 import {WallController} from '../src/features/walls/controller.ts'
 import type {WallElement,WallResult} from '../src/features/walls/controller.ts'
 const item:WallElement={id:'image',asset_id:'asset',kind:'image',cx:.5,cy:.5,width:.2,height:.2,rotation_deg:0,z_index:2,content_url:'/image'}
 const near=(a:number,b:number)=>assert.ok(Math.abs(a-b)<1e-7,`${a} ≠ ${b}`)
 function anchor(v:WallElement,handle:string){const sx=handle.includes('e')?1:handle.includes('w')?-1:0,sy=handle.includes('s')?1:handle.includes('n')?-1:0,a=v.rotation_deg*Math.PI/180;return [v.cx*1000-v.width*1000*sx/2*Math.cos(a)+v.height*700*sy/2*Math.sin(a),v.cy*700-v.width*1000*sx/2*Math.sin(a)-v.height*700*sy/2*Math.cos(a)]}
-function inside(v:WallElement){const a=v.rotation_deg*Math.PI/180,bx=(Math.abs(v.width*1000*Math.cos(a))+Math.abs(v.height*700*Math.sin(a)))/2,by=(Math.abs(v.width*1000*Math.sin(a))+Math.abs(v.height*700*Math.cos(a)))/2;assert.ok(v.cx*1000>=bx-1e-7&&v.cx*1000<=1000-bx+1e-7);assert.ok(v.cy*700>=by-1e-7&&v.cy*700<=700-by+1e-7);assert.ok(v.width>=.03-1e-8&&v.width<=.6+1e-8&&v.height>=.03-1e-8&&v.height<=.6+1e-8)}
+function inside(v:WallElement){const a=v.rotation_deg*Math.PI/180,bx=(Math.abs(v.width*1000*Math.cos(a))+Math.abs(v.height*700*Math.sin(a)))/2,by=(Math.abs(v.width*1000*Math.sin(a))+Math.abs(v.height*700*Math.cos(a)))/2;assert.ok(v.cx*1000>=bx-1e-7&&v.cx*1000<=1000-bx+1e-7);assert.ok(v.cy*700>=by-1e-7&&v.cy*700<=700-by+1e-7);assert.ok(v.width>=.03-1e-8&&v.width<=1+1e-8&&v.height>=.03-1e-8&&v.height<=1+1e-8)}
+test('ajustar al muro aprovecha el alto/ancho completo, conserva giro/proporción y recurso',()=>{
+ for(const rotation_deg of [0,30,90,145]){const original={...item,width:.25,height:.35714285714285715,cx:.8,rotation_deg},next=fitWithinWall(original);inside(next);near(next.width/next.height,original.width/original.height);assert.equal(next.cx,.5);assert.equal(next.cy,.5);assert.equal(next.rotation_deg,rotation_deg);assert.equal(next.asset_id,original.asset_id);assert.ok(next.height>.6||next.width>.6);}
+ const full=fitWithinWall({...item,width:.25,height:.25,rotation_deg:0});near(full.width,1);near(full.height,1)
+})
 test('ocho tiradores conservan ancla opuesta y límites incluso con giro y Shift',()=>{
  for(const rotation_deg of [-135,-90,-30,0,30,90,145])for(const handle of resizeHandles)for(const proportional of [false,true])for(const [dx,dy] of [[40,60],[-40,-60],[5000,5000],[-5000,-5000]]){
   const original={...item,rotation_deg},v=resizeWithinWall(original,handle,dx,dy,proportional),before=anchor(original,handle),after=anchor(v,handle);near(before[0],after[0]);near(before[1],after[1]);inside(v);assert.equal(v.rotation_deg,rotation_deg);assert.equal(v.asset_id,item.asset_id);if(proportional)near(v.width/v.height,item.width/item.height)
