@@ -28,7 +28,7 @@ body { color: var(--ink); }
 }
 .workspace main > section:not(:has(.album-room)),
 .workspace .dashboard-actions,
-.workspace footer,
+.workspace footer:not(.wall-tools-footer),
 .workspace .wall-status {
   background: var(--read-surface);
   border: 1px solid var(--read-edge);

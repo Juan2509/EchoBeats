@@ -15,6 +15,7 @@ def isolated_runtime_settings(tmp_path, monkeypatch):
     # _env_file=None no desactiva variables heredadas del contenedor.
     monkeypatch.setenv('MEDIA_ROOT', str(tmp_path / 'media'))
     monkeypatch.setenv('AI_ENABLED', 'false')
+    monkeypatch.setenv('LOCAL_CHAT_ENABLED', 'false')
     monkeypatch.setenv('OPENAI_API_KEY', '')
     monkeypatch.setenv('PROCESSING_WORKER_ENABLED', 'false')
 

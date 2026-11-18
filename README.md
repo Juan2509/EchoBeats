@@ -61,6 +61,9 @@ Conservar `.env`, `data/`, `backups/` y volumen `echobeats_postgres_data`. No bo
 volúmenes para arrancar ni cambiar una contraseña inicializada editando solo `.env`.
 Si hay biblioteca existente, respaldar antes de aplicar migraciones pendientes.
 
+Para conversar con un modelo en tu equipo sin clave de OpenAI, sigue el
+[arranque con Ollama](docs/CONVERSACION_MUSICAL.md#chat-generativo-en-el-equipo).
+
 ## Funciones disponibles
 
 Apariencia neón personalizable en **Configuración → Tu atmósfera**: colores y

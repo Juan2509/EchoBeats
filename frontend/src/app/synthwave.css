@@ -174,7 +174,7 @@ a:focus-visible,summary:focus-visible,main:focus-visible,button:focus-visible,in
 .wall-tools-dialog .wall-move-buttons button{padding:8px 4px;font-size:.78rem}
 .wall-tools-dialog .wall-move-buttons button:last-child:nth-child(5){grid-column:1/-1}
 .wall-tools-dialog .wall-save-actions{display:grid;gap:12px}
-.wall-tools-dialog .wall-tools-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #7883a855;padding:12px 0 0;margin:0;position:static;background:transparent}
+.wall-tools-dialog .wall-tools-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;padding:12px 0 0;margin:0;position:static;background:transparent}
 .wall-tools-dialog .wall-tools-footer p{color:#b8dfe6;max-width:60%}
 .wall-tools-dialog .wall-tools-footer button{flex-shrink:0}
 @media(max-width:480px){.wall-tools-dialog{padding:14px}.wall-tools-dialog h2{font-size:1.1rem}.wall-tools-dialog>header{gap:8px;margin-bottom:12px}.wall-tools-dialog>header button{padding:8px;font-size:.78rem}.workspace .wall-tools-dialog .wall-tools{gap:12px}.wall-tools-dialog .wall-tools-footer{gap:8px}.wall-tools-dialog .wall-tools-footer button{padding:8px;font-size:.78rem}}

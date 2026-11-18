@@ -293,7 +293,8 @@ no modal, situado inicialmente a la derecha, sin fondo oscuro ni desenfoque ni
 bloqueo de scroll/foco del muro. Arrastrar la cabecera permite ubicarlo libremente;
 queda limitado al área visible (incluida barra de scroll) y se reajusta al cambiar
 tamaño/contenido. Minimizar conserva una cabecera compacta; Expandir recupera las
-herramientas. Cerrar/Escape conserva edición y Terminar edición guarda y bloquea.
+herramientas. La X y Terminar edición guardan lo pendiente, bloquean el muro y
+retiran el contorno del lienzo. Escape oculta las herramientas y conserva la edición.
 Cabecera enfocada: flechas desplazan (Mayús amplía paso), Inicio vuelve a derecha.
 Seleccionar una imagen en el muro muestra automáticamente Objeto sin abrir/cerrar
 el panel ni impedir arrastre/doble clic. Las preferencias de ubicación/minimización
