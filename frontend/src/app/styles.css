@@ -45,6 +45,18 @@ fieldset { margin: 24px 0; border: 1px solid #535563; border-radius: 8px; paddin
 .album-dialog { width: min(560px, 94vw); max-height: 90vh; color: #e9e9ef; background: #1a1b24; border: 1px solid #777083; border-radius: 14px; padding: 28px; }
 .album-dialog::backdrop { background: #000b; }
 .album-dialog button { margin-right: 10px; }
+.album-cover-options img { display: block; object-fit: cover; }
+.album-cover-options select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #626474;
+  border-radius: 8px;
+  background: #1d1e28;
+  color: inherit;
+  font: inherit;
+}
 input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #cbb7ff; outline-offset: 3px; }
 button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
 @media (max-width: 600px) { .workspace { padding: 24px; } .card { padding: 44px 0; } }

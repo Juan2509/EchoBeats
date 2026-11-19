@@ -10,6 +10,7 @@ import { FavoriteButton, useFavoritesRevision } from '../favorites/Favorites'
 import { useAppearance } from '../appearance/Appearance'
 import { presentationFor } from '../appearance/theme'
 import {AlbumTrackTools} from './AlbumTrackTools'
+import { AlbumDialog } from '../metadata/AlbumDialog'
 import {DeleteTrackButton,DeleteAlbumButton} from './DeleteTrackButton'
 import {DeleteAlbumTracks} from './DeleteAlbumTracks'
 import {useAlbumPanelSpace} from './useAlbumPanelSpace'
@@ -120,6 +121,9 @@ export function AlbumView({ id, refresh, navigate, onDirty }: { id: string; refr
   return <section className="album-view"><div className="album-toolbar"><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>← Mi biblioteca</a><div ref={setWallToolbar} className="album-wall-actions"/></div>
     <ReadState {...info} />{info.data && <div className="album-room"><aside ref={sidebar} className="album-sidebar"><div className="album-heading"><div className={`album-art collection-art ${presentationFor(appearance,id)}`}><Cover url={info.data.cover_url} title={info.data.title} /></div><div><p className="eyebrow">En tu colección</p><h1>{info.data.title}</h1><p>{artists(info.data)} · {info.data.track_count} pistas</p></div></div>
       <label className="album-presentation-control">Apariencia del álbum<select value={presentationFor(appearance,id)} onChange={event=>change({albumPresentations:{...appearance.albumPresentations,[id]:event.target.value as 'vinyl'|'image'}})}><option value="vinyl">Vinilo</option><option value="image">Portada</option></select></label>
+      {!info.data.system_key && <AlbumDialog albumId={id} disabled={false} onSaved={async () => {
+        window.dispatchEvent(new Event('echobeats:library-changed'))
+      }} />}
       <details className="album-import-tools" onToggle={event=>setImportOpen(event.currentTarget.open)}><summary>Añadir música a este álbum</summary>{importOpen&&<ImportPanel albumId={id} albumTitle={info.data.title} onImported={()=>window.dispatchEvent(new Event('echobeats:library-changed'))}/>}</details>
       <h2>Canciones del álbum</h2><ReadState {...songs} />{songs.data && <><TrackList inAlbum tracks={songs.data.items} navigate={navigate} queuePath={`/tracks?album_id=${encodeURIComponent(id)}`} queueLabel={info.data.title} />{!songs.data.total && <p className="empty-state">Este álbum todavía no tiene canciones.</p>}<Pagination offset={offset} total={songs.data.total} move={setOffset} /></>}
       <p className="note">Abrir este álbum no cambia la canción que está sonando.</p>

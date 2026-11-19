@@ -1,157 +1,80 @@
 # EchoBeats
 
-Explorar ahora ofrece una conversación musical sencilla con sugerencias y tarjetas
-para escuchar. Usa favoritos y pistas iniciadas en esta sesión; mantiene búsqueda
-avanzada en Opciones. La IA es opt-in y su prueba real sigue pendiente por créditos;
-la alternativa local queda identificada. [Alcance y validación](docs/CONVERSACION_MUSICAL.md).
+EchoBeats es una aplicación académica para organizar, reproducir y explorar una colección de música propia. Funciona en tu equipo y está pensada para un solo usuario.
 
-Ampliación del 15 de noviembre: **Inicio → Crear álbum**, con nombre, portada
-opcional y apariencia Vinilo/Portada. Para importar música hay que elegir su álbum;
-desde el álbum el destino queda fijado. Fichas y opciones permite retirar canciones
-con confirmación, conservando originales e historial. Los fondos propios tienen X
-y un lienzo para mover, girar y ajustar el recorte. Ver [guía y validación](docs/ALBUMES_CARPETA.md).
-Head actual `0011_wall_full_size`. La validación actual de capacidad del muro está
-en [APARIENCIA.md](docs/APARIENCIA.md); las cifras de esta ampliación inicial son históricas.
+## Objetivo
 
-Biblioteca y reproductor de música propia, playlists, muros personalizables por álbum
-y exploración de fichas mediante OpenAI/pgvector. Aplicación académica **local de un
-usuario**, sin autenticación ni exposición pública.
+Reunir en un mismo espacio la biblioteca, la escucha y la exploración musical. Puedes organizar canciones en álbumes, personalizar cómo se presentan y usar sus fichas para encontrar pistas dentro de tu colección.
 
-**P28: documentación y demostración preparadas; aceptación global pendiente.**
-Última regresión P27: 241 pruebas backend, 62 frontend y build aprobados. Siguen
-pendientes navegador/escucha/seek y éxito/evaluación con API real. El usuario dejó
-OpenAI pendiente por créditos: instalar o demostrar no autoriza reanudar llamadas.
-Evidencia en [VALIDACION_P28.md](docs/VALIDACION_P28.md).
+## Cómo funciona
 
-## Arranque
+1. **Organiza tu biblioteca.** En **Biblioteca → Crear álbum**, elige un nombre y, si quieres, sube una portada. Importa archivos MP3, WAV PCM, FLAC u Ogg Vorbis/Opus y selecciona el álbum de destino. Si importas desde un álbum, el destino ya está fijado. EchoBeats lee las etiquetas compatibles y conserva los archivos originales.
+2. **Escucha y prepara playlists.** Reproduce desde un álbum, una búsqueda o una playlist. El reproductor mantiene su cola al navegar y ofrece pausa, anterior, siguiente, progreso, volumen, repetición y orden aleatorio. Puedes marcar canciones como favoritas.
+3. **Personaliza los álbumes.** En **Editar álbum y portada** puedes subir una imagen o elegir la portada propia de una canción del álbum. En **Editar pared** puedes decorar el muro con imágenes o GIF, moverlos, cambiar su tamaño y giro, y ordenar sus capas. **Configuración** reúne los ajustes de fondos, colores y estilo.
+4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda avanzada usa fichas musicales con un índice vigente. La IA es opcional y viene desactivada. La integración con OpenAI trabaja con texto, y su validación con el proveedor real sigue pendiente por créditos.
 
-Docker activo con contenedores Linux y Compose 2.24 o posterior; internet para la
-primera descarga de imágenes/paquetes. El preparador usa Node 24 o Python 3;
-no necesitas instalar el backend en el host para usar Docker.
+La interfaz usa React, TypeScript y Vite. FastAPI sirve el catálogo y los archivos de audio. PostgreSQL guarda la biblioteca, las playlists y los muros, y pgvector almacena los índices de búsqueda. Los medios se guardan en `data/media/` y las preferencias visuales se conservan en el navegador.
 
-```bash
-node scripts/preparar_entorno.mjs
+## Ejecutar EchoBeats
+
+En ambos sistemas necesitas una copia del repositorio, Python 3 para preparar la configuración, Docker con contenedores Linux, Docker Compose 2.24 o posterior e internet para la primera descarga. Docker instala las dependencias del frontend y del backend dentro de sus imágenes.
+
+### Windows
+
+1. Inicia Docker Desktop en modo de contenedores Linux.
+2. Abre PowerShell en la carpeta del proyecto, donde está `compose.yaml`.
+3. Ejecuta:
+
+```powershell
+py -3 scripts/preparar_entorno.py
 docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-Alternativa al primer comando: `python3 scripts/preparar_entorno.py` o, en Windows
-con Python instalado, `py -3 scripts/preparar_entorno.py`. Ambos conservan `.env`
-si existe y no imprimen contraseñas. No compartir `docker compose config` expandido.
+Si Python está disponible como `python`, puedes usar `python scripts/preparar_entorno.py`.
 
-Si Docker no está en PATH, en este equipo PowerShell permite:
+### Linux
 
-```powershell
-$dockerExe = Join-Path $env:LOCALAPPDATA 'Programs\DockerDesktop\resources\bin\docker.exe'
-& $dockerExe compose config --quiet
-& $dockerExe compose up --build -d --wait
+1. Inicia Docker Engine. Si tu instalación usa systemd y el motor está detenido, ejecuta `sudo systemctl start docker`.
+2. Abre una terminal en la carpeta del proyecto, donde está `compose.yaml`.
+3. Ejecuta:
+
+```bash
+python3 scripts/preparar_entorno.py
+docker compose config --quiet
+docker compose up --build -d --wait
 ```
 
-Abrir [EchoBeats](http://localhost:5173), [ready](http://localhost:8000/api/v1/ready)
-y [OpenAPI](http://localhost:8000/docs). `migrate` termina con código 0 antes del
-backend; no es un servicio permanente. [INSTALACION.md](docs/INSTALACION.md)
-explica diagnóstico y ejecución nativa.
+### Abrir la aplicación
+
+Cuando termine el arranque, abre [EchoBeats](http://localhost:5173). También puedes consultar el [estado del backend](http://localhost:8000/api/v1/ready) y la [documentación de la API](http://localhost:8000/docs).
+
+Docker inicia PostgreSQL, aplica las migraciones y levanta el backend y el frontend. El servicio `migrate` termina con código `0` después de actualizar el esquema.
+
+### Detener y volver a iniciar
+
+Para detener EchoBeats:
 
 ```bash
 docker compose stop
+```
+
+Para volver a iniciarlo:
+
+```bash
 docker compose up -d --wait
 ```
 
-Conservar `.env`, `data/`, `backups/` y volumen `echobeats_postgres_data`. No borrar
-volúmenes para arrancar ni cambiar una contraseña inicializada editando solo `.env`.
-Si hay biblioteca existente, respaldar antes de aplicar migraciones pendientes.
+El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo no existe. Si ya tienes una biblioteca, conserva su `.env`, la carpeta `data/`, el volumen de PostgreSQL y los respaldos. Cambiar la contraseña en `.env` por sí solo deja desincronizada la credencial de una base ya inicializada.
 
-Para conversar con un modelo en tu equipo sin clave de OpenAI, sigue el
-[arranque con Ollama](docs/CONVERSACION_MUSICAL.md#chat-generativo-en-el-equipo).
-
-## Funciones disponibles
-
-Apariencia neón personalizable en **Configuración → Tu atmósfera**: colores y
-dirección de degradados, rejilla y fondo propio. Preferencias por navegador;
-diseños del muro siguen en BD por álbum. Uso y límites en [APARIENCIA.md](docs/APARIENCIA.md).
-
-- MP3, WAV PCM, FLAC, Ogg Vorbis/Opus: importación, etiquetas/portadas y edición con
-  procedencia, búsqueda por título/artista/álbum y provisionales sin identidad inventada.
-- Un reproductor compartido: cola, pausa, anterior/siguiente, progreso y volumen;
-  recargar no inicia ni restaura reproducción automáticamente.
-- Playlists con nombre, orden, PNG/JPEG y apariencia vinilo/tarjeta.
-- Muro por álbum: color, PNG/JPEG/GIF, posición/tamaño/giro/capas, bloqueo,
-  autoguardado y reset versionado. GIF pausables con preview.
-- Fichas con fuente/versión/evidencia, cola de preparación/indexación y favoritos.
-  Preferencias explícitas acotan cambios de orden; no entrenan gustos ni registran escuchas.
-
-Biblioteca funciona sin IA. **Explorar textual también exige fichas con índice
-vigente**; sin vectores muestra el estado correspondiente. Semántica/híbrida y
-selección opcional de citas pueden consumir API al habilitarse explícitamente.
-No se envía audio. Guardar fichas no indexa ni llama al proveedor automáticamente.
-Citas literales comprobadas, sin prosa libre; scores no son confianza ni pertinencia garantizada.
-
-Límites: 20 audios, 50 MiB por archivo, 200 MiB por solicitud; imágenes 5 MiB y
-4096 px por lado; muro 30 objetos; GIF 200 fotogramas/32 MP decodificados totales.
-Sin transcodificación, reconocimiento ni análisis acústico.
-
-## Demostración aislada
-
-La [guía de demostración](docs/GUIA_DEMOSTRACION.md) distingue lo local, lo simulado
-y lo real pendiente. Para probar otro arranque con base y medios vacíos:
-
-```powershell
-node scripts/validar_arranque_limpio.mjs --docker "$env:LOCALAPPDATA\Programs\DockerDesktop\resources\bin\docker.exe"
-```
-
-Omitir `--docker` si está en PATH. Crea un proyecto único bajo `data/`, credenciales
-nuevas sin clave OpenAI y puertos separados. Construye/migra, verifica dependencias,
-build/tests, importación/rangos y recreación de backend; detiene solo ese proyecto al terminar,
-conservando datos, configuración e informe para reabrirlo. Puede usar caché Docker;
-no acredita navegador/escucha, API real o instalación en otra máquina.
-
-## Datos y configuración
-
-Solo `.env` privado; nunca claves en `VITE_*`, frontend o Git. IA desactivada por
-defecto; consultar Configuración no consume API ni acredita proveedor válido.
-[CONFIGURACION.md](docs/CONFIGURACION.md) detalla puertos, modelo/receta y límites.
-PostgreSQL interno `postgres:5432`; host `127.0.0.1:5433`. Compose monta `./data`
-en `/app/data`; los originales se conservan.
-
-Hay **506 MP3 sin fila actual**, conservados tras un defecto de aislamiento de tests
-corregido en P26. No borrarlos ni reimportarlos automáticamente. Ver [hallazgo](docs/HALLAZGO_AISLAMIENTO_P26.md).
+### Si hay un error de arranque
 
 ```bash
-docker compose exec backend python -m alembic current
-python3 scripts/base_datos.py respaldar
-python3 scripts/base_datos.py restaurar backups/ARCHIVO.dump --base echobeats_restore_revision
+docker compose ps -a
+docker compose logs --tail=50 migrate
+docker compose logs --tail=50 backend frontend
 ```
 
-El helper de respaldo requiere Python 3 y `docker` en PATH. El dump no contiene
-medios; restaurar crea una base nueva y no cambia la activa. [BASE_DATOS.md](docs/BASE_DATOS.md)
-explica copia coherente de BD/medios/configuración y alternativa Docker.
-
-## Verificación
-
-```bash
-docker compose exec -e RUN_DB_TESTS=1 backend python -m pytest -W error --tb=short
-docker compose exec backend python -m pip check
-docker compose exec backend python -m alembic check
-docker compose exec frontend npm test
-docker compose exec frontend npm run build
-```
-
-Las pruebas usan BD/medios temporales y clave vacía por defecto. No acreditan API
-real ni escucha. No usar la principal para downgrades o pérdidas simuladas. Consultar
-[matriz P26](docs/MATRIZ_ACEPTACION_P26.md) y [calidad P27](docs/REVISION_CALIDAD_P27.md).
-
-## Documentación
-
-- [Instalación](docs/INSTALACION.md), [arquitectura](docs/ARQUITECTURA.md),
-  [configuración](docs/CONFIGURACION.md), [demostración](docs/GUIA_DEMOSTRACION.md).
-- [Alcance](docs/ALCANCE_MVP.md), [API](docs/CONTRATO_API.md), [datos](docs/MODELO_DATOS.md),
-  [decisiones](docs/DECISIONES.md) y [requerimientos](docs/REVISION_REQUERIMIENTOS.md).
-- [IA](docs/INTEGRACION_IA.md), [embeddings](docs/EMBEDDINGS.md),
-  [exploración](docs/EXPLORACION.md), [preferencias](docs/PREFERENCIAS.md).
-- [Plan](docs/PLAN_DESARROLLO.md) y [memoria](docs/MEMORIA_PROYECTO.md).
-
-`backend/`: FastAPI/Python 3.12; `frontend/`: React/TypeScript/Vite; `pruebas/`:
-señales/música sintética original con hashes; `scripts/`: preparación/operación.
-Datos y builds privados ignorados por Git. Dependencias bloqueadas: frontend
-`npm ci`; backend `pip install --require-hashes -r backend/requirements.lock` en
-Python 3.12. No actualizar locks automáticamente al arrancar.
+- Si Docker no responde, comprueba que Docker Desktop o Docker Engine esté iniciado.
+- Si falla `migrate` por autenticación y ya existía una biblioteca, recupera el `.env` correspondiente a ese volumen o sincroniza la credencial de PostgreSQL antes de arrancar de nuevo.
+- Si Docker informa que un puerto está ocupado, comprueba los puertos locales predeterminados `5173` (interfaz), `8000` (API) y `5433` (PostgreSQL).
