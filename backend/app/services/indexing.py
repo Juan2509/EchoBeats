@@ -5,7 +5,7 @@ from uuid import uuid4
 from sqlalchemy import select, func
 from sqlalchemy.dialects.postgresql import insert
 from app.integrations.ai import OpenAIProvider, AIError, checked_text, usage, MESSAGES
-from app.models.catalog import track_description as description, track_embedding as embedding, processing_job as job
+from app.models.catalog import track_embedding as embedding, processing_job as job
 from app.models.vector import Vector1536
 from app.services import descriptions, processing
 from app.services.metadata import MetadataError, require_track

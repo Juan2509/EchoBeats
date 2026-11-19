@@ -1,7 +1,7 @@
 # Configuración efectiva — P28
 
 La sección visual **Configuración** de la aplicación tiene Fondo principal,
-Álbumes (selector del que se quiere editar), Colores y estilo y Conexión y estado.
+Álbumes (selector del que se quiere editar) y Colores y estilo.
 El muro se configura desde **Editar pared → Fondo**. Ver [APARIENCIA.md](APARIENCIA.md).
 Este documento describe las variables operativas del servidor.
 

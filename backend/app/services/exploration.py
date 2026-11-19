@@ -1,6 +1,5 @@
 """Selección de citas, alternativa registrada y verificación posterior a generación."""
 import json
-from sqlalchemy import select
 from starlette.concurrency import run_in_threadpool
 from pydantic import ValidationError
 from app.integrations.ai import AIError, Explanation, usage
