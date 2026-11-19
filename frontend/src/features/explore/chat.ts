@@ -2,7 +2,7 @@ import type {Track} from '../../shared/api/metadata'
 export type Message={role:'user'|'assistant';content:string}
 export type Recommendation={track:Track;reason:string;evidence:{source_id:string;version:number;quote:string}[]}
 export type MusicSuggestion={title:string;artist:string|null;work:string|null;match:'direct'|'approximate';reason:string;source_url?:string}
-export type ChatReply={reply:string;mode:'local'|'ai';provider?:'ollama'|'openai'|null;recommendations:Recommendation[];suggestions?:MusicSuggestion[];warnings:string[];context:{favorites:number;recent:number;current:string|null}}
+export type ChatReply={reply:string;mode:'local'|'ai';provider?:'openai'|null;recommendations:Recommendation[];suggestions?:MusicSuggestion[];warnings:string[];context:{favorites:number;recent:number;current:string|null}}
 export type ChatTurn={question:string;answer?:ChatReply;error?:string}
 export function decodeChat(value:unknown):ChatReply{
   const d=value as ChatReply

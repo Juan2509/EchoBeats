@@ -20,7 +20,6 @@ from app.api.ai import router as ai_router
 from app.api.search import router as search_router
 from app.api.favorites import router as favorites_router
 from app.integrations.ai import OpenAIProvider, AIError
-from app.integrations.local_chat import OllamaChat
 from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
 from app.config import Settings
@@ -49,7 +48,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.database_engine = engine
     app.state.settings = config
     app.state.ai_provider = OpenAIProvider(config)
-    app.state.local_chat = OllamaChat() if config.local_chat_enabled else None
     app.include_router(health_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(readiness_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(imports_router, prefix="/api/v1", tags=["Importación"])

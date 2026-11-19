@@ -25,16 +25,13 @@ class ChatInput(BaseModel):
     previous_track_ids: list[UUID]=Field(default_factory=list,max_length=20)
     reference_track_id: UUID | None=None
     use_ai: bool=Field(default=False,strict=True)
-    provider: Literal['ollama','openai'] | None=None
 
 @router.get('/explore/chat/status')
 async def chat_status(request: Request):
-    local = request.app.state.local_chat
     settings = request.app.state.settings
     cloud = settings.ai_enabled and bool(settings.openai_api_key.get_secret_value().strip())
     return JSONResponse(
-        {'local_enabled': local is not None, 'local_ready': await local.ready() if local else False,
-         'cloud_enabled': settings.ai_enabled, 'cloud_ready': cloud},
+        {'cloud_enabled': settings.ai_enabled, 'cloud_ready': cloud},
         headers={'Cache-Control': 'no-store'},
     )
 
@@ -46,7 +43,7 @@ async def chat(body:ChatInput,request:Request):
         from app.services.metadata import MetadataError
         raise MetadataError('chat_message','El último mensaje debe ser tu pregunta.')
     result=await respond(engine_for(request),request.app.state.settings,request.app.state.ai_provider,
-        [m.model_dump() for m in body.messages],body.current_track_id,body.recent_track_ids,body.reference_track_id,body.use_ai,body.previous_track_ids,local_provider=request.app.state.local_chat,requested_provider=body.provider)
+        [m.model_dump() for m in body.messages],body.current_track_id,body.recent_track_ids,body.reference_track_id,body.use_ai,body.previous_track_ids)
     return JSONResponse(jsonable_encoder(result),headers={'Cache-Control':'no-store'})
 
 

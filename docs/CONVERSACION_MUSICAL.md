@@ -3,46 +3,21 @@
 Ampliación solicitada el 16 de noviembre de 2026. Sustituye el formulario técnico
 como entrada principal, sin eliminar la búsqueda avanzada ni sus fuentes.
 
-## Chat generativo en el equipo
+## OpenAI en Explorar
 
-EchoBeats también puede generar respuestas con Ollama y Qwen3 sin una cuenta
-de OpenAI. Desde la raíz, iniciar el servicio, descargar el modelo (~2,5 GB) y
-levantar EchoBeats con el archivo adicional:
-
-```bash
-docker compose -f compose.yaml -f compose.chat-local.yaml up -d ollama
-docker compose -f compose.yaml -f compose.chat-local.yaml exec ollama ollama pull qwen3:4b-instruct
-docker compose -f compose.yaml -f compose.chat-local.yaml up -d --wait
-```
-
-Abrir Explorar. Si el modelo está listo, **Proveedor del chat** selecciona Ollama
-al entrar. El mismo selector ofrece **OpenAI · API de ChatGPT** cuando el backend
-tiene `AI_ENABLED=true` y `OPENAI_API_KEY` configurados. Cambiar de proveedor conserva
-la conversación. Al enviar con OpenAI se comparten hasta cuatro intercambios
-previos y el contexto musical. Un fallo devuelve el modo básico sin enviar la
-consulta a otro proveedor. Esta configuración conserva los modelos
-en un volumen dedicado, mantiene Ollama dentro de la red de Compose y desactiva
-sus funciones en la nube. Reutilizar los dos archivos Compose al reiniciar.
-El chat local puede hablar de temas cotidianos además de música. La primera
-respuesta puede tardar mientras se carga el modelo. El servidor permite hasta
-110 segundos para la generación; si falla, indica la causa y usa el modo básico.
-Los fallos locales no redirigen mensajes a OpenAI.
+Explorar usa OpenAI directamente cuando el backend tiene `AI_ENABLED=true`
+y `OPENAI_API_KEY` configurados. Al abrir la vista se comprueba la configuración
+local. Al enviar el mensaje se comparten hasta cuatro intercambios previos y el
+contexto musical. La respuesta puede consumir créditos. Si OpenAI no está
+configurado o devuelve un error, EchoBeats ofrece una respuesta básica.
 
 ## Experiencia
 
-Una caja para hablar con EchoBeats, tres sugerencias de inicio y Enviar. Enter envía,
-Shift+Enter añade una línea. Se pueden hacer seguimientos, cancelar la espera o
-empezar una conversación nueva. Las tarjetas permiten escuchar, marcar un corazón,
-abrir álbum y consultar citas cuando existen. El control Usar IA aparece junto al estado del chat cuando el servidor está
-configurado. Opciones reúne olvidar reproducciones recientes y Búsqueda avanzada.
-
-Al abrir no se busca ni se llama al proveedor: solo se consulta su configuración.
-Sin Ollama, el modo inicial es básico. Mientras el proveedor procesa la consulta se muestra
-un estado de espera cancelable. GPT-6 Luna usa esfuerzo de razonamiento bajo
-en la conversación, con el límite de tiempo del proveedor configurado. OpenAI
-requiere seleccionarlo en cada visita y que el servidor declare integración y
-clave configuradas. Ese estado no acredita saldo ni acceso.
-No se habilitó IA en .env ni se reanudó la prueba real pendiente por créditos.
+Enter envía el mensaje y Shift+Enter añade una línea. Puedes cancelar la espera
+o empezar una conversación nueva. Las tarjetas permiten escuchar, marcar favoritos,
+abrir un álbum y consultar citas cuando existen. Opciones reúne la búsqueda avanzada
+y el control para olvidar reproducciones recientes. GPT-6 Luna usa esfuerzo de
+razonamiento bajo para el chat.
 
 ## Contexto y gustos
 
@@ -68,7 +43,7 @@ audio ni solicita acceso a servicios externos de escucha.
 previous_track_ids, reference_track_id y use_ai (false por omisión).
 Responde reply, mode, recommendations, suggestions, warnings y resumen de contexto.
 
-Con IA habilitada y elegida se solicita un plan estructurado de intención, consulta,
+Con OpenAI habilitado se solicita un plan estructurado de intención, consulta,
 referencia permitida y descubrimiento. No hay herramientas ni escrituras; store=false.
 El plan se valida dos veces y solo puede referenciar pistas del contexto. Después
 se usa recuperación híbrida o similares existente: como máximo dos operaciones

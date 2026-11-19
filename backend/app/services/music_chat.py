@@ -126,9 +126,11 @@ def local_plan(messages,context):
     check_in=r'que tal|como estas|como va|como te va|que hay'
     if re.fullmatch(rf'(?:{greeting})(?: (?:{check_in}))?|(?:{check_in})',phrase):
         return {'intent':'greeting','query':'','reference_id':None,'discovery':False}
+    if re.fullmatch(r'(?:muy )?bien(?: gracias)? y tu|y tu como estas',phrase):
+        return {'intent':'check_in','query':'','reference_id':None,'discovery':False}
     if re.fullmatch(r'(?:muchas )?gracias(?: por (?:la ayuda|las recomendaciones))?|genial|perfecto',phrase):
         return {'intent':'thanks','query':'','reference_id':None,'discovery':False}
-    if re.fullmatch(r'(?:a )?que te refieres(?: con eso)?|que quieres decir(?: con eso)?|como asi|no (?:te )?entendi|puedes explicarlo',phrase):
+    if re.fullmatch(r'(?:a )?que te refieres(?: con eso)?|que quieres decir(?: con eso)?|como asi|no (?:te )?entiend[oa]|no (?:te )?entendi|puedes explicarlo',phrase):
         return {'intent':'clarify','query':'','reference_id':None,'discovery':False}
     if any(p in plain for p in ['mis gustos','que me gusta','que sabes de mi']):return {'intent':'preferences','query':'','reference_id':None,'discovery':False}
     prior=[m['content'] for m in messages[:-1] if m['role']=='user']
@@ -190,25 +192,20 @@ def new_suggestions(engine, suggestions):
     return result
 
 
-async def respond(engine,settings,provider,messages,current,recent,reference,use_ai,previous=(),*,local_provider=None,requested_provider=None):
+async def respond(engine,settings,provider,messages,current,recent,reference,use_ai,previous=()):
     context=await run_in_threadpool(context_for,engine,current,recent,reference)
     warnings=[];plan=local_plan(messages,context);used_ai=False;suggestions=[]
     switch_force = bool(re.search(SWITCH_FORCE_NAME + r'(?!\s*!?\s*2)', normalized(messages[-1]['content'])))
-    use_ollama = requested_provider == 'ollama' or (requested_provider is None and local_provider is not None)
     if reference and not context['reference']:
         raise metadata.MetadataError('track_not_found','La pista de referencia ya no está en la biblioteca.',404)
     exclude_games = plan['intent'] not in {'greeting', 'thanks'} and excludes_game_music(messages)
-    if use_ai and not exclude_games and plan['intent'] not in {'greeting', 'thanks'}:
+    if use_ai and not exclude_games:
         library_requested=plan['intent']=='recommend'
         try:
-            if use_ollama:
-                if local_provider is None:raise AIError('local_model_unavailable')
-            else:
-                if not settings.ai_enabled:raise AIError('ai_disabled')
-                if not settings.openai_api_key.get_secret_value().strip():raise AIError('ai_not_configured')
-            generator=local_provider if use_ollama else provider
+            if not settings.ai_enabled:raise AIError('ai_disabled')
+            if not settings.openai_api_key.get_secret_value().strip():raise AIError('ai_not_configured')
             grounding = {'related_soundtrack': SWITCH_FORCE_REFERENCE} if switch_force else {}
-            generated=await generator.conversation_plan({'messages':messages,'library_requested':library_requested,**context,**grounding})
+            generated=await provider.conversation_plan({'messages':messages,'library_requested':library_requested,**context,**grounding})
             plan=ConversationPlan.model_validate(generated).model_dump()
             if plan['intent']=='recommend' and not library_requested:raise AIError('ai_invalid_response')
             if plan['reference_id'] and plan['reference_id'] not in {t['id'] for t in context['tracks']}:raise AIError('ai_invalid_response')
@@ -226,6 +223,7 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
     elif used_ai and plan['intent'] in {'discuss','greeting','preferences','clarify'}:
         reply=plan['reply']
     elif plan['intent']=='greeting':reply='¡Hola! ¿Cómo va todo?'
+    elif plan['intent']=='check_in':reply='¡Me alegra que estés bien! Aquí estoy para charlar contigo.'
     elif plan['intent']=='thanks':reply='¡De nada!'
     elif plan['intent']=='acknowledge':reply='Gracias por contármelo. ¿Qué música te gusta?'
     elif plan['intent']=='discuss':reply=local_discussion(messages,clarify=False)
@@ -244,7 +242,7 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
         data=None
         try:
             if plan['reference_id']:data=await run_in_threadpool(search.similar,engine,settings,UUID(plan['reference_id']),5,None,None,'discovery' if plan['discovery'] else 'favorites')
-            else:data=await search.search(engine,settings,provider,plan['query'] or messages[-1]['content'],'hybrid' if used_ai and not use_ollama else 'lexical',5,preferences='discovery' if plan['discovery'] else 'favorites')
+            else:data=await search.search(engine,settings,provider,plan['query'] or messages[-1]['content'],'hybrid' if used_ai else 'lexical',5,preferences='discovery' if plan['discovery'] else 'favorites')
             for item in (data or {}).get('results',[]):
                 if item['track']['id'] in exclude:continue
                 saved=exploration.recorded(item)
@@ -255,4 +253,4 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
             recommendations,truncated=await run_in_threadpool(catalog_fallback,engine,plan['query'],context,plan['discovery'],plan['reference_id'],exclude)
             if truncated:warnings.append('La alternativa local revisó hasta 500 pistas, priorizando las señales de contexto y las incorporaciones recientes.')
         reply='Estas son las pistas de tu biblioteca con las señales más cercanas. Cada tarjeta indica por qué apareció; el parecido musical es orientativo.' if recommendations else 'En la búsqueda que pediste dentro de tu biblioteca no encontré resultados con señales suficientes. Si quieres, puedo explorar música en general.'
-    return {'reply':reply,'mode':mode,'provider':('ollama' if use_ollama else 'openai') if used_ai else None,'recommendations':recommendations,'suggestions':suggestions,'warnings':warnings,'context':{'favorites':len(context['favorites']),'recent':len(context['recent']),'current':context['current']}}
+    return {'reply':reply,'mode':mode,'provider':'openai' if used_ai else None,'recommendations':recommendations,'suggestions':suggestions,'warnings':warnings,'context':{'favorites':len(context['favorites']),'recent':len(context['recent']),'current':context['current']}}

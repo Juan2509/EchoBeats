@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { assetUrl } from './theme'
-import type { Wallpaper } from './theme'
+import { assetUrl, sceneNames } from './theme'
+import type { SceneMode, Wallpaper } from './theme'
+import { SceneArtwork } from './SceneArtwork'
 import { prepareWallpaper } from './image'
 import {WallpaperCanvas} from './WallpaperCanvas'
 import {imageStyle} from './wallpaperStyle'
@@ -8,7 +9,7 @@ export {imageStyle} from './wallpaperStyle'
 
 export function WallpaperThumbnail({value,image}:{value:Wallpaper;image?:string|null}){
   const source=image??value.image
-  return <span className="background-thumbnail" data-mode={value.mode} aria-hidden="true">{source&&value.mode==='image'?<span className="wallpaper-image" style={imageStyle(source,value)}/>:value.mode==='image'?<svg viewBox="0 0 160 90"><path d="M10 75 55 25 85 58 110 38 150 75Z" fill="#7995ba"/><circle cx="120" cy="20" r="10" fill="#f9c9e9"/></svg>:<><i className="thumbnail-sun"/><i className="thumbnail-grid"/></>}</span>
+  return <span className="background-thumbnail" data-mode={value.mode} aria-hidden="true">{source&&value.mode==='image'?<span className="wallpaper-image" style={imageStyle(source,value)}/>:value.mode==='image'?<svg viewBox="0 0 160 90"><path d="M10 75 55 25 85 58 110 38 150 75Z" fill="#7995ba"/><circle cx="120" cy="20" r="10" fill="#f9c9e9"/></svg>:value.mode!=='synthwave'?<SceneArtwork mode={value.mode}/>:<><i className="thumbnail-sun"/><i className="thumbnail-grid"/></>}</span>
 }
 
 export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherited=false,imageOnly=false,previewRatio,inheritValue}:{value:Wallpaper;label:string;onSave:(value:Wallpaper)=>void;onInherit?:()=>void;onRemove?:()=>void;inherited?:boolean;imageOnly?:boolean;previewRatio?:number;inheritValue?:Wallpaper}){
@@ -26,7 +27,7 @@ export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherite
   useEffect(()=>()=>{if(preview)URL.revokeObjectURL(preview)},[preview])
   useEffect(()=>{const resize=()=>setRatio(window.innerWidth/window.innerHeight);window.addEventListener('resize',resize);return()=>window.removeEventListener('resize',resize)},[])
   function edit(changes:Partial<Wallpaper>){setDraft(current=>({...current,...changes}));setDirty(true);setNotice('Vista previa · pulsa Aplicar fondo para guardar.')}
-  function choose(mode:'synthwave'|'vaporwave'){
+  function choose(mode:SceneMode){
     setPrepared(null);setPreview(null);setDirty(false);setError('');onSave({...value,mode});setNotice('Estilo predeterminado aplicado. Tu imagen guardada sigue disponible.')
   }
   async function load(file:File){
@@ -55,7 +56,7 @@ export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherite
   return <section className="background-editor" aria-label={label}><h3>{label}</h3>
     {onInherit&&<p>{inherited?'Este álbum está usando el fondo principal.':'Este álbum tiene un fondo propio.'}</p>}
     <fieldset disabled={busy}><legend>Elegir fondo</legend><div className="background-modes background-gallery">
-      {!imageOnly&&(['synthwave','vaporwave'] as const).map(mode=><button type="button" className="background-choice" key={mode} aria-pressed={value.mode===mode&&!dirty&&!inherited} onClick={()=>choose(mode)}><WallpaperThumbnail value={{...value,mode}}/><span>{mode==='synthwave'?'Synthwave':'Vaporwave'}</span><span className="choice-check" aria-hidden="true">✓</span></button>)}
+      {!imageOnly&&(Object.keys(sceneNames) as SceneMode[]).map(mode=><button type="button" className="background-choice" key={mode} aria-pressed={value.mode===mode&&!dirty&&!inherited} onClick={()=>choose(mode)}><WallpaperThumbnail value={{...value,mode}}/><span>{sceneNames[mode]}</span><span className="choice-check" aria-hidden="true">✓</span></button>)}
       <div className="background-custom-choice"><button type="button" className="background-choice" aria-pressed={draft.mode==='image'&&!inherited} onClick={()=>{if(preview){edit({mode:'image'});return}if(value.image){setDraft({...value,mode:'image'});setDirty(true)}else fileInput.current?.click()}}><WallpaperThumbnail value={{...draft,mode:'image'}} image={image}/><span>{image?'Tu imagen':'Usa tu imagen'}</span><span className="choice-check" aria-hidden="true">✓</span></button>{image&&(prepared||onRemove&&!inherited)&&<button type="button" className="background-remove" aria-label={prepared?'Descartar imagen pendiente':'Quitar fondo personalizado'} title="Quitar esta imagen" onClick={removeImage}>×</button>}</div>
       {onInherit&&<button type="button" className="background-choice" aria-pressed={inherited&&!dirty} onClick={()=>{setPrepared(null);setPreview(null);setDirty(false);onInherit();setNotice('Se usa el fondo principal.')}}><WallpaperThumbnail value={inheritValue??value}/><span>Usar fondo principal</span><span className="choice-check" aria-hidden="true">✓</span></button>}
     </div>
@@ -66,7 +67,7 @@ export function BackgroundEditor({value,label,onSave,onInherit,onRemove,inherite
       <label>Zoom / recorte · {draft.zoom.toFixed(2)}×<input type="range" min={1} max={3} step={.05} value={draft.zoom} onChange={event=>edit({zoom:Number(event.target.value),mode:'image'})}/></label>
       <button type="button" className="secondary" onClick={()=>edit({fit:'cover',x:50,y:50,zoom:1,panX:0,panY:0,rotation:0,mode:'image'})}>Centrar imagen</button>
     </>}
-    <button type="button" disabled={!dirty} onClick={()=>void apply()}>Aplicar fondo</button>{dirty&&<button type="button" className="secondary" onClick={()=>{setDraft(value);setPrepared(null);setPreview(null);setDirty(false);setError('');setNotice('Ajustes descartados. El fondo guardado se conserva.')}}>Descartar ajustes</button>}</fieldset>
+    {image&&<button type="button" disabled={!dirty} onClick={()=>void apply()}>Aplicar fondo</button>}{dirty&&<button type="button" className="secondary" onClick={()=>{setDraft(value);setPrepared(null);setPreview(null);setDirty(false);setError('');setNotice('Ajustes descartados. El fondo guardado se conserva.')}}>Descartar ajustes</button>}</fieldset>
     <p role="status">{busy?'Preparando o guardando fondo…':notice}</p>{error&&<p role="alert">{error}</p>}
   </section>
 }

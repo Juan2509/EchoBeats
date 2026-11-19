@@ -5,11 +5,11 @@ import {fittedSize} from '../src/features/appearance/image.ts'
 
 test('tema neón y presets válidos conservan ajustes serializados sin modificar valores originales',()=>{
   for(const preset of Object.values(presets)){
-    const theme=decodeAppearance({...defaults,...preset,angle:240,grid:false,wallSurface:'album'})
+    const theme=decodeAppearance({...defaults,...preset,animateBackgrounds:false,grid:false,wallSurface:'album'})
     assert.deepEqual(decodeAppearance(JSON.parse(JSON.stringify(theme))),theme)
-    assert.equal(theme.angle,240);assert.equal(theme.wallSurface,'album');assert.equal(theme.grid,false)
+    assert.equal(theme.animateBackgrounds,false);assert.equal(theme.wallSurface,'album');assert.equal(theme.grid,false)
   }
-  assert.equal(defaults.angle,135);assert.equal(defaults.wallSurface,'scene')
+  assert.equal(defaults.animateBackgrounds,true);assert.equal(defaults.wallSurface,'scene')
 })
 
 test('preferencias corruptas o CSS/URLs arbitrarios no se convierten en estilos ni solicitudes externas',()=>{
@@ -28,8 +28,8 @@ test('el fondo solo admite recurso gestionado y permite quitarlo sin eliminar su
   const theme=decodeAppearance({...legacy,backgroundImage:url,skyTop:'#abcdef'})
   assert.equal(theme.skyTop,'#ABCDEF');assert.equal(theme.background.image,url)
   assert.equal(theme.background.mode,'image');assert.equal(cssVariables(theme)['--grid-opacity'],'0')
-  const changed=replaceBackground(theme,undefined,{...theme.background,mode:'vaporwave'})
-  assert.equal(changed.background.image,url);assert.equal(changed.background.mode,'vaporwave')
+  const changed=replaceBackground(theme,undefined,{...theme.background,mode:'city'})
+  assert.equal(changed.background.image,url);assert.equal(changed.background.mode,'city')
   assert.equal(theme.background.mode,'image')
 })
 
@@ -53,8 +53,8 @@ test('contornos migran preferencias antiguas y rechazan color/CSS/grosor o ident
   for(const thickness of [-1,'8',NaN])assert.equal(stickerOutlineFor(changeStickerOutline(defaults,albumA,stickerA,{thickness:thickness as number}),albumA,stickerA).thickness,2)
 })
 test('fondo de álbum independiente, herencia y retorno al principal sin afectar otros álbumes',()=>{
-  let a=replaceBackground(defaults,albumA,{...defaults.background,mode:'vaporwave',x:20,zoom:2})
-  assert.equal(backgroundFor(a,albumA).mode,'vaporwave');assert.deepEqual(backgroundFor(a,albumB),defaults.background)
+  let a=replaceBackground(defaults,albumA,{...defaults.background,mode:'city',x:20,zoom:2})
+  assert.equal(backgroundFor(a,albumA).mode,'city');assert.deepEqual(backgroundFor(a,albumB),defaults.background)
   a=replaceBackground(a,undefined,{...defaults.background,x:70})
   assert.equal(backgroundFor(a,albumA).x,20);assert.equal(backgroundFor(a,albumB).x,70)
   a=replaceBackground(a,albumA,null)
@@ -69,7 +69,7 @@ test('transparencia reversible por álbum conserva el resto de las preferencias'
 })
 test('encuadre malformado y claves no válidas no se conservan',()=>{
   assert.deepEqual(decodeWallpaper({mode:'image',image:'https://example.com/a.png',x:-1,y:101,zoom:Infinity}),defaults.background)
-  const a=decodeAppearance({...defaults,albumBackgrounds:{invalid:{mode:'vaporwave'}},wallSurfaces:{[albumA]:'transparent',invalid:'album'}})
+  const a=decodeAppearance({...defaults,albumBackgrounds:{invalid:{mode:'city'}},wallSurfaces:{[albumA]:'transparent',invalid:'album'}})
   assert.deepEqual(a.albumBackgrounds,{});assert.deepEqual(a.wallSurfaces,{})
 })
 test('preparación conserva proporciones sin ampliar imágenes pequeñas',()=>{
@@ -81,7 +81,7 @@ test('preparación conserva proporciones sin ampliar imágenes pequeñas',()=>{
 
 test('imagen del muro se guarda independiente del fondo del álbum y mantiene encuadre',()=>{
   const url='/api/v1/assets/12345678-1234-1234-1234-123456789abc/content'
-  const before=replaceBackground(defaults,albumA,{...defaults.background,mode:'vaporwave'})
+  const before=replaceBackground(defaults,albumA,{...defaults.background,mode:'city'})
   const a=replaceWallBackground(before,albumA,{...defaults.background,mode:'image',image:url,fit:'contain',x:15,y:80,zoom:1.7})
   assert.equal(wallSurfaceFor(a,albumA),'image');assert.equal(wallSurfaceFor(a,albumB),'scene')
   assert.deepEqual(a.albumBackgrounds,before.albumBackgrounds);assert.deepEqual(a.background,before.background)
@@ -108,6 +108,44 @@ test('eliminar imagen personalizada respeta ámbito, recursos compartidos y esti
   const album=removeCustomBackground(a,'album',albumA);assert.equal(album.albumBackgrounds[albumA].image,null);assert.deepEqual(album.background,a.background);assert.deepEqual(album.wallBackgrounds,a.wallBackgrounds)
   const wall=removeCustomBackground(a,'wall',albumA);assert.equal(wall.wallBackgrounds[albumA],undefined);assert.equal(wallSurfaceFor(wall,albumA),'scene');assert.deepEqual(wall.albumBackgrounds,a.albumBackgrounds)
   assert.deepEqual(removeCustomBackground(defaults,'main'),defaults)
-  const vapor=replaceBackground(defaults,undefined,{...image,mode:'vaporwave'});assert.equal(removeCustomBackground(vapor,'main').background.mode,'vaporwave')
+  const city=replaceBackground(defaults,undefined,{...image,mode:'city'});assert.equal(removeCustomBackground(city,'main').background.mode,'city')
   assert.equal(removeCustomBackground(defaults,'album',albumB),defaults)
+})
+
+test('los paisajes nuevos se conservan por álbum y respetan la animación desactivada',()=>{
+  const theme=decodeAppearance({...defaults,angle:40,animateBackgrounds:false,
+    background:{...defaults.background,mode:'city'},
+    albumBackgrounds:{[albumA]:{...defaults.background,mode:'aurora'}}})
+  assert.equal(theme.background.mode,'city')
+  assert.equal(backgroundFor(theme,albumA).mode,'aurora')
+  assert.equal(cssVariables(theme,albumA)['--grid-opacity'],'0')
+  assert.equal(decodeAppearance(JSON.parse(JSON.stringify(theme))).animateBackgrounds,false)
+  assert.equal('angle' in theme,false)
+  assert.equal(decodeWallpaper({mode:'constructor'}).mode,'synthwave')
+})
+
+test('los colores personalizados del cielo se aplican a todos los fondos',()=>{
+  const theme=decodeAppearance({...defaults,skyTop:'#134E4A',skyBottom:'#F5D0FE'})
+  const colors=cssVariables(theme)
+  for(const prefix of ['synth','city','aurora','winter','rain']){
+    assert.equal(colors[`--${prefix}-top` as keyof typeof colors],'#134E4A')
+    assert.equal(colors[`--${prefix}-bottom` as keyof typeof colors],'#F5D0FE')
+  }
+  assert.equal(colors['--landscape-tint-top'],'#134E4A')
+  assert.equal(colors['--landscape-tint-bottom'],'#F5D0FE')
+  assert.equal(cssVariables(defaults)['--landscape-tint-top'],'transparent')
+  assert.equal(cssVariables(defaults)['--city-top'],'#8B5A95')
+  assert.equal(cssVariables(defaults)['--aurora-top'],'#071837')
+})
+
+
+test('los fondos retirados pasan a Synthwave y conservan la imagen guardada',()=>{
+  const image='/api/v1/assets/12345678-1234-1234-1234-123456789abc/content'
+  for (const mode of ['vaporwave', 'ocean', 'lake']) {
+    const oldBackground={...defaults.background,mode,image,zoom:2}
+    const theme=decodeAppearance({...defaults,background:oldBackground,albumBackgrounds:{[albumA]:oldBackground}})
+    const expected={...oldBackground,mode:'synthwave'}
+    assert.deepEqual(theme.background,expected)
+    assert.deepEqual(backgroundFor(theme,albumA),expected)
+  }
 })

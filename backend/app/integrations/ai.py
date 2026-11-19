@@ -13,13 +13,13 @@ QUOTA_CODES = {'insufficient_quota', 'billing_hard_limit_reached', 'usage_limit_
     'credit_balance_exhausted', 'organization_spend_limit_exceeded',
     'project_spend_limit_exceeded', 'organization_usage_limit_exceeded'}
 MESSAGES = {
-    'local_model_missing': 'El modelo de conversación aún no está descargado en Ollama.',
-    'local_model_unavailable': 'No pude conectar con Ollama en este equipo.',
     'ai_disabled': 'La integración de IA está desactivada.',
     'ai_not_configured': 'Falta configurar la clave del proveedor en el servidor.',
     'ai_busy': 'Hay otra operación de IA en curso. Inténtalo después.',
     'ai_timeout': 'El proveedor no respondió a tiempo. No se repitió una llamada de resultado incierto.',
     'ai_authentication': 'El proveedor rechazó las credenciales o el acceso al modelo.',
+    'ai_invalid_key': 'OpenAI rechazó la clave API. Revisa la clave configurada en EchoBeats.',
+    'ai_model_access': 'OpenAI no permite usar el modelo configurado con este proyecto o clave.',
     'ai_quota': 'El proveedor informa de cuota o saldo insuficiente.',
     'ai_rate_limit': 'El proveedor alcanzó su límite temporal de solicitudes.',
     'ai_unavailable': 'El proveedor no está disponible. La biblioteca y el audio siguen accesibles.',
@@ -79,6 +79,8 @@ CHAT_INSTRUCTIONS = (
     'tienes experiencias personales y elige una obra, género o rasgo concreto con una razón, en lugar de repetir esa aclaración '
     'en cada mensaje. Si mencionan una obra concreta, úsala como punto de partida; si no la conoces, dilo. '
     'En reply escribe como en una charla entre personas, con un tono cercano y curioso. '
+    'En saludos, agradecimientos o respuestas como «bien, ¿y tú?», contesta al intercambio anterior '
+    'de forma breve y natural, sin proponer música salvo que el usuario la pida. '
     'Retoma lo que dijo, desarrolla una idea concreta y deja que la conversación avance a su ritmo. '
     'Evita repetir la petición, dar un saludo de plantilla o rematar cada respuesta con una pregunta. '
     'Si una pregunta aporta algo, haz solo una y vincúlala a lo que se estaba hablando. '
@@ -160,8 +162,10 @@ class OpenAIProvider:
         return f'openai:{self.settings.ai_embedding_model}:dimensions={self.settings.ai_embedding_dimensions}:float:v1'
 
     async def conversation_plan(self, context):
-        content=json.dumps(context,ensure_ascii=False)
-        checked_text(content,32000)
+        history = context['messages']
+        metadata = {key: value for key, value in context.items() if key != 'messages'}
+        content = [{'role': 'user', 'content': 'Contexto de EchoBeats: ' + json.dumps(metadata, ensure_ascii=False)}, *history]
+        checked_text(json.dumps(content, ensure_ascii=False), 32000)
         value=await self._post('/responses',{'model':self.settings.ai_generation_model,'store':False,
             'reasoning':{'effort':'low'},'max_output_tokens':2800,
             'instructions': CHAT_INSTRUCTIONS,
@@ -207,6 +211,11 @@ class OpenAIProvider:
                                 value = json.loads(raw)
                             except (ValueError, UnicodeError):
                                 raise AIError('ai_invalid_response' if response.is_success else 'ai_unavailable') from None
+                            if path == '/responses' and body.get('text', {}).get('format', {}).get('name') == 'music_conversation_plan':
+                                if response.status_code == 401:
+                                    raise AIError('ai_invalid_key')
+                                if response.status_code in {403, 404}:
+                                    raise AIError('ai_model_access')
                             if response.status_code in {401, 403, 404}:
                                 raise AIError('ai_authentication')
                             if response.status_code == 429:

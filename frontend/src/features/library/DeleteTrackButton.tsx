@@ -3,11 +3,20 @@ import {ConfirmDialog} from './ConfirmDialog'
 type DeleteProps={id:string;title:string;onDeleted?:()=>void}
 export function DeleteTrackButton(props:DeleteProps){return <DeleteCatalogButton {...props} kind="tracks"/>}
 export function DeleteAlbumButton(props:DeleteProps){return <DeleteCatalogButton {...props} kind="albums"/>}
+export function notifyAlbumDeleted(id: string, trackIds: string[]) {
+  window.dispatchEvent(new CustomEvent('echobeats:album-deleted', { detail: id }))
+  for (const trackId of trackIds) window.dispatchEvent(new CustomEvent('echobeats:track-deleted', { detail: trackId }))
+  window.dispatchEvent(new Event('echobeats:library-changed'))
+}
 function DeleteCatalogButton({id,title,onDeleted=()=>{},kind}:{id:string;title:string;onDeleted?:()=>void;kind:'tracks'|'albums'}){
   const album=kind==='albums',url=`/api/v1/${kind}/${id}`
   const [confirmation,setConfirmation]=useState<{message:string;resolve:(confirmed:boolean)=>void}|null>(null)
   const [busy,setBusy]=useState(false),[uncertain,setUncertain]=useState(false),[error,setError]=useState('')
-  function removed(ids:string[]=[]){if(album){window.dispatchEvent(new CustomEvent('echobeats:album-deleted',{detail:id}));for(const trackId of ids)window.dispatchEvent(new CustomEvent('echobeats:track-deleted',{detail:trackId}));window.dispatchEvent(new Event('echobeats:library-changed'))}else window.dispatchEvent(new CustomEvent('echobeats:track-deleted',{detail:id}));onDeleted()}
+  function removed(ids: string[] = []) {
+    if (album) notifyAlbumDeleted(id, ids)
+    else window.dispatchEvent(new CustomEvent('echobeats:track-deleted', { detail: id }))
+    onDeleted()
+  }
   async function act(){if(busy)return;setBusy(true);setError('');let sent=false
     try{const current=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(current.status===404){removed();return}if(!current.ok)throw Error('No se pudo consultar el elemento.');const data=await current.json(),etag=current.headers.get('etag');if(!etag||data.id!==id)throw Error('Recarga los datos antes de eliminar.')
       if(uncertain){setUncertain(false);setError('El elemento sigue en la biblioteca. Puedes volver a solicitar su eliminación.');return}

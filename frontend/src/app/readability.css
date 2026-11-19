@@ -20,7 +20,7 @@ body { color: var(--ink); }
 .workspace .skip-link { background: #151e30; color: #fff; border: 1px solid #d3f6ff; }
 .workspace input:is([type=range],[type=checkbox]), dialog input:is([type=range],[type=checkbox]) { accent-color: #ef98d0; }
 .workspace .site-header {
-  background: #151e30;
+  background: #151e30e8;
   border: 1px solid var(--read-edge);
   border-radius: 14px;
   padding: 14px 16px;
@@ -69,21 +69,26 @@ dialog :is(p,small,label,legend,output) { color: var(--ink-muted); }
 dialog button:not(.background-choice):not(.wall-swatch),
 .workspace .button-link,
 .workspace summary, dialog summary {
-  color: var(--ink); background: #202d45; border: 1px solid #9aaaca;
+  color: var(--ink); background: #202d45df; border: 1px solid #9aaaca;
   -webkit-text-fill-color: currentColor;
 }
 .workspace .site-header a[aria-current=page],
 .workspace button[aria-pressed=true]:not(.wall-object):not(.wall-swatch):not(.background-choice),
 dialog button[aria-pressed=true]:not(.background-choice):not(.wall-swatch) {
-  color: #fff; background: #3a496b; border-color: #c5edff;
+  color: #fff; background: #3a496bea; border-color: #c5edff;
   outline: 2px solid #b6e8ff; outline-offset: 2px;
 }
-.workspace .site-header .brand { color: #d3f6ff; }
+.workspace .site-header .brand,
+.workspace .site-header .brand:hover {
+  color: #d3f6ff;
+  background: transparent;
+  border-color: transparent;
+}
 .workspace .brand .mark { color: #ffd5f1; -webkit-text-fill-color: currentColor; }
 .workspace button:not(.wall-object):not(.wall-swatch):not(.background-choice):not(.wall-resize-handle):hover,
 dialog button:not(.wall-swatch):not(.background-choice):hover,
 .workspace .site-header a:hover, .workspace .button-link:hover,
-.workspace summary:hover, dialog summary:hover { color: #fff; background: #3a496b; border-color: #fff; }
+.workspace summary:hover, dialog summary:hover { color: #fff; background: #3a496bea; border-color: #fff; }
 .workspace button:disabled, dialog button:disabled { opacity: 1; color: #bbc5d8; background-color: #273044; cursor: not-allowed; }
 .workspace input:not([type=checkbox]):not([type=range]):not([type=color]),
 .workspace :is(textarea,select), dialog input:not([type=checkbox]):not([type=range]):not([type=color]),
@@ -236,14 +241,14 @@ dialog :is(a,button,summary,input,select,textarea):focus-visible { outline: 3px 
 
 /* Cristal suave: desenfoca lo que queda detrás, nunca el texto o los controles.
    Sin soporte de backdrop-filter se conservan las superficies opacas anteriores. */
-@supports ((backdrop-filter: blur(18px)) or (-webkit-backdrop-filter: blur(18px))) {
+@supports ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
   .workspace main > section:not(:has(.album-room)),
   .workspace :is(.album-sidebar,.player-bar,.import-panel,.metadata-editor,.playlist-editor,.playlist-create,.preference-comparison,.empty-state,.explore-result,.album-card),
   dialog:is(.appearance-dialog,.album-dialog,.description-dialog),
   .workspace .wall-tools-dialog {
     background: var(--glass-surface);
-    backdrop-filter: blur(18px) saturate(110%);
-    -webkit-backdrop-filter: blur(18px) saturate(110%);
+    backdrop-filter: blur(8px) saturate(110%);
+    -webkit-backdrop-filter: blur(8px) saturate(110%);
     border-color: #8a98b4;
   }
 }
@@ -342,6 +347,24 @@ html { scroll-padding-top: calc(var(--navigation-height, 84px) + 24px); }
 .chat-user p,.chat-assistant > p { white-space: pre-wrap; line-height: 1.7; margin: 8px 0; }
 .chat-assistant { background: #131d30; border: 1px solid #7886a4; border-radius: 4px 16px 16px; padding: 20px; }
 .chat-assistant > strong { color: #d3f6ff; }
+.chat-loading { margin-top: 10px; }
+.chat-loading-dots { display: inline-flex; align-items: center; gap: 6px; height: 16px; }
+.chat-loading-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--read-cyan);
+  animation: chat-loading-pulse 1.2s ease-in-out infinite;
+}
+.chat-loading-dots i:nth-child(2) { animation-delay: .15s; }
+.chat-loading-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes chat-loading-pulse {
+  0%, 65%, 100% { opacity: .45; transform: translateY(0); }
+  32% { opacity: 1; transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-loading-dots i { animation: none; }
+}
 .chat-recommendations { display: grid; gap: 14px; margin-top: 18px; }
 .chat-track { display: grid; grid-template-columns: 72px minmax(0,1fr); gap: 16px; background: #1c2940; border: 1px solid #7886a4; border-radius: 12px; padding: 16px; }
 .chat-track > .cover { width: 72px; height: 72px; }

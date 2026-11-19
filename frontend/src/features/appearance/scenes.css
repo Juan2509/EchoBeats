@@ -1,0 +1,155 @@
+.scene-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+.scene-art { position: absolute; inset: 0; overflow: hidden; container-type: size; }
+.scene-neon {
+  background:
+    radial-gradient(ellipse at 50% 65%, color-mix(in srgb, var(--neon-pink) 55%, transparent), transparent 76%),
+    radial-gradient(ellipse at 18% 36%, color-mix(in srgb, var(--neon-cyan) 34%, transparent), transparent 66%),
+    linear-gradient(180deg, transparent 8%, color-mix(in srgb, var(--sky-bottom) 68%, var(--neon-pink)));
+  opacity: 0;
+}
+.scene-neon[data-animated=true] { animation: scene-glow 18s ease-in-out infinite; }
+
+.scene-city {
+  background: repeating-linear-gradient(0deg, #180c2820 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, var(--city-top, #8b5a95),
+    color-mix(in srgb, var(--city-top, #8b5a95) 35%, var(--city-bottom, #f2a983)) 31%,
+    var(--city-bottom, #f2a983) 56%, #48244c 93%);
+}
+.scene-stars { position: absolute; inset: 0 0 36%; }
+.scene-stars i {
+  position: absolute;
+  width: var(--star-size);
+  height: var(--star-size);
+  background: #fff3e8;
+  opacity: var(--star-opacity);
+}
+.scene-city .scene-stars i:nth-child(4n) { background: #ffb89e; }
+.scene-city-sun {
+  position: absolute;
+  left: 51%; top: 36%;
+  width: clamp(42px, 15cqmin, 170px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: repeating-linear-gradient(0deg, #ffd2a4 0 5px, #ffead5 6px 11px);
+  border-radius: 50%;
+  box-shadow: 0 0 32px #ffad987d, 0 0 72px #ffd4a768;
+}
+.scene-skyline {
+  position: absolute;
+  display: flex;
+  align-items: end;
+  gap: .36cqw;
+  left: -1%; right: -1%;
+}
+.scene-skyline-0 { bottom: 19%; height: 54%; color: #9b527f; --window: #ffc498; --road: #794268; }
+.scene-skyline-1 { bottom: 9%; height: 49%; color: #613652; --window: #ec9b91; --road: #472d4d; }
+.scene-skyline-2 { bottom: 0; height: 34%; color: #20283e; --window: #ffd69d; --road: #172337; }
+.scene-skyline::after { content: ''; position: absolute; top: 100%; width: 100%; height: 22cqh; background: var(--road); }
+.scene-building {
+  position: relative;
+  flex: var(--building-width) 1 0;
+  height: var(--building-height);
+  background: linear-gradient(90deg, #090a1a28 17%, transparent 17%), currentColor;
+  --window-x: max(3px, .95cqw);
+  --window-y: max(4px, 1.32cqh);
+}
+.scene-building:nth-child(3n)::before {
+  content: ''; position: absolute; bottom: 100%; left: 22%; width: 43%; height: 8%; background: currentColor;
+}
+.scene-building::after {
+  content: ''; position: absolute; inset: max(2px, .8cqh) 15%;
+  background: var(--window);
+  mask-size: var(--window-x) 100%, 100% var(--window-y);
+  mask-repeat: repeat;
+  mask-image: linear-gradient(90deg, #000 47%, transparent 47%), linear-gradient(0deg, #000 42%, transparent 42%);
+  mask-composite: intersect;
+  opacity: .28;
+}
+.scene-building:nth-child(4n)::after { opacity: .12; }
+.scene-city[data-animated=true] .scene-building:nth-child(3n + 1)::after { animation: scene-windows 17s ease-in-out var(--light-delay) infinite; }
+.scene-rail {
+  position: absolute;
+  inset: auto 0 24%;
+  height: max(4px, 1.1cqh);
+  background: #252439;
+  border-top: 2px solid #743c5a;
+  box-shadow: 0 3px #151a2d;
+}
+.scene-rail::after {
+  content: ''; position: absolute; inset: 100% 0 auto; height: 8cqh;
+  background: repeating-linear-gradient(90deg, transparent 0 11cqw, #1e2338 11cqw 12cqw);
+}
+.scene-train {
+  position: absolute;
+  display: flex; gap: 2px;
+  bottom: 100%; left: 0;
+  translate: 33cqw;
+  width: clamp(44px, 33cqw, 520px);
+  height: max(4px, 2.6cqh);
+}
+.scene-train i { position: relative; flex: 1; background: linear-gradient(#493045 22%, #a44965 23% 71%, #4c2944 72%); border-radius: 2px 2px 0 0; }
+.scene-train i::before {
+  content: ''; position: absolute; inset: 25% 10% 42%;
+  background: repeating-linear-gradient(90deg, #ffe2af 0 14%, transparent 14% 22%);
+}
+.scene-train i:last-child { border-radius: 2px 8px 0 0; }
+.scene-train i:last-child::after { content: ''; position: absolute; right: 0; bottom: 19%; width: 6%; height: 15%; background: #fff4c1; box-shadow: 2px 0 8px #ffe9a9; }
+.scene-city[data-animated=true] .scene-train { animation: scene-train-pass 27s linear -8s infinite; }
+.scene-city[data-animated=true] .scene-stars { animation: scene-starlight-drift 74s ease-in-out infinite alternate; }
+
+.scene-aurora {
+  background: radial-gradient(ellipse at 63% 63%, #1c507b 0, transparent 65%),
+    linear-gradient(163deg, var(--aurora-top, #071837), var(--aurora-bottom, #102957) 57%, #28527c);
+}
+.scene-aurora .scene-stars { inset: 0 0 18%; }
+.scene-aurora .scene-stars i { border-radius: 50%; box-shadow: 0 0 4px #d3edff8c; }
+.scene-aurora-ribbon {
+  position: absolute;
+  inset: -35% -28% 17%;
+  border-radius: 50%;
+  background: repeating-linear-gradient(102deg, transparent 0 2.8%, var(--ribbon-light) 3.3%, transparent 5.9%),
+    linear-gradient(0deg, var(--ribbon-color), transparent 47%);
+  mask-image: radial-gradient(ellipse at 50% 36%, transparent 43%, #000 60%, transparent 74%);
+  filter: blur(clamp(2px, 1.35cqmin, 14px));
+  mix-blend-mode: screen;
+  transform: rotate(var(--tilt)) translateY(var(--rise));
+  opacity: var(--ribbon-opacity);
+}
+.scene-aurora-green { --tilt: -20deg; --rise: -7%; --ribbon-light: #45ffc092; --ribbon-color: #12f498; --ribbon-opacity: .85; }
+.scene-aurora-violet { --tilt: 21deg; --rise: 15%; --ribbon-light: #c498fa78; --ribbon-color: color-mix(in srgb, #bb6ec1 70%, var(--neon-pink)); --ribbon-opacity: .67; }
+.scene-aurora-cyan { --tilt: -22deg; --rise: -25%; --ribbon-light: #4ef4ed78; --ribbon-color: color-mix(in srgb, #039cb3 70%, var(--neon-cyan)); --ribbon-opacity: .68; }
+.scene-aurora[data-animated=true] .scene-aurora-ribbon { animation: scene-aurora-sway 24s ease-in-out infinite alternate; }
+.scene-aurora[data-animated=true] .scene-aurora-violet { animation-delay: -9s; }
+.scene-aurora[data-animated=true] .scene-aurora-cyan { animation-delay: -16s; }
+.scene-aurora-water {
+  position: absolute; inset: 83% 0 0;
+  background: repeating-linear-gradient(0deg, #12344848 0 1px, transparent 2px 6px),
+    linear-gradient(108deg, #0b1931 25%, #15576e 61%, #497393 78%, #1a857d);
+}
+.scene-aurora-mountains {
+  position: absolute; inset: 39% 0 9%;
+  background: repeating-linear-gradient(155deg, #425f7620 0 2%, transparent 3% 7%), linear-gradient(172deg, #192d48, #050e20 70%);
+  clip-path: polygon(0 0, 7% 10%, 14% 12%, 23% 28%, 31% 53%, 36% 65%, 43% 78%, 52% 83%, 61% 81%, 70% 86%, 79% 75%, 88% 81%, 94% 76%, 100% 80%, 100% 88%, 72% 90%, 48% 91%, 36% 98%, 0 100%);
+}
+.scene-aurora-shore {
+  position: absolute; inset: 88% 0 0;
+  background: linear-gradient(153deg, #111c2e, #213d4a);
+  clip-path: polygon(0 0, 24% 14%, 43% 43%, 76% 64%, 100% 89%, 100% 100%, 0 100%);
+}
+
+@keyframes scene-glow { 0%, 100% { opacity: .08; } 50% { opacity: .29; } }
+@keyframes scene-windows { 0%, 22%, 100% { opacity: .25; } 48%, 64% { opacity: .57; } 82% { opacity: .14; } }
+@keyframes scene-train-pass { 0% { translate: -100%; } 69%, 100% { translate: 103cqw; } }
+@keyframes scene-starlight-drift { to { translate: 3% -5%; } }
+@keyframes scene-aurora-sway {
+  to { transform: rotate(calc(var(--tilt) + 6deg)) translate(5%, calc(var(--rise) + 6%)) scaleY(1.12); opacity: calc(var(--ribbon-opacity) - .13); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-viewport [data-animated=true], .scene-viewport [data-animated=true] * { animation: none !important; }
+}

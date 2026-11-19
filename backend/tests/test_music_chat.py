@@ -66,11 +66,47 @@ async def test_chat_ai_plan_mock_quota_and_invalid_anchor(chat_client):
 
 async def test_conversation_adapter_structured_plan_no_store_or_tools():
     settings=Settings(_env_file=None,ai_enabled=True,openai_api_key='fake-test-only')
+    messages = [
+        {'role': 'user', 'content': 'Hola'},
+        {'role': 'assistant', 'content': '¿Cómo estás?'},
+        {'role': 'user', 'content': 'Bien, ¿y tú?'},
+    ]
     def handler(request):
         body=json.loads(request.content);assert body['reasoning']=={'effort':'low'};assert body['store'] is False;assert 'tools' not in body;assert body['text']['format']['type']=='json_schema'
+        assert body['input'][1:] == messages
         return httpx.Response(200,json={'status':'completed','model':settings.ai_generation_model,'usage':{'input_tokens':1},'output':[{'type':'message','content':[{'type':'output_text','text':json.dumps({'intent':'greeting','query':'','reference_id':None,'discovery':False,'reply':'Hablemos de música.','suggestions':[]})}]}]})
     provider=OpenAIProvider(settings,transport=httpx.MockTransport(handler))
-    assert (await provider.conversation_plan({'tracks':[],'messages':[{'role':'user','content':'hola'}]}))['intent']=='greeting'
+    assert (await provider.conversation_plan({'tracks':[],'messages':messages}))['intent']=='greeting'
+
+
+@pytest.mark.parametrize('status, code', [(401, 'ai_invalid_key'), (403, 'ai_model_access'), (404, 'ai_model_access')])
+async def test_openai_chat_distinguishes_key_and_model_access(status, code):
+    settings = Settings(_env_file=None, ai_enabled=True, openai_api_key='fake-test-only')
+    transport = httpx.MockTransport(lambda _: httpx.Response(status, json={'error': {}}))
+    provider = OpenAIProvider(settings, transport=transport)
+    with pytest.raises(AIError) as failure:
+        await provider.conversation_plan({'tracks': [], 'messages': [{'role': 'user', 'content': 'Hola'}]})
+    assert failure.value.code == code
+
+
+async def test_openai_handles_greetings_and_social_fallback(chat_client):
+    client, app = chat_client
+    app.state.settings.ai_enabled = True
+    app.state.settings.openai_api_key = SecretStr('fake-test-only')
+
+    class Fake:
+        async def conversation_plan(self, context):
+            if context['messages'][-1]['content'] != 'Hola':
+                raise AIError('ai_invalid_key')
+            return {'intent': 'greeting', 'query': '', 'reference_id': None,
+                    'discovery': False, 'reply': '¡Hola! Me alegra verte.', 'suggestions': []}
+
+    app.state.ai_provider = Fake()
+    greeting = (await post(client, 'Hola', use_ai=True)).json()
+    assert greeting['provider'] == 'openai' and greeting['reply'] == '¡Hola! Me alegra verte.'
+    fallback = (await post(client, 'Bien, ¿y tú?', use_ai=True)).json()
+    assert fallback['mode'] == 'local' and 'charlar' in fallback['reply']
+    assert 'clave API' in fallback['warnings'][0]
 
 async def test_local_followup_keeps_previous_request():
     context={'current':None,'reference':None,'favorites':[],'recent':[]}
@@ -158,35 +194,6 @@ async def test_local_identity_and_music_theme_stay_out_of_library_search(chat_cl
     assert 'dentro de tu biblioteca' in library['reply'] and not library['suggestions']
 
 
-async def test_local_model_has_priority_and_can_discuss_general_topics(chat_client):
-    from app.integrations.local_chat import MODEL, OllamaChat
-
-    client, app = chat_client
-    calls = []
-    reply = 'Si buscas un rompecabezas de plataformas con música electrónica, puedo partir de lo que te gusta de ese juego.'
-
-    def handler(request):
-        calls.append(request.url.path)
-        if request.url.path == '/api/tags':
-            return httpx.Response(200, json={'models': [{'name': MODEL}]})
-        body = json.loads(request.content)
-        assert body['model'] == MODEL and body['stream'] is False
-        assert 'tools' not in body
-        assert 'recommend' not in body['format']['properties']['intent']['enum']
-        messages = json.loads(body['messages'][1]['content'])['messages']
-        assert messages[-1]['content'] == 'Me gusta Mighty Switch Force'
-        result = {'intent': 'discuss', 'query': '', 'reference_id': None, 'discovery': False,
-                  'reply': reply, 'suggestions': []}
-        return httpx.Response(200, json={'done': True, 'message': {'content': json.dumps(result)}})
-
-    app.state.local_chat = OllamaChat(transport=httpx.MockTransport(handler))
-    state = (await client.get('/api/v1/explore/chat/status')).json()
-    assert state['local_ready'] and not state['cloud_ready']
-    data = (await post(client, 'Me gusta Mighty Switch Force', use_ai=True)).json()
-    assert data['provider'] == 'ollama' and data['reply'] == reply
-    assert calls == ['/api/tags', '/api/chat']
-
-
 async def test_named_soundtrack_discovery_uses_documented_reference(chat_client):
     client, _ = chat_client
     data = (await post(client, '¿Qué música se parece a Mighty Switch Force?')).json()
@@ -199,7 +206,7 @@ async def test_named_soundtrack_discovery_uses_documented_reference(chat_client)
 
 async def test_simple_greeting_and_game_exclusion_do_not_use_model(chat_client):
     client, _ = chat_client
-    greeting = (await post(client, '¡Hola!', use_ai=True)).json()
+    greeting = (await post(client, '¡Hola!')).json()
     assert greeting['provider'] is None and not greeting['warnings']
     messages = [
         {'role': 'user', 'content': 'Me gusta la música de Mighty Switch Force'},
@@ -230,34 +237,16 @@ async def test_style_clarification_keeps_the_exclusion_even_with_a_game_title(ch
         {'role': 'assistant', 'content': '¿Qué aspecto del sonido quieres conservar?'},
         {'role': 'user', 'content': 'El estilo de Mighty Switch Force'},
     ]
-    result = (await client.post('/api/v1/explore/chat', json={'messages': messages, 'use_ai': True,
-                                                            'provider': 'ollama'})).json()
+    result = (await client.post('/api/v1/explore/chat', json={'messages': messages, 'use_ai': True})).json()
     assert result['provider'] is None and not result['warnings']
     assert result['suggestions'][0]['artist'] == 'Justice'
 
 
-async def test_explicit_provider_routes_with_both_configured_and_does_not_fail_over(chat_client):
+async def test_chat_status_reports_only_openai_configuration(chat_client):
     client, app = chat_client
+    response = await client.get('/api/v1/explore/chat/status')
+    assert response.json() == {'cloud_enabled': False, 'cloud_ready': False}
     app.state.settings.ai_enabled = True
     app.state.settings.openai_api_key = SecretStr('fake-test-only')
-    calls = []
-
-    class Generator:
-        def __init__(self, name):
-            self.name = name
-
-        async def conversation_plan(self, context):
-            calls.append(self.name)
-            return {'intent': 'discuss', 'query': '', 'reference_id': None, 'discovery': False,
-                    'reply': 'Hablemos de música.', 'suggestions': []}
-
-    app.state.ai_provider = Generator('openai')
-    app.state.local_chat = Generator('ollama')
-    for provider in ('openai', 'ollama'):
-        result = (await post(client, 'Hablemos de música', use_ai=True, provider=provider)).json()
-        assert result['provider'] == provider
-
-    app.state.local_chat = None
-    result = (await post(client, 'Hablemos de música', use_ai=True, provider='ollama')).json()
-    assert result['provider'] is None and result['warnings']
-    assert calls == ['openai', 'ollama']
+    response = await client.get('/api/v1/explore/chat/status')
+    assert response.json() == {'cloud_enabled': True, 'cloud_ready': True}

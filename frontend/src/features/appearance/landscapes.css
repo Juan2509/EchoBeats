@@ -1,0 +1,92 @@
+.scene-winter { background: linear-gradient(var(--winter-top), var(--winter-bottom) 64%, #8096b9); }
+.scene-rain { background: linear-gradient(var(--rain-top), var(--rain-bottom) 64%, #151c38); }
+
+.landscape-artwork {
+  --landscape-ratio: 1.7768;
+  position: absolute;
+  width: max(100cqw, calc(100cqh * var(--landscape-ratio)));
+  height: max(100cqh, calc(100cqw / var(--landscape-ratio)));
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  isolation: isolate;
+}
+.landscape-artwork > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.landscape-palette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--landscape-tint-top), var(--landscape-tint-bottom) 46%, transparent 68%);
+  mix-blend-mode: color;
+  opacity: .8;
+}
+.scene-rain .landscape-palette {
+  background: linear-gradient(180deg, var(--landscape-tint-top) 16%, var(--landscape-tint-bottom) 52%, transparent 74%);
+  mask-image: radial-gradient(ellipse 43% 57% at 50% 36%, #000 72%, transparent);
+  opacity: .92;
+}
+
+.landscape-weather { position: absolute; inset: 0; overflow: hidden; }
+.landscape-weather i { position: absolute; opacity: var(--particle-opacity); }
+.scene-winter .landscape-weather i {
+  width: var(--particle-size);
+  height: var(--particle-size);
+  border-radius: 50%;
+  background: #f7faff;
+  box-shadow: 0 0 5px #e3f1ffa6;
+}
+.scene-winter[data-animated=true] .landscape-weather i {
+  animation: snow-drift calc(10s + var(--particle-depth) * 2s) linear var(--particle-phase) infinite;
+}
+
+.scene-rain .landscape-weather {
+  inset: 4% 14% 24%;
+  mask-image: linear-gradient(90deg, transparent 12%, #000 23% 48%, transparent 49% 53%, #000 54% 77%, transparent 88%);
+}
+.scene-rain .landscape-weather i {
+  width: 1px;
+  height: calc(1.25cqh + var(--particle-depth) * .6cqh);
+  background: linear-gradient(transparent, #c6e8ff);
+  rotate: 6deg;
+}
+.scene-rain[data-animated=true] .landscape-weather i {
+  animation: rain-streak calc(1.7s + var(--particle-depth) * .29s) linear var(--particle-phase) infinite;
+}
+.landscape-city-lights {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
+.landscape-city-lights i {
+  position: absolute;
+  width: .45%;
+  aspect-ratio: 1.3;
+  transform: translate(-50%, -50%);
+  border-radius: 1px;
+  background: #ffe2ae;
+  box-shadow: 0 0 4px #ffda9499;
+  opacity: 0;
+  animation: window-light 14s ease-in-out var(--light-phase) infinite;
+}
+.landscape-city-lights i:nth-child(3n) { background: #badafe; }
+
+@keyframes snow-drift {
+  0% { translate: -26px -48cqh; opacity: 0; }
+  15%, 84% { opacity: var(--particle-opacity); }
+  52% { translate: 9px 2cqh; }
+  100% { translate: 40px 57cqh; opacity: 0; }
+}
+@keyframes rain-streak {
+  0% { translate: 24px -40cqh; opacity: 0; }
+  15%, 85% { opacity: var(--particle-opacity); }
+  100% { translate: -23px 46cqh; opacity: 0; }
+}
+@keyframes window-light { 0%, 85%, 100% { opacity: .04; } 34%, 58% { opacity: .67; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .landscape-city-lights { display: none; }
+}

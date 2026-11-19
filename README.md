@@ -11,7 +11,7 @@ Reunir en un mismo espacio la biblioteca, la escucha y la exploración musical. 
 1. **Organiza tu biblioteca.** En **Biblioteca → Crear álbum**, elige un nombre y, si quieres, sube una portada. Importa archivos MP3, WAV PCM, FLAC u Ogg Vorbis/Opus y selecciona el álbum de destino. Si importas desde un álbum, el destino ya está fijado. EchoBeats lee las etiquetas compatibles y conserva los archivos originales.
 2. **Escucha y prepara playlists.** Reproduce desde un álbum, una búsqueda o una playlist. El reproductor mantiene su cola al navegar y ofrece pausa, anterior, siguiente, progreso, volumen, repetición y orden aleatorio. Puedes marcar canciones como favoritas.
 3. **Personaliza los álbumes.** En **Editar álbum y portada** puedes subir una imagen o elegir la portada propia de una canción del álbum. En **Editar pared** puedes decorar el muro con imágenes o GIF, moverlos, cambiar su tamaño y giro, y ordenar sus capas. **Configuración** reúne los ajustes de fondos, colores y estilo.
-4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda avanzada usa fichas musicales con un índice vigente. La IA es opcional y viene desactivada. La integración con OpenAI trabaja con texto, y su validación con el proveedor real sigue pendiente por créditos.
+4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda avanzada usa fichas musicales con un índice vigente. OpenAI procesa el chat cuando el servidor tiene `AI_ENABLED=true` y `OPENAI_API_KEY` configurados. La integración trabaja con texto y está desactivada en instalaciones nuevas.
 
 La interfaz usa React, TypeScript y Vite. FastAPI sirve el catálogo y los archivos de audio. PostgreSQL guarda la biblioteca, las playlists y los muros, y pgvector almacena los índices de búsqueda. Los medios se guardan en `data/media/` y las preferencias visuales se conservan en el navegador.
 
@@ -47,7 +47,11 @@ docker compose up --build -d --wait
 
 ### Abrir la aplicación
 
-Cuando termine el arranque, abre [EchoBeats](http://localhost:5173). También puedes consultar el [estado del backend](http://localhost:8000/api/v1/ready) y la [documentación de la API](http://localhost:8000/docs).
+Cuando termine el arranque, copia en el navegador la dirección que quieras abrir.
+
+- EchoBeats (`http://localhost:5173`)
+- Estado del backend (`http://localhost:8000/api/v1/ready`)
+- Documentación de la API (`http://localhost:8000/docs`)
 
 Docker inicia PostgreSQL, aplica las migraciones y levanta el backend y el frontend. El servicio `migrate` termina con código `0` después de actualizar el esquema.
 

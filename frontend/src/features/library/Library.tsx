@@ -1,3 +1,4 @@
+import { DeleteLibraryAlbums } from './DeleteLibraryAlbums'
 import { useEffect, useState } from 'react'
 import type { Album, Track } from '../../shared/api/metadata'
 import defaultCover from '../../shared/assets/default-cover.svg'
@@ -88,7 +89,7 @@ export function Library({ refresh, navigate, search, createAlbum }: { refresh: n
   }
   const result = useRead<Page<Album | Track>>(`/${view === 'albumes' ? 'albums' : view === 'favoritos' ? 'favorites' : 'tracks'}?${new URLSearchParams({ q: query, limit: '24', offset: String(offset), include_empty_system: 'false' })}`, refresh + (view === 'favoritos' ? favoritesRevision : 0), view !== 'playlists')
   return <section aria-labelledby="library-title">
-    <p className="eyebrow">Tus discos, tus recuerdos</p><h1 id="library-title">Mi biblioteca</h1><button type="button" onClick={createAlbum}>Crear álbum</button>
+    <p className="eyebrow">Tus discos, tus recuerdos</p><h1 id="library-title">Mi biblioteca</h1><div className="editor-actions"><button type="button" onClick={createAlbum}>Crear álbum</button><DeleteLibraryAlbums /></div>
     <p className="intro">Un espacio para toda la música que has hecho tuya.</p>
     <form className="search-form" role="search" onSubmit={event => { event.preventDefault(); move(view, draft.trim()) }}>
       <label htmlFor="library-query">Buscar por canción, artista, álbum o nombre de playlist</label>

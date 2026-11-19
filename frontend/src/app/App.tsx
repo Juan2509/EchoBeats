@@ -1,31 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
-import { getHealth } from '../shared/api/health'
 import { ImportPanel } from '../features/import/ImportPanel'
 import { MetadataEditor } from '../features/metadata/MetadataEditor'
 import { AlbumView, Library } from '../features/library/Library'
 import { PlayerBar, PlayerProvider } from '../features/player/Player'
 
 import { PlaylistView } from '../features/playlists/Playlists'
-import { AIStatus } from '../features/descriptions/AIStatus'
 import { ExploreView } from '../features/explore/ExploreView'
 import { FavoritesProvider } from '../features/favorites/Favorites'
 import { AppearanceProvider } from '../features/appearance/Appearance'
 import {SettingsPage} from '../features/appearance/SettingsPage'
 import {CreateAlbumDialog} from '../features/library/CreateAlbumDialog'
 
-type Connection = 'checking' | 'connected' | 'error'
 export function App() {
   const [location, setLocation] = useState(() => window.location.pathname + window.location.search)
-  const [connection, setConnection] = useState<Connection>('checking')
-  const [attempt, setAttempt] = useState(0)
   const [refresh, setRefresh] = useState(0)
   const [creatingAlbum,setCreatingAlbum]=useState(false)
   useEffect(()=>{const changed=()=>setRefresh(value=>value+1);window.addEventListener('echobeats:library-changed',changed);window.addEventListener('echobeats:track-deleted',changed);return()=>{window.removeEventListener('echobeats:library-changed',changed);window.removeEventListener('echobeats:track-deleted',changed)}},[])
   const [metadataActivated, setMetadataActivated] = useState(false)
+  const [exploreVisited, setExploreVisited] = useState(false)
   const [playlistDirty, setPlaylistDirty] = useState(false)
   const [wallDirty, setWallDirty] = useState(false)
   const heading = useRef<HTMLElement>(null)
   const path = location.split('?')[0]
+  const exploring = path === '/explorar'
+  useEffect(() => { if (exploring) setExploreVisited(true) }, [exploring])
   const search = location.includes('?') ? location.slice(location.indexOf('?')) : ''
   const album = /^\/albumes\/([0-9a-f-]{36})$/i.exec(path)
   const playlist = /^\/playlists\/([0-9a-f-]{36})$/i.exec(path)
@@ -66,17 +64,6 @@ export function App() {
     document.addEventListener('focusin', reveal)
     return () => document.removeEventListener('focusin', reveal)
   }, [])
-  useEffect(() => {
-    const controller = new AbortController()
-    let disposed = false
-    setConnection('checking')
-    const timeout = window.setTimeout(() => controller.abort(), 5000)
-    getHealth(controller.signal)
-      .then(() => { if (!disposed) setConnection('connected') })
-      .catch(() => { if (!disposed) setConnection('error') })
-      .finally(() => window.clearTimeout(timeout))
-    return () => { disposed = true; controller.abort(); window.clearTimeout(timeout) }
-  }, [attempt])
   const changed = () => setRefresh(value => value + 1)
   return <AppearanceProvider albumId={album?.[1]}><FavoritesProvider><PlayerProvider refresh={refresh}><div className="workspace" data-view={album?'album':'collection'}>
     <a className="skip-link" href="#content">Saltar al contenido</a>
@@ -89,8 +76,8 @@ export function App() {
       {path === '/biblioteca' && <Library refresh={refresh} navigate={navigate} search={search} createAlbum={()=>setCreatingAlbum(true)} />}
       {playlist && <PlaylistView key={playlist[1]} id={playlist[1]} navigate={navigate} onSaved={changed} onDirty={setPlaylistDirty} />}
       {album && <AlbumView key={album[1]} id={album[1]} refresh={refresh} navigate={navigate} onDirty={setWallDirty} />}
-      {path === '/explorar' && <ExploreView key={search} search={search} navigate={navigate} />}
-      {path==='/configuracion'&&<SettingsPage search={search} navigate={navigate}><p>MP3, WAV PCM, FLAC, Ogg Vorbis y Opus · hasta 50 MiB por archivo · 20 archivos y 200 MiB por solicitud.</p><p>Importar y editar etiquetas no envía tus canciones a servicios de IA.</p><p role="status">{connection==='connected'?'Servidor conectado':connection==='checking'?'Comprobando conexión…':'No se pudo conectar con el servidor'}</p><button onClick={()=>setAttempt(value=>value+1)}>Comprobar conexión</button><AIStatus/></SettingsPage>}
+      {(exploring || exploreVisited) && <ExploreView active={exploring} search={exploring ? search : ''} navigate={navigate} />}
+      {path==='/configuracion'&&<SettingsPage search={search} navigate={navigate}/>}
       {!['/', '/biblioteca', '/explorar','/configuracion'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
       <div hidden={path !== '/biblioteca'}>
         {path==='/biblioteca'&&<ImportPanel onImported={changed} />}
