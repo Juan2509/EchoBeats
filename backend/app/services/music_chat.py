@@ -242,7 +242,16 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
         data=None
         try:
             if plan['reference_id']:data=await run_in_threadpool(search.similar,engine,settings,UUID(plan['reference_id']),5,None,None,'discovery' if plan['discovery'] else 'favorites')
-            else:data=await search.search(engine,settings,provider,plan['query'] or messages[-1]['content'],'hybrid' if used_ai else 'lexical',5,preferences='discovery' if plan['discovery'] else 'favorites')
+            else:
+                query=plan['query'] or messages[-1]['content']
+                preference_mode='discovery' if plan['discovery'] else 'favorites'
+                if used_ai:
+                    try:
+                        data=await search.search(engine,settings,provider,query,'hybrid',5,preferences=preference_mode)
+                    except AIError:
+                        warnings.append('La búsqueda vectorial no estuvo disponible. Busqué coincidencias por texto en las fichas.')
+                if not data or not data['results']:
+                    data=await search.search(engine,settings,provider,query,'lexical',5,preferences=preference_mode)
             for item in (data or {}).get('results',[]):
                 if item['track']['id'] in exclude:continue
                 saved=exploration.recorded(item)

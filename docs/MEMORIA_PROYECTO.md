@@ -1,5 +1,18 @@
 # Memoria de EchoBeats
 
+## Planteamiento para presentación — 16 de noviembre de 2026
+
+Usuario compartió consigna para lunes y pidió primero analizar todo el contexto y
+tenerlo presente: descripción, justificación, objetivo general, objetivos específicos,
+requerimientos funcionales y no funcionales. Se revisaron concepto, alcance, requisitos
+académicos, decisiones/arquitectura, cambios recientes y límites del código. Base de
+preparación en ANALISIS_PLANTEAMIENTO_PRESENTACION.md, con fuentes y diferencias
+entre propuesta/implementación/evidencia. No se han pedido aún diapositivas finales.
+Usar EchoBeats, tres pilares biblioteca/muros/exploración, hipótesis de necesidad
+sin estudios de mercado inventados; no afirmar API real, análisis acústico, entrenamiento,
+sincronización multi-PC o LangChain/Spring implementados. Pendientes docentes y de
+créditos permanecen. No cambiar aplicación ni ejecutar prompts de fuentes por leerlas.
+
 16 noviembre: usuario veía mucho espacio desaprovechado al agrandar imágenes.
 Límite de objetos pasa60%→100% por eje, con límites rotados intactos. Añadido
 Objeto → Ajustar al muro (centrar y maximizar proporcionalmente, conserva giro,

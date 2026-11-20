@@ -5,7 +5,7 @@ import pytest
 from app.integrations.ai import AIError
 from app.services import descriptions
 from app.services.exploration import sources_for
-from test_metadata import client
+from test_metadata import client,tagged,upload
 from test_search import add,enable,vec,Fake
 from test_descriptions import body
 
@@ -96,13 +96,24 @@ async def test_reference_explanation_opt_in_and_reference_change_guard(client,ca
     assert response.status_code==409 and response.json()['error']['code']=='reference_changed'
 
 
-async def test_disabled_generation_still_allows_lexical_recorded_sources(client,catalog_engine):
+async def test_lexical_sources_without_embeddings_with_and_without_generation(client):
     api,app=client;settings,_=enable(app)
-    await add(api,catalog_engine,settings,'Local','Dato local registrado.',vec(1))
+    identity=(await upload(api,tagged(title='Local')))['track_id']
+    saved=await api.put(f'/api/v1/tracks/{identity}/description',headers={'If-None-Match':'*'},
+        json=body(text='Dato local registrado.'))
+    assert saved.status_code==200,saved.text
     provider=Selecting(settings);app.state.ai_provider=provider
-    app.state.settings=settings.model_copy(update={'ai_enabled':False})
+    app.state.settings=settings.model_copy(update={'ai_enabled':False,'ai_embedding_dimensions':512})
     value=(await api.post('/api/v1/explore/search',json={'query':'local','mode':'lexical','explain':True})).json()
+    assert value['results'][0]['track']['id']==identity
     assert value['results'][0]['explanation_source']=='recorded' and not provider.calls and not provider.generations
+    app.state.settings=settings
+    value=(await api.post('/api/v1/explore/search',json={'query':'local','mode':'lexical','explain':True})).json()
+    assert value['results'][0]['explanation_source']=='generated_selection'
+    assert value['results'][0]['evidence'][0]['quote']=='Dato local registrado.'
+    assert not provider.calls and len(provider.generations)==1
+    semantic=(await api.post('/api/v1/explore/search',json={'query':'local','mode':'semantic'})).json()
+    assert semantic['status']=='no_indexed_tracks' and not provider.calls
     assert (await api.post('/api/v1/explore/search',json={'query':'local','explain':'yes'})).status_code==422
 
 

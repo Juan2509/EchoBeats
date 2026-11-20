@@ -26,16 +26,21 @@ def track_filters(connection, album_id, playlist_id, exclude=None, preferences='
     return conditions
 
 
-def eligible(settings, conditions=()):
+def eligible(settings, conditions=(), *, require_embedding=True):
     derived=or_(description.c.source=='metadata',description.c.features.contains([{'source':'metadata'}]))
     basis=revision.c.snapshot['input_track_revision'].astext
-    return select(track.c.id.label('track_id'),description.c.id.label('description_id'),description.c.version,
-        description.c.content_hash,description.c.text,description.c.features,description.c.source,description.c.source_details,
-        embedding.c.id.label('embedding_id')).select_from(track.join(description,description.c.track_id==track.c.id)
+    statement = select(track.c.id.label('track_id'),description.c.id.label('description_id'),description.c.version,
+        description.c.content_hash,description.c.text,description.c.features,description.c.source,description.c.source_details
+    ).select_from(track.join(description,description.c.track_id==track.c.id)
         .join(revision,(revision.c.description_id==description.c.id)&(revision.c.version==description.c.version))
-        .join(embedding,(embedding.c.description_id==description.c.id)&(embedding.c.description_version==description.c.version)&(embedding.c.content_hash==description.c.content_hash)))\
-        .where(track.c.deleted_at.is_(None),embedding.c.model_key==indexing.model_key(settings),embedding.c.input_format==indexing.INPUT_FORMAT,
-               func.length(func.trim(description.c.text))>0,or_(not_(derived),basis==cast(track.c.revision,Text)),*conditions)
+    ).where(track.c.deleted_at.is_(None),func.length(func.trim(description.c.text))>0,
+            or_(not_(derived),basis==cast(track.c.revision,Text)),*conditions)
+    if require_embedding:
+        statement = statement.join(embedding,
+            (embedding.c.description_id==description.c.id)&(embedding.c.description_version==description.c.version)&
+            (embedding.c.content_hash==description.c.content_hash)
+        ).where(embedding.c.model_key==indexing.model_key(settings),embedding.c.input_format==indexing.INPUT_FORMAT)
+    return statement
 
 
 def envelope(settings, query, mode, limit, status, reason=None, **extra):
@@ -46,14 +51,17 @@ def envelope(settings, query, mode, limit, status, reason=None, **extra):
 
 
 def preflight(engine, settings, query, mode, limit, album_id, playlist_id, preferences='off'):
-    indexing.configured(settings)
+    if mode != 'lexical':
+        indexing.configured(settings)
     with engine.connect() as connection:
         filters=track_filters(connection,album_id,playlist_id,preferences=preferences)
         if not connection.scalar(select(func.count()).select_from(track)):
             return envelope(settings,query,mode,limit,'no_library')
         if not connection.scalar(select(func.count()).select_from(track).where(*filters)):
             return envelope(settings,query,mode,limit,'no_matches','empty_filter')
-        if not connection.scalar(select(func.count()).select_from(eligible(settings,filters).subquery())):
+        if not connection.scalar(select(func.count()).select_from(eligible(settings,filters,require_embedding=mode!='lexical').subquery())):
+            if mode == 'lexical':
+                return envelope(settings,query,mode,limit,'no_matches','no_current_descriptions')
             return envelope(settings,query,mode,limit,'no_indexed_tracks')
     return None
 
@@ -67,7 +75,7 @@ def lexical_score(query):
 
 
 def ranked(connection, settings, conditions, query, mode, vector, limit):
-    base=eligible(settings,conditions)
+    base=eligible(settings,conditions,require_embedding=mode!='lexical')
     distance=embedding.c.embedding.op('<=>',return_type=Float)(bindparam('query_vector',type_=Vector1536())) if vector is not None else None
     parameters={'query_vector':vector} if vector is not None else {}
     if distance is not None and settings.search_max_cosine_distance is not None:

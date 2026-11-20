@@ -8,6 +8,8 @@ from app.config import Settings
 from app.main import create_app
 from app.integrations.ai import OpenAIProvider,AIError
 from app.services.music_chat import local_plan
+from test_descriptions import body
+from test_metadata import tagged,upload
 
 pytestmark=[pytest.mark.integration,pytest.mark.anyio]
 
@@ -63,6 +65,34 @@ async def test_chat_ai_plan_mock_quota_and_invalid_anchor(chat_client):
     fake.result=AIError('ai_quota');data=(await post(c,'Hablemos de trip hop',use_ai=True)).json();assert data['mode']=='local';assert data['warnings'];assert fake.calls==2
     fake.result={'intent':'recommend','query':'','reference_id':str(uuid4()),'discovery':False,'reply':'Hablemos de música.','suggestions':[]}
     assert (await post(c,'Hablemos de trip hop',use_ai=True)).json()['mode']=='local';assert fake.calls==3
+
+
+async def test_chat_uses_cited_lexical_fiches_before_catalog_fallback(chat_client):
+    api,app=chat_client
+    identity=(await upload(api,tagged(title='Pista de prueba')))['track_id']
+    description='Grabación con timbales.'
+    saved=await api.put(f'/api/v1/tracks/{identity}/description',headers={'If-None-Match':'*'},
+        json=body(text=description))
+    assert saved.status_code==200,saved.text
+    app.state.settings.ai_enabled=True
+    app.state.settings.openai_api_key=SecretStr('fake-test-only')
+
+    class Planner:
+        async def conversation_plan(self,context):
+            return {'intent':'recommend','query':'timbales','reference_id':None,
+                    'discovery':False,'reply':'Busco en tus fichas.','suggestions':[]}
+
+        async def embed(self,query):
+            raise AssertionError('El índice vacío no debe consumir un embedding de consulta')
+
+    app.state.ai_provider=Planner()
+    result=await post(api,'Busca timbales en mi biblioteca',use_ai=True)
+    assert result.status_code==200,result.text
+    data=result.json()
+    assert data['mode']=='ai'
+    recommendation,=data['recommendations']
+    assert recommendation['track']['id']==identity
+    assert recommendation['evidence'][0]['quote']==description
 
 async def test_conversation_adapter_structured_plan_no_store_or_tools():
     settings=Settings(_env_file=None,ai_enabled=True,openai_api_key='fake-test-only')

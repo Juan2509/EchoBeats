@@ -34,9 +34,10 @@ campos adicionales/modelos suministrados por cliente se rechazan con 422.
 
 semantic/hybrid generan un único embedding de la consulta con el adaptador P20:
 se envía ese texto, no audios ni fichas. Requieren proveedor habilitado/configurado
-y créditos. lexical no consume API; compara solo el mismo subconjunto con vector
-vigente para que el baseline y el híbrido sean comparables. La biblioteca textual
-ordinaria de P08 sigue siendo independiente y también encuentra pistas sin índice.
+y créditos. La recuperación lexical puede buscar cualquier ficha vigente, incluso
+sin vector, y no consume API. Para comparar el ranking lexical con el híbrido en
+una evaluación controlada, indexar todas las fichas del corpus de comparación.
+La búsqueda de Biblioteca también encuentra pistas que todavía carecen de ficha.
 
 GET /api/v1/tracks/{id}/similar?limit=3 usa el vector almacenado de una pista,
 excluye esa pista y no genera embedding nuevo. Admite los mismos filtros de álbum

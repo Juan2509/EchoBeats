@@ -18,6 +18,9 @@ __pycache__/
 htmlcov/
 *.egg-info/
 
+# Java
+/backend-java/target/
+
 # Frontend
 node_modules/
 dist/

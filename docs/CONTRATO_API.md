@@ -342,8 +342,10 @@ RF-14/CA-11 real y validación de pertinencia siguen pendientes por petición de
 P22 efectivo: POST /explore/search con query, limit (5 por defecto, 1–20), mode
 semantic/lexical/hybrid (hybrid por defecto), album_id/playlist_id opcionales.
 GET /tracks/{id}/similar con limit/filtros usa vector de referencia sin llamada
-externa y excluye la referencia. Todos los resultados se limitan a versiones,
-hashes/modelo/receta elegibles. reference_not_indexed es 409.
+externa y excluye la referencia. Los modos vectoriales se limitan a versiones,
+hashes/modelo/receta elegibles. El modo lexical busca fichas vigentes incluso sin
+vector y devuelve no_matches con razón no_current_descriptions cuando el filtro
+carece de fichas elegibles. reference_not_indexed es 409.
 Respuesta: query/mode/limit/status/reason/model_key/results/distance_limit,
 relevance=candidates_only, warnings y query_usage cuando procede. Resultados
 incluyen track/description/evidence, distance, fusion_score, semantic_rank,

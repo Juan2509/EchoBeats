@@ -73,8 +73,9 @@ Sin IA se reconocen saludos con puntuación y fórmulas como «hola que tal»,
 agradecimientos y preguntas sobre gustos. Las peticiones reconocibles de charla
 general reciben una pregunta breve. El modo local reconoce la música de
 videojuegos y retoma ese tema ante una aclaración. Estas respuestas no consultan
-el catálogo. Se usa
-la recuperación textual/similares local cuando hay índice vigente. Sin resultados,
+el catálogo. Para recomendaciones de la biblioteca se consultan fichas vigentes
+por texto si la búsqueda híbrida no produce candidatos o falla el proveedor.
+La búsqueda por referencia usa el vector vigente de la pista. Sin resultados,
 se examinan hasta500 pistas elegibles, priorizando referencias del contexto antes
 de las incorporaciones recientes: coincidencias de palabras, favoritos y álbumes
 del contexto. Descubrimiento excluye favoritos; referencia excluye su propia pista.

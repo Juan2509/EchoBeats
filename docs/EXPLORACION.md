@@ -17,8 +17,9 @@ música». La vista arranca en **Textual** y sin selección de citas con IA. Abr
 cambiar filtros o abrir una referencia no inicia búsqueda, reproducción ni llamadas
 de proveedor. Solo carga opciones y, cuando procede, el nombre de referencia local.
 
-Textual usa el índice vigente sin API; semántica/híbrida envían la consulta de
-texto a OpenAI. «Seleccionar citas con IA» es una opción aparte, desmarcada por
+Textual consulta fichas vigentes sin necesitar un vector ni llamar al proveedor.
+Semántica e híbrida requieren vectores vigentes y envían la consulta de texto a
+OpenAI. «Seleccionar citas con IA» es una opción aparte, desmarcada por
 defecto: puede enviar extractos de hasta cinco fichas y consumir créditos. No envía
 audio. IA desactivada o sin cuota no impide acceder a biblioteca/reproductor.
 La prueba real sigue pendiente por instrucción del usuario; P23 no la reanuda.

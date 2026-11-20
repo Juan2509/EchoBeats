@@ -35,7 +35,9 @@ def current_results(engine,settings,data,album_id,playlist_id):
         preference_mode=data.get('preferences',{}).get('mode','off')
         filters=search.track_filters(connection,album_id,playlist_id,exclude=data.get('reference_track_id'),preferences=preference_mode)
         ids=[item['track']['id'] for item in data['results']]
-        rows=connection.execute(search.eligible(settings,[*filters,track.c.id.in_(ids)])).all()
+        rows=connection.execute(search.eligible(
+            settings,[*filters,track.c.id.in_(ids)],require_embedding=data['mode']!='lexical'
+        )).all()
         valid={(str(row.track_id),str(row.description_id),row.version,row.content_hash) for row in rows}
         results=[]
         for item in data['results']:

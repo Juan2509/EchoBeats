@@ -1,5 +1,13 @@
 # EchoBeats: contexto del proyecto
 
+Consigna de presentación recibida: descripción, justificación, objetivo general,
+objetivos específicos, RF y RNF, para lunes sin fecha exacta. Usuario pidió primero
+analizar y conservar contexto. Leer docs/ANALISIS_PLANTEAMIENTO_PRESENTACION.md antes
+de preparar material. No hay diapositivas finales aún. Separar planteamiento y estado
+real: API/evaluación pendientes por créditos; nada de análisis acústico o entrenamiento
+automático demostrado, sincronización multi-PC ni stack docente asumido. Concepto
+Dream Radio es histórico; nombre definitivo EchoBeats. No modificar app por esta revisión.
+
 Última ampliación: objetos del muro hasta1.0 por eje, antes0.60.0011_wall_full_size
 aplicada con backup privado y huellas wall/elements sin cambios. Mínimo0.03 y límites
 rotados siguen; downgrade rechaza grandes sin recortar. Objeto → Ajustar al muro
