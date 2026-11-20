@@ -55,6 +55,11 @@ Cuando termine el arranque, copia en el navegador la dirección que quieras abri
 
 Docker inicia PostgreSQL, aplica las migraciones y levanta Spring Boot, FastAPI y el frontend. El puerto de la API conserva las URLs existentes y distribuye por método y ruta. `/api/v1/ready` verifica PostgreSQL, pgvector, el esquema y la disponibilidad de FastAPI desde Spring Boot. El servicio `migrate` termina con código `0` después de actualizar el esquema.
 
+### Acceso remoto
+
+Para publicar EchoBeats por HTTPS en un VPS Linux, usa el modo remoto
+con Caddy y un proyecto aislado por cuenta. [Guía de acceso remoto](docs/ACCESO_REMOTO.md).
+
 ### Buscar canciones por sonido
 
 Importa al menos dos canciones. El trabajador local analiza en segundo plano

@@ -1,0 +1,29 @@
+# Args: hostname, username, bcrypt hash, local HTTP port.
+(echobeats_account) {
+	{args[0]} {
+		@foreignWrite {
+			not method GET HEAD OPTIONS
+			not header Origin https://{args[0]}
+		}
+		route {
+			header {
+				Strict-Transport-Security "max-age=31536000"
+				X-Content-Type-Options nosniff
+				X-Frame-Options DENY
+				Referrer-Policy no-referrer
+				Cross-Origin-Resource-Policy same-origin
+				>Cache-Control "private, no-store"
+			}
+			basic_auth bcrypt EchoBeats {
+				{args[1]} {args[2]}
+			}
+			respond @foreignWrite "Origen no permitido." 403
+			request_body {
+				max_size 220MB
+			}
+			reverse_proxy 127.0.0.1:{args[3]} {
+				header_up -Authorization
+			}
+		}
+	}
+}

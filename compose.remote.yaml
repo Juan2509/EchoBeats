@@ -1,0 +1,47 @@
+# Use with compose.yaml and a unique project name per account.
+services:
+  postgres:
+    ports: !reset []
+    restart: unless-stopped
+
+  migrate:
+    env_file: !override
+      - ${REMOTE_ENV_FILE:?Indica la ruta absoluta del archivo privado de la cuenta}
+    volumes: !reset []
+
+  backend:
+    env_file: !override
+      - ${REMOTE_ENV_FILE:?Indica la ruta absoluta del archivo privado de la cuenta}
+    environment:
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend,${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
+      ALLOWED_ORIGINS: https://${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes: !override
+      - remote_media:/app/data/media
+    restart: unless-stopped
+
+  backend-java:
+    environment:
+      ALLOWED_ORIGINS: https://${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
+    volumes: !override
+      - remote_media:/app/data/media:ro
+    restart: unless-stopped
+
+  gateway:
+    ports: !reset []
+    volumes: !override
+      - ./gateway/api.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+
+  frontend:
+    build:
+      dockerfile: deploy/remote/Dockerfile
+    environment: !override
+      REMOTE_DOMAIN: ${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
+    ports: !override
+      - "127.0.0.1:${REMOTE_HTTP_PORT:?Indica un puerto local distinto por cuenta}:8080"
+    volumes: !reset []
+    restart: unless-stopped
+
+volumes:
+  remote_media:
