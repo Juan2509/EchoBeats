@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react'
 import {AdvancedExploreView} from './AdvancedExploreView'
+import { AudioSimilarity } from './AudioSimilarity'
 import {decodeChat,conversationMessages} from './chat'
 import type {ChatTurn} from './chat'
 import {usePlayer} from '../player/Player'
@@ -69,6 +70,7 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
     </div>
     <p className="note">{checking?'Comprobando la configuración de OpenAI…':statusFailed?'No pude comprobar la configuración de OpenAI. Puedes usar el modo básico.':useAI?'Al enviar, OpenAI recibe tu mensaje, el historial reciente de este chat y el contexto musical. Puede consumir créditos.':'El modo básico responde con ejemplos y búsqueda local.'}</p>
     {referenceId&&<p className="chat-reference">{!valid?'La referencia no es válida.':reference.loading?'Cargando referencia…':reference.error?'No pude cargar la referencia.':`Tomaré como punto de partida «${reference.data?.title}».`} <a href="/explorar" onClick={e=>{e.preventDefault();navigate('/explorar')}}>Quitar referencia</a></p>}
+    {valid && reference.data && <AudioSimilarity key={reference.data.id} track={reference.data} />}
     {!turns.length&&<div className="chat-welcome"><p>Puedes hablarme con tus palabras.</p><div className="chat-suggestions">{['¿Qué distingue al trip hop del downtempo?','Me gustan los discos que cuentan una historia','Recomiéndame algo que aún no conozca'].map(text=><button type="button" className="secondary" key={text} onClick={()=>setQuery(text)}>{text}</button>)}</div><p className="note">Los corazones me orientan. Las reproducciones recientes se usan solo durante esta sesión; no escucho ni envío tus archivos de audio.</p></div>}
     <div ref={conversation} className="chat-conversation" aria-live="polite">{turns.map((turn,index)=><article className="chat-turn" key={index}><div className="chat-user"><strong>Tú</strong><p>{turn.question}</p></div>{busy&&index===turns.length-1&&!turn.answer&&!turn.error&&<div className="chat-assistant">
       <strong>EchoBeats</strong>

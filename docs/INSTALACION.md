@@ -43,7 +43,7 @@ http://localhost:8000/api/v1/ready. El proxy se comprueba con
 http://localhost:5173/api/v1/health. Postgres solo publica 127.0.0.1:5433.
 Los tres puertos se pueden cambiar según CONFIGURACION.md, con orígenes coherentes.
 
-Orden: postgres healthy → migrate finaliza 0 → backend ready → frontend.
+Orden: PostgreSQL disponible → migraciones completas → FastAPI → Spring Boot → gateway → frontend.
 `migrate Exited (0)` es correcto. Ready acredita BD, extensión y revisión de esquema,
 no éxito de OpenAI ni calidad de resultados. AI_ENABLED=false no impide biblioteca,
 edición, reproducción, muro o fichas manuales.

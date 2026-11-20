@@ -11,9 +11,9 @@ Reunir en un mismo espacio la biblioteca, la escucha y la exploración musical. 
 1. **Organiza tu biblioteca.** En **Biblioteca → Crear álbum**, elige un nombre y, si quieres, sube una portada. Importa archivos MP3, WAV PCM, FLAC u Ogg Vorbis/Opus y selecciona el álbum de destino. Si importas desde un álbum, el destino ya está fijado. EchoBeats lee las etiquetas compatibles y conserva los archivos originales.
 2. **Escucha y prepara playlists.** Reproduce desde un álbum, una búsqueda o una playlist. El reproductor mantiene su cola al navegar y ofrece pausa, anterior, siguiente, progreso, volumen, repetición y orden aleatorio. Puedes marcar canciones como favoritas.
 3. **Personaliza los álbumes.** En **Editar álbum y portada** puedes subir una imagen o elegir la portada propia de una canción del álbum. En **Editar pared** puedes decorar el muro con imágenes o GIF, moverlos, cambiar su tamaño y giro, y ordenar sus capas. **Configuración** reúne los ajustes de fondos, colores y estilo.
-4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda textual avanzada consulta fichas vigentes; los modos semántico e híbrido requieren un índice vectorial vigente y un proveedor habilitado. OpenAI procesa el chat cuando el servidor tiene `AI_ENABLED=true` y `OPENAI_API_KEY` configurados. La integración trabaja con texto y está desactivada en instalaciones nuevas.
+4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda textual avanzada consulta fichas vigentes; los modos semántico e híbrido requieren un índice vectorial vigente y un proveedor habilitado. OpenAI procesa el chat cuando el servidor tiene `AI_ENABLED=true` y `OPENAI_API_KEY` configurados. La integración con OpenAI trabaja con texto y está desactivada en instalaciones nuevas. Desde una pista también puedes buscar canciones por sonido mediante el índice acústico local.
 
-La interfaz usa React, TypeScript y Vite. FastAPI sirve el catálogo y los archivos de audio. PostgreSQL guarda la biblioteca, las playlists y los muros, y pgvector almacena los índices de búsqueda. Los medios se guardan en `data/media/` y las preferencias visuales se conservan en el navegador.
+La interfaz usa React, TypeScript y Vite. En Docker Compose, Spring Boot sirve las consultas del catálogo, audio e imágenes, favoritos, playlists y muros. FastAPI atiende la importación, la edición de pistas y álbumes, la indexación y la exploración. PostgreSQL guarda la biblioteca, las playlists y los muros, y pgvector almacena los índices de búsqueda. Los medios se guardan en `data/media/` y las preferencias visuales se conservan en el navegador.
 
 ## Ejecutar EchoBeats
 
@@ -51,9 +51,28 @@ Cuando termine el arranque, copia en el navegador la dirección que quieras abri
 
 - EchoBeats (`http://localhost:5173`)
 - Estado del backend (`http://localhost:8000/api/v1/ready`)
-- Documentación de la API (`http://localhost:8000/docs`)
+- Referencia del contrato HTTP (`http://localhost:8000/docs`)
 
-Docker inicia PostgreSQL, aplica las migraciones y levanta el backend y el frontend. El servicio `migrate` termina con código `0` después de actualizar el esquema.
+Docker inicia PostgreSQL, aplica las migraciones y levanta Spring Boot, FastAPI y el frontend. El puerto de la API conserva las URLs existentes y distribuye por método y ruta. `/api/v1/ready` verifica PostgreSQL, pgvector, el esquema y la disponibilidad de FastAPI desde Spring Boot. El servicio `migrate` termina con código `0` después de actualizar el esquema.
+
+### Buscar canciones por sonido
+
+Importa al menos dos canciones. El trabajador local analiza en segundo plano
+las pistas importadas y las que ya estaban en la biblioteca sin un vector vigente.
+En **Biblioteca** o en un álbum, abre **Buscar similares** para una canción. En
+**Explorar** verás su estado y podrás pulsar **Buscar canciones por sonido** cuando esté
+lista. Si el análisis falla, puedes reintentarlo desde la misma pantalla.
+
+El análisis usa hasta los primeros 30 segundos de cada pista, calcula un
+embedding acústico de 26 dimensiones y lo guarda en PostgreSQL con pgvector.
+La búsqueda compara por distancia coseno. Se ejecuta localmente con FFmpeg y usa
+características del espectro y la intensidad. Los resultados son candidatos acústicos
+y dependen de lo que se escucha al comienzo de cada pista.
+
+La importación y la reproducción pueden continuar durante el análisis. Si se
+reinicia el servidor, las pistas pendientes y los análisis interrumpidos se retoman.
+`PROCESSING_WORKER_ENABLED=false` pausa el análisis automático. Para preparar el
+índice manualmente sigue disponible `docker compose exec backend python -m app.index_audio`.
 
 ### Detener y volver a iniciar
 
@@ -76,7 +95,7 @@ El preparador crea un `.env` privado con una contraseña aleatoria cuando el arc
 ```bash
 docker compose ps -a
 docker compose logs --tail=50 migrate
-docker compose logs --tail=50 backend frontend
+docker compose logs --tail=50 backend backend-java gateway frontend
 ```
 
 - Si Docker no responde, comprueba que Docker Desktop o Docker Engine esté iniciado.

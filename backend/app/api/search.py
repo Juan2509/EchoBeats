@@ -87,3 +87,27 @@ async def similar_explained(body:SimilarInput,request:Request):
 def similar(track_id:UUID,request:Request,limit:Annotated[int,Query(ge=1,le=20)]=5,album_id:UUID | None=None,playlist_id:UUID | None=None,preferences:PreferenceMode='off'):
     data=service.similar(engine_for(request),request.app.state.settings,track_id,limit,album_id,playlist_id,preferences)
     return JSONResponse(jsonable_encoder(data),headers={'Cache-Control':'no-store'})
+
+
+@router.get('/tracks/{track_id}/audio-similar')
+def audio_similar(track_id: UUID, request: Request, limit: Annotated[int, Query(ge=1, le=20)] = 5):
+    from app.services.audio_similarity import similar_audio
+
+    data = similar_audio(engine_for(request), track_id, limit)
+    return JSONResponse(jsonable_encoder(data), headers={'Cache-Control': 'no-store'})
+
+
+@router.get('/tracks/{track_id}/audio-index')
+def audio_index_status(track_id: UUID, request: Request):
+    from app.services.audio_similarity import audio_index_status as status
+
+    data = status(engine_for(request), track_id, request.app.state.settings.processing_worker_enabled)
+    return JSONResponse(data, headers={'Cache-Control': 'no-store'})
+
+
+@router.post('/tracks/{track_id}/audio-index/retry')
+def audio_index_retry(track_id: UUID, request: Request):
+    from app.services.audio_similarity import retry_audio_index
+
+    data = retry_audio_index(engine_for(request), track_id, request.app.state.settings.processing_worker_enabled)
+    return JSONResponse(data, headers={'Cache-Control': 'no-store'})

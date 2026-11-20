@@ -50,8 +50,6 @@ services:
 
   backend:
     <<: *backend-base
-    ports:
-      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -63,12 +61,60 @@ services:
       start_period: 5s
     command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
+  backend-java:
+    build:
+      context: .
+      dockerfile: backend-java/Dockerfile
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      MEDIA_ROOT: /app/data/media
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-echobeats}
+      POSTGRES_USER: ${POSTGRES_USER:-echobeats}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Ejecuta python3 scripts/preparar_entorno.py}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000,http://127.0.0.1:8000}
+      ECHOBEATS_PYTHON_READY_URL: http://backend:8000/api/v1/ready
+    volumes:
+      - ./data/media:/app/data/media:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bash -ec 'exec 3<>/dev/tcp/127.0.0.1/8001;
+          printf "GET /api/v1/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3;
+          read -r status <&3; [[ "$$status" == *" 200 "* ]]'
+      interval: 5s
+      timeout: 8s
+      retries: 12
+      start_period: 10s
+
+  gateway:
+    image: nginx:stable-alpine@sha256:caf4e1e032a20f9c3c5e28fc7f25ffd768ad8677b4975c54193075997b3a97e3
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8080"
+    volumes:
+      - ./gateway/api.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      backend-java:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/api/v1/ready"]
+      interval: 5s
+      timeout: 8s
+      retries: 12
+
   frontend:
     build:
       context: .
       dockerfile: frontend/Dockerfile
     environment:
-      API_PROXY_TARGET: http://backend:8000
+      API_PROXY_TARGET: http://gateway:8080
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
     volumes:
@@ -77,7 +123,7 @@ services:
       - ./frontend/index.html:/app/frontend/index.html:ro
       - ./frontend/vite.config.ts:/app/frontend/vite.config.ts:ro
     depends_on:
-      backend:
+      gateway:
         condition: service_healthy
 
 volumes:

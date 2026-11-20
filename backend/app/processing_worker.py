@@ -3,7 +3,7 @@ import logging
 from threading import Event, Thread
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
-from app.services import processing
+from app.services import audio_similarity, processing
 from app.services import indexing
 from app.integrations.ai import AIError, OpenAIProvider
 
@@ -34,12 +34,18 @@ class ProcessingWorker:
                         continue
                     try:
                         processing.recover(self.engine)
+                        if self.settings is not None and self.settings.processing_worker_enabled:
+                            audio_similarity.recover_audio_attempts(self.engine)
                         while not self.stop_event.is_set():
                             owner.execute(text('SELECT 1'))
                             claimed = processing.claim(self.engine)
                             if claimed is None:
                                 claimed = indexing.claim(self.engine, self.settings)
                             if claimed is None:
+                                if self.settings is not None and self.settings.processing_worker_enabled and audio_similarity.process_next_audio(
+                                    self.engine, self.settings.media_root,
+                                ):
+                                    continue
                                 self.stop_event.wait(self.interval)
                                 continue
                             if claimed.operation == 'index_description':

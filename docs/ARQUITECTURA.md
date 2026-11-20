@@ -1,16 +1,19 @@
-# Arquitectura implementada — P28
+# Arquitectura implementada
 
 EchoBeats es el nombre definitivo; Dream Radio es el título histórico del concepto.
-MVP local de un usuario, React/TypeScript/Vite + Python/FastAPI + PostgreSQL/pgvector.
-Decisiones y alcance en DECISIONES.md/ALCANCE_MVP.md; no atribuir aprobación docente
-de stack, VPS/tenants o PDF/OCR mientras siga pendiente en REVISION_REQUERIMIENTOS.md.
+MVP local de un usuario con React/TypeScript/Vite, Java/Spring Boot, Python/FastAPI y PostgreSQL/pgvector.
+El profesor autorizó usar Python junto con Spring Boot. El alcance de VPS, tenants y PDF/OCR sigue pendiente.
 
 ```mermaid
 flowchart LR
   U[Interfaz React] --> V[Proxy Vite local]
-  V --> A[FastAPI]
+  V --> G[Gateway HTTP local]
+  G --> J[Spring Boot]
+  G --> A[FastAPI]
   U --> P[Reproductor único del navegador]
-  P -->|GET HEAD Range por ID| A
+  P -->|GET HEAD Range por ID| V
+  J --> D[(PostgreSQL + pgvector)]
+  J -->|Lectura| M[Medios gestionados locales]
   A --> D[(PostgreSQL + pgvector)]
   A --> M[Medios gestionados locales]
   D --> W[Worker local con bloqueo exclusivo]
@@ -47,7 +50,8 @@ Un embedding 1536 enlaza versión/hash/espacio/receta. El índice no vuelve verd
 una emoción ni acredita análisis acústico. pgvector hace coseno exacto, textual usa
 FTS simple y híbrida fusiona rangos RRF(60); no ANN ni porcentajes de confianza.
 
-Similares usa vector de referencia y la excluye. Sin umbral evaluado son candidatos.
+Similares por ficha usa el vector de referencia y excluye esa ficha. La búsqueda
+acústica utiliza un índice pgvector independiente con embeddings del audio. Sin umbral evaluado son candidatos.
 Citas optativas seleccionan fragmentos literales ID/versión/subcadena; se descarta
 prosa libre. Fallo conserva descripción registrada. P25 aplica ajuste optativo de
 pares de candidatos, máximo una posición, o descubrir excluyendo favoritos antes
@@ -55,8 +59,8 @@ del límite. Cada resultado explica orden sin inventar atributos musicales.
 
 ## Operación y evidencia
 
-Alembic 0001–0009; head 0009_favorites. Ready comprueba BD/extensión/revisión, no
-proveedor. .env/volumen/medios/backups privados; dump lógico y copia de medios son
+Alembic aplica el esquema hasta `0013_audio_index_queue`. En Compose, el endpoint
+`/ready` comprueba la base, pgvector, la revisión y la disponibilidad de FastAPI. .env/volumen/medios/backups privados; dump lógico y copia de medios son
 complementarios. Restaurar crea otra base. Dockerfiles/locks fijan dependencias;
 backend nativo requiere Python 3.12 y frontend Node 24 de referencia.
 

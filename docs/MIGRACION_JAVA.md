@@ -1,9 +1,22 @@
 # Migración de EchoBeats a Java y Spring Boot
 
-La migración conserva el frontend de EchoBeats, los contratos HTTP, el esquema
-de catálogo, las composiciones de los muros y las rutas de los medios. La
-aplicación habitual sigue arrancando con el Compose existente mientras se
-comprueba la equivalencia de cada grupo de rutas en PostgreSQL aislado.
+Docker Compose arranca Spring Boot y FastAPI junto con la misma interfaz React.
+Vite dirige `/api` al servicio `gateway`, que también publica la API local
+en el puerto configurado por `BACKEND_PORT` (8000 por defecto). Conserva métodos,
+URLs, cabeceras de revisión y la reproducción por rangos. La asignación está
+en [gateway/api.conf](../gateway/api.conf).
+
+| Spring Boot | FastAPI |
+| --- | --- |
+| Estado y disponibilidad, consultas del catálogo y búsqueda de biblioteca | Importación, carga de imágenes y escritura de pistas y álbumes |
+| Reproducción y entrega de imágenes | Etiquetas, fichas, trabajos de preparación e indexación |
+| Favoritos, playlists y muros | Explorar, chat, embeddings y búsqueda acústica |
+
+Los dos servicios usan el mismo PostgreSQL y almacenamiento de medios. Alembic
+aplica el esquema una vez antes del arranque. Spring Boot monta los medios en
+solo lectura. En Compose, su endpoint `/ready` comprueba también FastAPI.
+El proxy entrega cada solicitud al servicio asignado, sin reintentos cruzados
+de operaciones de escritura.
 
 ## Primer grupo de rutas
 
@@ -36,8 +49,8 @@ pistas y el rechazo de pistas retiradas. Los muros conservan el lienzo lógico
 precondición por ETag y el restablecimiento. Se verificaron guardar, detectar
 conflicto y restablecer sobre una base aislada con archivos sintéticos.
 
-La comprobación de disponibilidad reconoce la revisión existente
-`0011_wall_full_size` y pgvector. El módulo arranca por defecto en
+La comprobación de disponibilidad reconoce la revisión
+`0013_audio_index_queue` y pgvector. El módulo arranca por defecto en
 `127.0.0.1:8001` con Java 21 o posterior. Para una prueba local, utilizar Java
 y Maven desde la raíz del repositorio y pasar las variables `POSTGRES_HOST`,
 `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER` y `POSTGRES_PASSWORD`
@@ -48,26 +61,13 @@ mvn -f backend-java/pom.xml package
 java -jar backend-java/target/echobeats-api-0.1.0-SNAPSHOT.jar
 ```
 
-## Contratos pendientes antes de sustituir FastAPI
+## Alcance de la integración
 
-1. Portar la escritura de álbumes y pistas, la importación y extracción de
-   metadatos multiformato, y la subida de imágenes, portadas y GIF.
-2. Ejecutar la regresión completa de compatibilidad HTTP y visual, incluidos
-   los casos concurrentes y recuperación de un respaldo previo.
-3. Portar fichas, trabajos persistentes, embeddings, consultas híbridas y chat.
-   Reutilizar el esquema pgvector y comparar versiones, ranking y citas con el
-   comportamiento de referencia. Validar OpenAI cuando la cuenta tenga créditos.
-4. Incorporar el flujo documental como módulo adicional. Debe recibir el PDF
-   temporalmente, validar y escanear el archivo, ejecutar extracción y OCR en un
-   trabajo duradero, indexar fragmentos por página y retirar la copia según la
-   política de retención. El audio gestionado sigue disponible para reproducción.
-5. Incorporar autenticación y autorización en todas las rutas con datos. Definir
-   propiedad y migración de los datos existentes antes de habilitar tenants.
-   Probar que lecturas, búsquedas, medios y trabajos respetan ese aislamiento.
-6. Preparar HTTPS y el arranque en VPS. Probar desde una base vacía y desde una
-   restauración aislada de la versión de origen, incluida la reproducción de
-   audio y el flujo de PDF sin el equipo cliente disponible.
+El modo integrado se ejecuta con `docker compose up --build -d --wait`.
+El modo nativo de Java conserva su puerto 8001 y puede probarse por separado.
+Los endpoints de Python mantienen sus contratos para las funciones restantes
+y la referencia de la API se conserva en `/docs` del puerto publicado.
 
-La sustitución de servidor se verifica con los contratos HTTP de la aplicación
-actual y la misma interfaz React. El flujo documental requerirá acceso a sus
-propias pantallas o rutas adicionales.
+La autenticación multicliente, el despliegue en VPS con HTTPS y el flujo PDF/OCR
+pertenecen a la ampliación de alcance registrada en los requerimientos.
+La validación de OpenAI con créditos sigue pendiente.

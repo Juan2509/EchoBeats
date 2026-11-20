@@ -7,7 +7,7 @@ from sqlalchemy import (
     Index, MetaData, String, Table, UniqueConstraint, Uuid, func, text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from app.models.vector import Vector1536
+from app.models.vector import AudioVector26, Vector1536
 
 metadata = MetaData(naming_convention={
     "ix": "ix_%(table_name)s_%(column_0_name)s",
@@ -199,4 +199,29 @@ track_embedding = Table(
     Column('created_at', DateTime(timezone=True), nullable=False, server_default=func.now()),
     UniqueConstraint('description_id', 'description_version', 'model_key'),
     CheckConstraint('description_version > 0', name='version'),
+)
+
+
+track_audio_embedding = Table(
+    "track_audio_embedding", metadata,
+    Column("track_id", Uuid, ForeignKey("track.id", ondelete="CASCADE"), primary_key=True),
+    Column("model_key", String(80), primary_key=True),
+    Column("audio_asset_id", Uuid, ForeignKey("media_asset.id", ondelete="RESTRICT"), nullable=False),
+    Column("content_sha256", String(64), nullable=False),
+    Column("embedding", AudioVector26(), nullable=False),
+    Column("indexed_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+
+
+audio_index_attempt = Table(
+    "audio_index_attempt", metadata,
+    Column("track_id", Uuid, ForeignKey("track.id", ondelete="CASCADE"), primary_key=True),
+    Column("model_key", String(80), primary_key=True),
+    Column("content_sha256", String(64), primary_key=True),
+    Column("status", String(16), nullable=False),
+    Column("error", String(200)),
+    CheckConstraint(
+        "(status = 'processing' AND error IS NULL) OR (status = 'failed' AND error IS NOT NULL)",
+        name="status",
+    ),
 )
