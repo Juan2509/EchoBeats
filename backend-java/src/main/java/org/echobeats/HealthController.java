@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 class HealthController {
-    private static final Set<String> EXPECTED_SCHEMA = Set.of("0013_audio_index_queue");
+    private static final Set<String> EXPECTED_SCHEMA = Set.of("0014_document_index");
     private final JdbcTemplate jdbc;
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
     private final HttpRequest pythonReadiness;

@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app/backend
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg \
+    && apt-get install -y --no-install-recommends ffmpeg clamav clamav-freshclam poppler-utils tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa util-linux \
     && rm -rf /var/lib/apt/lists/*
 COPY backend/requirements.lock ./requirements.lock
 RUN python -m pip install --no-cache-dir --require-hashes -r requirements.lock

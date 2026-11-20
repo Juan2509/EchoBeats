@@ -10,7 +10,7 @@ en [gateway/api.conf](../gateway/api.conf).
 | --- | --- |
 | Estado y disponibilidad, consultas del catálogo y búsqueda de biblioteca | Importación, carga de imágenes y escritura de pistas y álbumes |
 | Reproducción y entrega de imágenes | Etiquetas, fichas, trabajos de preparación e indexación |
-| Favoritos, playlists y muros | Explorar, chat, embeddings y búsqueda acústica |
+| Favoritos, playlists y muros | Explorar, chat, embeddings, búsqueda acústica y procesamiento de PDF/OCR |
 
 Los dos servicios usan el mismo PostgreSQL y almacenamiento de medios. Alembic
 aplica el esquema una vez antes del arranque. Spring Boot monta los medios en
@@ -50,7 +50,7 @@ precondición por ETag y el restablecimiento. Se verificaron guardar, detectar
 conflicto y restablecer sobre una base aislada con archivos sintéticos.
 
 La comprobación de disponibilidad reconoce la revisión
-`0013_audio_index_queue` y pgvector. El módulo arranca por defecto en
+`0014_document_index` y pgvector. El módulo arranca por defecto en
 `127.0.0.1:8001` con Java 21 o posterior. Para una prueba local, utilizar Java
 y Maven desde la raíz del repositorio y pasar las variables `POSTGRES_HOST`,
 `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER` y `POSTGRES_PASSWORD`
@@ -68,6 +68,6 @@ El modo nativo de Java conserva su puerto 8001 y puede probarse por separado.
 Los endpoints de Python mantienen sus contratos para las funciones restantes
 y la referencia de la API se conserva en `/docs` del puerto publicado.
 
-La autenticación multicliente, el despliegue en VPS con HTTPS y el flujo PDF/OCR
-pertenecen a la ampliación de alcance registrada en los requerimientos.
-La validación de OpenAI con créditos sigue pendiente.
+El modo remoto usa autenticación HTTPS y separa datos por instancia. El flujo
+documental se ejecuta en Python y guarda los fragmentos y vectores en PostgreSQL.
+El despliegue en un VPS público y la validación de OpenAI con créditos siguen pendientes.

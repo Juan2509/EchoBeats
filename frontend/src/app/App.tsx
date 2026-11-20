@@ -5,6 +5,7 @@ import { AlbumView, Library } from '../features/library/Library'
 import { PlayerBar, PlayerProvider } from '../features/player/Player'
 
 import { PlaylistView } from '../features/playlists/Playlists'
+import { DocumentsPage } from '../features/documents/DocumentsPage'
 import { ExploreView } from '../features/explore/ExploreView'
 import { FavoritesProvider } from '../features/favorites/Favorites'
 import { AppearanceProvider } from '../features/appearance/Appearance'
@@ -68,7 +69,7 @@ export function App() {
   return <AppearanceProvider albumId={album?.[1]}><FavoritesProvider><PlayerProvider refresh={refresh}><div className="workspace" data-view={album?'album':'collection'}>
     <a className="skip-link" href="#content">Saltar al contenido</a>
     <header className="site-header"><a className="brand" href="/" onClick={event => { event.preventDefault(); navigate('/') }}><span className="mark" aria-hidden="true">◉</span> EchoBeats</a>
-      <nav aria-label="Navegación principal">{[['/', 'Inicio'], ['/biblioteca', 'Biblioteca'], ['/explorar', 'Explorar'], ['/configuracion','Configuración']].map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={event => { event.preventDefault(); navigate(href) }}>{label}</a>)}</nav>
+      <nav aria-label="Navegación principal">{[['/', 'Inicio'], ['/biblioteca', 'Biblioteca'], ['/explorar', 'Explorar'], ['/documentos', 'Documentos'], ['/configuracion','Configuración']].map(([href, label]) => <a key={href} href={href} aria-current={path === href ? 'page' : undefined} onClick={event => { event.preventDefault(); navigate(href) }}>{label}</a>)}</nav>
     </header>
     {creatingAlbum&&<CreateAlbumDialog close={()=>setCreatingAlbum(false)} created={id=>{setCreatingAlbum(false);changed();navigate(`/albumes/${id}`)}}/>}
     <main id="content" ref={heading} tabIndex={-1}>
@@ -77,8 +78,9 @@ export function App() {
       {playlist && <PlaylistView key={playlist[1]} id={playlist[1]} navigate={navigate} onSaved={changed} onDirty={setPlaylistDirty} />}
       {album && <AlbumView key={album[1]} id={album[1]} refresh={refresh} navigate={navigate} onDirty={setWallDirty} />}
       {(exploring || exploreVisited) && <ExploreView active={exploring} search={exploring ? search : ''} navigate={navigate} />}
+      {path==='/documentos' && <DocumentsPage />}
       {path==='/configuracion'&&<SettingsPage search={search} navigate={navigate}/>}
-      {!['/', '/biblioteca', '/explorar','/configuracion'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
+      {!['/', '/biblioteca', '/explorar', '/documentos','/configuracion'].includes(path) && !album && !playlist && <section><h1>No encontramos esa página</h1><a href="/biblioteca" onClick={event => { event.preventDefault(); navigate('/biblioteca') }}>Volver a la biblioteca</a></section>}
       <div hidden={path !== '/biblioteca'}>
         {path==='/biblioteca'&&<ImportPanel onImported={changed} />}
         <details className="metadata-tools" onToggle={event => { if (event.currentTarget.open) setMetadataActivated(true) }}><summary>Editar canciones, álbumes y portadas</summary>{metadataActivated && <MetadataEditor refresh={refresh} onSaved={changed} />}</details>

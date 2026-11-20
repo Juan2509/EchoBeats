@@ -392,3 +392,7 @@ html { scroll-padding-top: calc(var(--navigation-height, 84px) + 24px); }
   .chat-assistant { padding: 14px; }
   .chat-user { max-width: 92%; }
 }
+
+.workspace .documents-view .explore-form fieldset,
+.workspace .documents-view .explore-form label { grid-template-columns: minmax(0, 1fr); }
+.documents-view input[type="file"] { inline-size: 100%; min-inline-size: 0; }
