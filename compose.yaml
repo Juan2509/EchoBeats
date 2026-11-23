@@ -19,7 +19,6 @@ x-backend: &backend-base
     - ./backend/alembic.ini:/app/backend/alembic.ini:ro
     - ./backend/pyproject.toml:/app/backend/pyproject.toml:ro
     - ./data:/app/data
-    - document_signatures:/var/lib/clamav
     - ./pruebas/coleccion:/app/fixtures:ro
     - ./pruebas/semantica:/app/semantic-fixtures:ro
 
@@ -129,4 +128,3 @@ services:
 
 volumes:
   postgres_data:
-  document_signatures:

@@ -779,6 +779,12 @@ se crearon archivos. Las ampliaciones se habilitan expresamente en el registro.
 
 ### Estado actual
 
+**Limpieza del 23 de noviembre de 2026.** Tras retirar la vista Documentos,
+también se retiraron su API, el trabajador de PDF y la configuración de OCR
+del arranque local y remoto. Se conservan la revisión Alembic 0014, las tablas
+existentes y sus datos. `Requerimientos.md` sigue como referencia académica.
+Compose local arranca y la antigua API de Documentos devuelve HTTP 404.
+
 **Directriz vigente del usuario — 13 de noviembre:** incorporar progresivamente
 `Requerimientos.md` al desarrollo. Antes de cada bloque, revisar su cobertura,
 ajustar los contratos afectados y documentar evidencia y diferencias pendientes.

@@ -10,7 +10,7 @@ en [gateway/api.conf](../gateway/api.conf).
 | --- | --- |
 | Estado y disponibilidad, consultas del catálogo y búsqueda de biblioteca | Importación, carga de imágenes y escritura de pistas y álbumes |
 | Reproducción y entrega de imágenes | Etiquetas, fichas, trabajos de preparación e indexación |
-| Favoritos, playlists y muros | Explorar, chat, embeddings, búsqueda acústica y procesamiento de PDF/OCR |
+| Favoritos, playlists y muros | Explorar, chat, embeddings, búsqueda acústica |
 
 Los dos servicios usan el mismo PostgreSQL y almacenamiento de medios. Alembic
 aplica el esquema una vez antes del arranque. Spring Boot monta los medios en
@@ -68,6 +68,5 @@ El modo nativo de Java conserva su puerto 8001 y puede probarse por separado.
 Los endpoints de Python mantienen sus contratos para las funciones restantes
 y la referencia de la API se conserva en `/docs` del puerto publicado.
 
-El modo remoto usa autenticación HTTPS y separa datos por instancia. El flujo
-documental se ejecuta en Python y guarda los fragmentos y vectores en PostgreSQL.
+El modo remoto usa autenticación HTTPS y separa datos por instancia.
 El despliegue en un VPS público y la validación de OpenAI con créditos siguen pendientes.

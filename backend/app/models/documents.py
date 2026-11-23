@@ -1,4 +1,4 @@
-"""Document entities sharing the tenant instance schema."""
+"""Legacy tables retained so Alembic can compare the deployed schema."""
 
 from sqlalchemy import CheckConstraint, UniqueConstraint, Column, DateTime, ForeignKey, Integer, LargeBinary, String, Table, Text, Uuid, func
 

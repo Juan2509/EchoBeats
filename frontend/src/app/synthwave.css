@@ -54,10 +54,10 @@ a:focus-visible,summary:focus-visible,main:focus-visible,button:focus-visible,in
 .album-sidebar .track-list li>div { flex:1; min-width:0; flex-basis:100px; }.album-sidebar .track-list strong { font-size:.8rem; font-weight:550; line-height:1.5; }.album-sidebar .track-list span,.album-sidebar .track-list a,.album-sidebar .track-list time { font-size:.68rem; }
 .album-sidebar .track-list time { margin-top:8px; }.album-sidebar .track-list>li>div>a { display:none; }
 .wall-panel { padding:0; }.wall-heading { gap:8px; }.wall-heading h2 { font-size:.95rem; font-weight:550; color:#e4dced; }.wall-heading .eyebrow { display:none; }
-.wall-heading button { font-size:.75rem; padding:8px 12px; }.wall-status { color:#b9b1ce; font-size:.72rem; margin:6px 0 10px; }
+.wall-heading button { font-size:.75rem; padding:8px 12px; }
 .wall-canvas { border:0; border-radius:2px; width:min(100%,calc((100dvh - 225px)*1.428571)); margin-inline:auto; }
 .wall-canvas[data-surface=scene] { box-shadow:none; }.wall-canvas[data-mode=editing] { outline:1px dashed color-mix(in srgb,var(--neon-cyan) 45%,transparent); outline-offset:3px; }
-.wall-tools { margin-top:18px; }.wall-placeholder { background:#171429; color:#ddd6ef; border-color:var(--neon-cyan); }.wall-swatch[aria-pressed=true] { border-color:var(--neon-cyan); }
+.wall-tools { margin-top:18px; }.wall-placeholder { background:#171429; color:#ddd6ef; border-color:var(--neon-cyan); }
 .wall-animation { color:#c7bddb; }.wall-selection,.description-feature { border-color:#71608088; }.wall-error,.player-error { color:#ffb9d2; }
 .player-bar { width:min(760px,100%); align-self:center; bottom:14px; padding:12px 15px; gap:16px; z-index:20; grid-template-columns:minmax(140px,1fr) minmax(230px,1.6fr) 95px; box-shadow:0 0 24px #08061ccc,0 0 22px color-mix(in srgb,var(--neon-pink) 10%,transparent); }
 .player-track img { width:46px; height:46px; }.player-track strong { font-size:.78rem; }.player-track span,.player-track a { font-size:.67rem; }

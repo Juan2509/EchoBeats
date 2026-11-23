@@ -3,8 +3,9 @@
 EchoBeats es el nombre definitivo; Dream Radio es el título histórico del concepto.
 MVP local de un usuario con React/TypeScript/Vite, Java/Spring Boot, Python/FastAPI y PostgreSQL/pgvector.
 El profesor autorizó combinar Python con Spring Boot. El modo remoto aísla cada
-cuenta en una instancia y el flujo PDF/OCR se ejecuta en FastAPI. La publicación
-real en un VPS y la validación con OpenAI siguen pendientes.
+cuenta en una instancia. La publicación real en un VPS y la validación con
+OpenAI siguen pendientes. La migración 0014 y sus tablas documentales se conservan
+para mantener la compatibilidad con las bases existentes.
 
 ```mermaid
 flowchart LR

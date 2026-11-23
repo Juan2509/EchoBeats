@@ -1,4 +1,4 @@
-from app.models import documents  # Register documentary tables with the catalog metadata.
+from app.models import documents  # Preserve legacy document tables in Alembic metadata.
 from logging.config import fileConfig
 
 from alembic import context

@@ -19,8 +19,6 @@ from app.api.descriptions import router as descriptions_router
 from app.api.ai import router as ai_router
 from app.api.search import router as search_router
 from app.api.favorites import router as favorites_router
-from app.api.documents import router as documents_router
-from app.services import documents
 from app.integrations.ai import OpenAIProvider, AIError
 from app.processing_worker import ProcessingWorker
 from app.services.metadata import MetadataError
@@ -35,19 +33,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         worker = ProcessingWorker(app.state.database_engine, settings=config) if config.processing_worker_enabled and app.state.database_engine is not None else None
-        document_worker = (
-            documents.DocumentWorker(app.state.database_engine, config)
-            if worker is not None and documents.available(config) else None
-        )
-        workers = [item for item in (worker, document_worker) if item is not None]
-        for item in workers:
-            item.start()
+        if worker is not None:
+            worker.start()
         try:
             yield
         finally:
             from starlette.concurrency import run_in_threadpool
-            for item in workers:
-                await run_in_threadpool(item.stop)
+            if worker is not None:
+                await run_in_threadpool(worker.stop)
             if engine is not None:
                 engine.dispose()
 
@@ -69,7 +62,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(ai_router, prefix="/api/v1", tags=["IA"])
     app.include_router(search_router, prefix="/api/v1", tags=["Exploración"])
     app.include_router(favorites_router, prefix="/api/v1", tags=["Favoritos"])
-    app.include_router(documents_router, prefix="/api/v1", tags=["Documentos"])
 
     @app.exception_handler(AIError)
     async def ai_error(request,exc):
