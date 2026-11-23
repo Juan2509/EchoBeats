@@ -4,7 +4,7 @@ EchoBeats es un proyecto académico para organizar, reproducir y explorar una co
 
 ## Instalación y arranque
 
-Necesitas una copia del repositorio, Python 3 para preparar el entorno, Docker con contenedores Linux, Docker Compose 2.24 o posterior y conexión a internet para la primera construcción. Docker instala las dependencias de la aplicación dentro de sus imágenes.
+Necesitas una copia del repositorio, Python 3 o Node.js para preparar el entorno, Docker con contenedores Linux, Docker Compose 2.24 o posterior y conexión a internet para la primera construcción. Docker instala las dependencias de la aplicación dentro de sus imágenes.
 
 ### Windows
 
@@ -16,11 +16,22 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-Si Python está disponible como `python`, usa `python scripts/preparar_entorno.py` en la primera línea.
+Si PowerShell no reconoce `py`, usa `python scripts/preparar_entorno.py`. Si tienes Node.js, también puedes usar `node scripts/preparar_entorno.mjs`. Si Docker Desktop está abierto pero PowerShell no encuentra `docker`, abre una terminal nueva y comprueba `docker compose version`. Para errores al validar o levantar el proyecto, consulta las soluciones que siguen.
 
 ### Linux
 
-Asegúrate de que Docker Engine esté iniciado. Si tu instalación usa systemd y el motor está detenido, ejecuta `sudo systemctl start docker`. Abre una terminal en la carpeta del proyecto.
+Abre una terminal en la raíz del repositorio. En el equipo del proyecto puedes entrar con `cd ~/Escritorio/EchoBeats`. Comprueba que `ls compose.yaml` encuentra el archivo y que Docker responde.
+
+```bash
+docker compose version
+docker info
+```
+
+- Si aparece `docker: command not found`, comprueba que Docker esté instalado y disponible en el `PATH`. Si Docker funciona pero falta el subcomando `compose`, instala o actualiza el complemento Compose V2.
+- Si `docker info` no puede conectar al motor y usas Docker Engine con systemd, ejecuta `sudo systemctl start docker` y vuelve a comprobar. Si usas Docker Desktop, ábrelo y espera a que el motor arranque. Si el error menciona un contexto o socket distinto del esperado, revisa `docker context ls`.
+- Si aparece `permission denied` al acceder al socket, comprueba con `sudo docker info` si el problema es de permisos en una instalación de Docker Engine administrada por el sistema. Si funciona, un administrador puede habilitar el acceso de tu cuenta. Pertenecer al grupo `docker` concede privilegios equivalentes a los de root.
+
+Con Docker disponible, prepara el entorno, valida la configuración y levanta los servicios. Si un comando falla, resuélvelo antes de continuar con el siguiente.
 
 ```bash
 python3 scripts/preparar_entorno.py
@@ -28,7 +39,28 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo no existe. Si ya tienes una biblioteca, conserva ese archivo junto con el volumen de PostgreSQL. La contraseña registrada en la base permanece aunque edites el archivo.
+| Si falla este paso | Qué hacer |
+| --- | --- |
+| `python3 scripts/preparar_entorno.py` | Si falta `python3` y tienes Node.js, ejecuta `node scripts/preparar_entorno.mjs`. Si falta el script o la plantilla, comprueba que estás en la raíz y que tu copia incluye `.env.example`. Si hay un error de escritura, revisa los permisos de la carpeta del proyecto con tu usuario. |
+| `docker compose config --quiet` | Si termina sin imprimir nada, la validación pasó. Si falta `POSTGRES_PASSWORD` o `.env`, revisa la preparación del entorno. Si ya existe una biblioteca, recupera su `.env` antes de preparar otro. Si hay un valor inesperado, revisa también las variables exportadas en la terminal, que pueden tener prioridad sobre `.env`. |
+| `docker compose up --build -d --wait` | Si falla la descarga de una imagen, revisa la conexión y el error del registro. Si un puerto está ocupado, identifica el proceso con `ss -ltnp` y cambia el puerto correspondiente en `.env`. Si falla un servicio, ejecuta `docker compose ps -a` y consulta sus registros en la sección **Diagnóstico**. |
+
+El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo falta. Conserva el `.env` original junto con el volumen de PostgreSQL para poder recuperar una biblioteca existente.
+
+### Recuperar el arranque si PostgreSQL rechaza la contraseña
+
+Si las imágenes se construyen pero aparece `service "migrate" didn't complete successfully: exit 1`, consulta `docker compose logs --tail=50 migrate`. Un PostgreSQL en estado `Healthy` puede seguir rechazando la conexión de Alembic. El estado del contenedor solo indica que el servidor está disponible.
+
+Si el registro dice `password authentication failed for user "echobeats"` después de crear un `.env` nuevo sobre un volumen existente, restaura primero el `.env` que corresponde a ese volumen y ejecuta `docker compose up -d --wait`. Crear otro `.env` no actualiza la contraseña guardada en PostgreSQL.
+
+Si perdiste ese archivo y administras la instalación local, puedes sincronizar la contraseña del rol con la del `.env` actual. Abre la consola de PostgreSQL mediante el socket local.
+
+```bash
+docker compose up -d --wait postgres
+docker compose exec postgres sh -c 'exec psql -X -w -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+```
+
+En la consola de `psql`, ejecuta `\password` y escribe dos veces el valor actual de `POSTGRES_PASSWORD` de tu `.env` privado. Sal con `\q` y ejecuta `docker compose up -d --wait`. Si también falla el acceso por socket, recupera una credencial administrativa de esa instancia antes de continuar. Conserva el volumen y `data/media/` durante todo el procedimiento.
 
 ### Abrir, detener y reiniciar
 
