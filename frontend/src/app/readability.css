@@ -223,14 +223,19 @@ dialog :is(a,button,summary,input,select,textarea):focus-visible { outline: 3px 
    La escena queda a tamaño completo y el zoom accesible del navegador sigue libre. */
 @media(min-width:1001px) {
   .workspace {
-    zoom: .75;
+    --workspace-scale: .75;
+    zoom: var(--workspace-scale);
     width: 100%;
     max-width: 1520px;
-    min-height: 133.333333svh;
+    min-height: calc(100svh / var(--workspace-scale));
   }
-  .workspace[data-view=album] { max-width: 1760px; }
+  .workspace[data-view=album] {
+    /* Equivale al zoom del navegador al 80 % sobre la escala anterior (.75). */
+    --workspace-scale: .60;
+    max-width: 1760px;
+  }
   .workspace .album-room:not(:has(.wall-panel[data-expanded=true])) > .album-sidebar {
-    min-height: max(320px, calc(133.333333dvh - 210px));
+    min-height: max(320px, calc(100dvh / var(--workspace-scale) - 210px));
   }
 }
 
