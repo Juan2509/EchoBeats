@@ -1,29 +1,14 @@
 # EchoBeats
 
-EchoBeats es una aplicación académica para organizar, reproducir y explorar una colección de música propia. Funciona en tu equipo y está pensada para un solo usuario.
+EchoBeats es un proyecto académico para organizar, reproducir y explorar una colección de música propia. Reúne una biblioteca local, un reproductor compartido, playlists, muros personalizables por álbum y herramientas para descubrir canciones de la colección. El modo local está pensado para un usuario.
 
-## Objetivo
+## Instalación y arranque
 
-Reunir en un mismo espacio la biblioteca, la escucha y la exploración musical. Puedes organizar canciones en álbumes, personalizar cómo se presentan y usar sus fichas para encontrar pistas dentro de tu colección.
-
-## Cómo funciona
-
-1. **Organiza tu biblioteca.** En **Biblioteca → Crear álbum**, elige un nombre y, si quieres, sube una portada. Importa archivos MP3, WAV PCM, FLAC u Ogg Vorbis/Opus y selecciona el álbum de destino. Si importas desde un álbum, el destino ya está fijado. EchoBeats lee las etiquetas compatibles y conserva los archivos originales.
-2. **Escucha y prepara playlists.** Reproduce desde un álbum, una búsqueda o una playlist. El reproductor mantiene su cola al navegar y ofrece pausa, anterior, siguiente, progreso, volumen, repetición y orden aleatorio. Puedes marcar canciones como favoritas.
-3. **Personaliza los álbumes.** En **Editar álbum y portada** puedes subir una imagen o elegir la portada propia de una canción del álbum. En **Editar pared** puedes decorar el muro con imágenes o GIF, moverlos, cambiar su tamaño y giro, y ordenar sus capas. **Configuración** reúne los ajustes de fondos, colores y estilo.
-4. **Explora tu música.** La vista **Explorar** ofrece sugerencias locales a partir de los metadatos y, según la consulta, de tus favoritos, la pista actual y la escucha de la sesión. La búsqueda textual avanzada consulta fichas vigentes; los modos semántico e híbrido requieren un índice vectorial vigente y un proveedor habilitado. OpenAI procesa el chat cuando el servidor tiene `AI_ENABLED=true` y `OPENAI_API_KEY` configurados. La integración con OpenAI trabaja con texto y está desactivada en instalaciones nuevas. Desde una pista también puedes buscar canciones por sonido mediante el índice acústico local.
-
-La interfaz usa React, TypeScript y Vite. En Docker Compose, Spring Boot sirve las consultas del catálogo, audio e imágenes, favoritos, playlists y muros. FastAPI atiende la importación, la edición de pistas y álbumes, la indexación y la exploración. PostgreSQL guarda la biblioteca, las playlists y los muros, y pgvector almacena los índices de búsqueda. Los medios se guardan en `data/media/` y las preferencias visuales se conservan en el navegador.
-
-## Ejecutar EchoBeats
-
-En ambos sistemas necesitas una copia del repositorio, Python 3 para preparar la configuración, Docker con contenedores Linux, Docker Compose 2.24 o posterior e internet para la primera descarga. Docker instala las dependencias del frontend y del backend dentro de sus imágenes.
+Necesitas una copia del repositorio, Python 3 para preparar el entorno, Docker con contenedores Linux, Docker Compose 2.24 o posterior y conexión a internet para la primera construcción. Docker instala las dependencias de la aplicación dentro de sus imágenes.
 
 ### Windows
 
-1. Inicia Docker Desktop en modo de contenedores Linux.
-2. Abre PowerShell en la carpeta del proyecto, donde está `compose.yaml`.
-3. Ejecuta:
+Inicia Docker Desktop en modo de contenedores Linux. Abre PowerShell en la carpeta del proyecto, junto a `compose.yaml`.
 
 ```powershell
 py -3 scripts/preparar_entorno.py
@@ -31,13 +16,11 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-Si Python está disponible como `python`, puedes usar `python scripts/preparar_entorno.py`.
+Si Python está disponible como `python`, usa `python scripts/preparar_entorno.py` en la primera línea.
 
 ### Linux
 
-1. Inicia Docker Engine. Si tu instalación usa systemd y el motor está detenido, ejecuta `sudo systemctl start docker`.
-2. Abre una terminal en la carpeta del proyecto, donde está `compose.yaml`.
-3. Ejecuta:
+Asegúrate de que Docker Engine esté iniciado. Si tu instalación usa systemd y el motor está detenido, ejecuta `sudo systemctl start docker`. Abre una terminal en la carpeta del proyecto.
 
 ```bash
 python3 scripts/preparar_entorno.py
@@ -45,57 +28,100 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-### Abrir la aplicación
+El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo no existe. Si ya tienes una biblioteca, conserva ese archivo junto con el volumen de PostgreSQL. La contraseña registrada en la base permanece aunque edites el archivo.
 
-Cuando termine el arranque, copia en el navegador la dirección que quieras abrir.
+### Abrir, detener y reiniciar
 
-- EchoBeats (`http://localhost:5173`)
-- Estado del backend (`http://localhost:8000/api/v1/ready`)
-- Referencia del contrato HTTP (`http://localhost:8000/docs`)
+Cuando termine el arranque, copia la dirección en el navegador.
 
-Docker inicia PostgreSQL, aplica las migraciones y levanta Spring Boot, FastAPI y el frontend. El puerto de la API conserva las URLs existentes y distribuye por método y ruta. `/api/v1/ready` verifica PostgreSQL, pgvector, el esquema y la disponibilidad de FastAPI desde Spring Boot. El servicio `migrate` termina con código `0` después de actualizar el esquema.
+| Servicio | Dirección predeterminada |
+| --- | --- |
+| EchoBeats | `http://localhost:5173` |
+| Estado de la API | `http://localhost:8000/api/v1/ready` |
+| Documentación interactiva de la API | `http://localhost:8000/docs` |
+| Estado a través del frontend | `http://localhost:5173/api/v1/health` |
+| PostgreSQL local | `127.0.0.1:5433` |
 
-### Acceso remoto
+Compose inicia PostgreSQL, aplica las migraciones y levanta FastAPI, Spring Boot, el gateway y el frontend. Es normal que `migrate` termine con código `0`. El endpoint `/api/v1/ready` verifica la base de datos, pgvector, la revisión del esquema y la disponibilidad de FastAPI.
 
-Para publicar EchoBeats por HTTPS en un VPS Linux, usa el modo remoto
-con Caddy y un proyecto aislado por cuenta. [Guía de acceso remoto](docs/ACCESO_REMOTO.md).
+Para detener EchoBeats, ejecuta `docker compose stop`. Para usarlo de nuevo, ejecuta `docker compose up -d --wait`. Usa el comando de instalación con `--build` al actualizar el código o las imágenes.
+
+## Usar EchoBeats
+
+1. **Biblioteca.** Abre **Biblioteca → Crear álbum**, elige un nombre y, si quieres, sube una portada. Importa MP3, WAV PCM, FLAC nativo u Ogg Vorbis/Opus y selecciona el álbum de destino. Al importar desde un álbum, el destino queda fijado. EchoBeats lee las etiquetas compatibles, conserva el archivo original y detecta duplicados por contenido.
+2. **Reproductor y playlists.** Reproduce desde un álbum, una búsqueda o una playlist. La cola se mantiene al navegar. Puedes pausar, cambiar de pista, avanzar, ajustar volumen, usar repetición u orden aleatorio y marcar favoritos. La reproducción de cada formato depende de los decodificadores del navegador.
+3. **Portada y muro.** En **Editar álbum y portada**, elige una imagen o la portada de una canción. En **Editar pared**, añade imágenes o GIF y ajusta su posición, tamaño, giro y capas. Los cambios del muro se autoguardan. **Configuración** reúne fondos, colores y estilo. Los fondos del muro se ajustan en **Editar pared → Fondo**.
+4. **Fichas musicales.** En **Fichas y opciones**, elige una pista para editar su descripción y conservar la procedencia de sus datos. Una ficha puede prepararse para búsqueda semántica mediante su indexación.
+5. **Explorar.** El chat tiene un modo básico que usa metadatos, favoritos y, cuando corresponde, la pista actual y las reproducciones recientes de la sesión. Ese contexto se mantiene en memoria y se puede olvidar desde **Opciones**. En **Opciones → Búsqueda avanzada** puedes consultar fichas por texto, por similitud semántica o mediante búsqueda híbrida cuando haya índices vigentes y el proveedor esté habilitado.
 
 ### Buscar canciones por sonido
 
-Importa al menos dos canciones. El trabajador local analiza en segundo plano
-las pistas importadas y las que ya estaban en la biblioteca sin un vector vigente.
-En **Biblioteca** o en un álbum, abre **Buscar similares** para una canción. En
-**Explorar** verás su estado y podrás pulsar **Buscar canciones por sonido** cuando esté
-lista. Si el análisis falla, puedes reintentarlo desde la misma pantalla.
+Importa al menos dos canciones. El trabajador prepara el índice acústico en segundo plano. Desde una pista de la biblioteca o de un álbum, abre **Buscar similares → Buscar canciones por sonido**. En **Explorar** puedes ver el estado del análisis y reintentarlo si falla.
 
-El análisis usa hasta los primeros 30 segundos de cada pista, calcula un
-embedding acústico de 26 dimensiones y lo guarda en PostgreSQL con pgvector.
-La búsqueda compara por distancia coseno. Se ejecuta localmente con FFmpeg y usa
-características del espectro y la intensidad. Los resultados son candidatos acústicos
-y dependen de lo que se escucha al comienzo de cada pista.
+FFmpeg analiza localmente hasta los primeros 30 segundos de cada pista. El sistema guarda un vector de 26 dimensiones y compara las pistas por distancia coseno. Los resultados son candidatos basados en el comienzo del audio. Este índice es independiente del índice de fichas y funciona sin OpenAI.
 
-La importación y la reproducción pueden continuar durante el análisis. Si se
-reinicia el servidor, las pistas pendientes y los análisis interrumpidos se retoman.
-`PROCESSING_WORKER_ENABLED=false` pausa el análisis automático. Para preparar el
-índice manualmente sigue disponible `docker compose exec backend python -m app.index_audio`.
+Los trabajos pendientes se retoman tras reiniciar el servidor. Puedes pausar el análisis automático con `PROCESSING_WORKER_ENABLED=false` o preparar el índice manualmente con `docker compose exec backend python -m app.index_audio`.
 
-### Detener y volver a iniciar
+## Arquitectura
 
-Para detener EchoBeats:
-
-```bash
-docker compose stop
+```text
+Navegador → React / TypeScript / Vite → gateway Nginx
+                                         ├─ Spring Boot
+                                         └─ FastAPI + trabajador local
+Spring Boot y FastAPI → PostgreSQL + pgvector y medios gestionados
 ```
 
-Para volver a iniciarlo:
+| Componente | Función |
+| --- | --- |
+| React, TypeScript y Vite | Interfaz, navegación y reproductor compartido. Las preferencias visuales se conservan por navegador y origen. |
+| Nginx | Distribuye las peticiones según el método y la ruta bajo una API común. |
+| Java 21 y Spring Boot | Lecturas del catálogo y entrega de audio e imágenes. Gestiona operaciones de favoritos, playlists y muros. |
+| Python 3.12 y FastAPI | Importación, edición de catálogo, fichas musicales, procesamiento, indexación y exploración. |
+| PostgreSQL 17, pgvector y Alembic | Persistencia de catálogo, metadatos, favoritos, playlists, muros y trabajos. Conserva índices separados para fichas y audio. Alembic aplica el esquema. |
+| Medios gestionados | Copias de audio e imágenes en `data/media/` para el modo local. El reproductor solicita tramos del audio mediante HTTP Range. |
+
+La cola de procesamiento se guarda en PostgreSQL. El trabajador local reclama y publica trabajos de forma coordinada para recuperar tareas interrumpidas. Las escrituras versionadas, como las de muros y playlists, usan ETags para detectar cambios concurrentes.
+
+### Estructura del repositorio
+
+| Ruta | Contenido |
+| --- | --- |
+| `frontend/` | Interfaz y pruebas del cliente. |
+| `backend/` | API Python, trabajador, migraciones y pruebas. |
+| `backend-java/` | API Spring Boot. |
+| `gateway/`, `deploy/remote/` | Enrutamiento HTTP y configuración de acceso remoto. |
+| `scripts/` | Preparación del entorno, copias de seguridad y validaciones. |
+| `pruebas/` | Archivos sintéticos y casos para probar importación, reproducción y búsqueda. |
+| `docs/` | Referencias técnicas, registros históricos y evidencias de validación. |
+
+## Configuración
+
+Usa `.env.example` como referencia y conserva los valores privados en `.env`.
+
+| Variable | Para qué sirve |
+| --- | --- |
+| `FRONTEND_PORT`, `BACKEND_PORT`, `POSTGRES_PORT` | Puertos publicados. Valores iniciales `5173`, `8000` y `5433`. Dentro de Compose, PostgreSQL usa `postgres:5432`. |
+| `ALLOWED_ORIGINS` | Orígenes permitidos para escrituras. Si cambias un puerto publicado, incluye el origen del navegador con su esquema y puerto. |
+| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Identidad y credenciales de PostgreSQL. |
+| `PROCESSING_WORKER_ENABLED` | Activa o pausa el procesamiento automático local. |
+| `AI_ENABLED`, `OPENAI_API_KEY` | Habilitan funciones de OpenAI en el backend. Las instalaciones nuevas arrancan con `AI_ENABLED=false`. |
+
+Para usar OpenAI, configura una clave con créditos en el backend, fija `AI_ENABLED=true` y vuelve a levantar Compose para aplicar el entorno. Mantén la clave fuera de Git y de las variables públicas `VITE_*`. El proveedor recibe texto para el chat y los embeddings de fichas. Las consultas e indexaciones pueden consumir créditos. El catálogo, la reproducción, los muros y la búsqueda acústica siguen disponibles con la IA externa desactivada.
+
+La búsqueda textual usa texto de las fichas, la semántica compara sus vectores vigentes y la híbrida combina ambos órdenes. Cuando hay evidencia registrada, la interfaz puede mostrar citas de fichas. La distancia y el orden de los resultados representan criterios de recuperación, sin equivalencia con un porcentaje de confianza.
+
+## Respaldar y restaurar
+
+Guarda tres elementos para poder recuperar una biblioteca: el dump de PostgreSQL con su manifiesto, una copia de `data/media/` y el `.env` privado correspondiente. Antes de respaldar, deja que terminen las importaciones y los guardados. Con PostgreSQL en ejecución, usa estos comandos desde la raíz del proyecto.
 
 ```bash
-docker compose up -d --wait
+python3 scripts/base_datos.py respaldar
+python3 scripts/base_datos.py restaurar backups/echobeats_FECHA_ID.dump --base echobeats_restore_comprobacion
 ```
 
-El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo no existe. Si ya tienes una biblioteca, conserva su `.env`, la carpeta `data/`, el volumen de PostgreSQL y los respaldos. Cambiar la contraseña en `.env` por sí solo deja desincronizada la credencial de una base ya inicializada.
+El primer comando crea el dump y su manifiesto SHA-256. Ejecuta el segundo cuando quieras comprobar una copia, sustituyendo el nombre de ejemplo por el del archivo real. La restauración requiere una base nueva cuyo nombre comience por `echobeats_restore_`. En Windows puedes sustituir `python3` por `py -3`.
 
-### Si hay un error de arranque
+## Diagnóstico
 
 ```bash
 docker compose ps -a
@@ -103,6 +129,49 @@ docker compose logs --tail=50 migrate
 docker compose logs --tail=50 backend backend-java gateway frontend
 ```
 
-- Si Docker no responde, comprueba que Docker Desktop o Docker Engine esté iniciado.
-- Si falla `migrate` por autenticación y ya existía una biblioteca, recupera el `.env` correspondiente a ese volumen o sincroniza la credencial de PostgreSQL antes de arrancar de nuevo.
-- Si Docker informa que un puerto está ocupado, comprueba los puertos locales predeterminados `5173` (interfaz), `8000` (API) y `5433` (PostgreSQL).
+| Síntoma | Qué revisar |
+| --- | --- |
+| Docker no responde | Inicia Docker Desktop o Docker Engine y comprueba `docker compose version`. |
+| Puerto ocupado | Identifica cuál de los tres puertos está en uso. Cambia la variable correspondiente y actualiza los orígenes permitidos si cambias la URL del navegador. |
+| `migrate` rechaza la contraseña | Recupera el `.env` asociado al volumen existente o sincroniza la contraseña del rol PostgreSQL con la configuración actual. Conserva el volumen. |
+| `ready` devuelve `503` | Revisa migraciones, conexión a PostgreSQL, pgvector y estado de FastAPI. |
+| El navegador recibe `403` al guardar | Comprueba que `ALLOWED_ORIGINS` incluya exactamente el esquema, host y puerto del frontend. |
+| Explorar no encuentra vectores | Guarda e indexa fichas con la configuración vigente. Si el proveedor indica cuota agotada, revisa el saldo antes de volver a solicitar embeddings. |
+| Una pista no se reproduce | Comprueba el formato y el soporte del navegador. EchoBeats entrega el audio original. |
+
+## Pruebas y demostración
+
+Con los servicios iniciados, puedes ejecutar las pruebas y comprobar la compilación desde la raíz.
+
+```bash
+docker compose exec -T frontend npm test
+docker compose exec -T frontend npm run build
+docker compose exec -T -e RUN_DB_TESTS=1 backend python -m pytest
+docker compose exec -T backend python -m alembic check
+```
+
+Las pruebas del backend crean bases de prueba aisladas, usan medios temporales y mantienen desactivada la IA externa por defecto. Las pruebas automáticas cubren el contrato de HTTP, rangos de audio, persistencia y recuperación con proveedores simulados. La validación con OpenAI y la evaluación musical de la búsqueda siguen pendientes.
+
+Para una demostración, usa una biblioteca dedicada y pistas sintéticas de `pruebas/coleccion/`. Crea un álbum, importa dos pistas, comprueba la reproducción y el avance, guarda una playlist, edita el muro y prueba Explorar en modo básico. Reinicia el entorno y vuelve a abrir el álbum para mostrar que se conservaron los cambios.
+
+## Acceso remoto opcional
+
+El modo remoto usa Linux, Docker Engine 28 o posterior, Docker Compose 2.24.4 o posterior y Caddy 2.10 o posterior. Cada cuenta utiliza un subdominio, un proyecto Compose, un puerto de loopback y sus propios volúmenes. Caddy recibe el tráfico público por HTTPS y autentica el acceso a la interfaz y a la API. PostgreSQL y el gateway quedan en la red interna. El despliegue en un VPS público sigue pendiente de validación.
+
+1. Apunta un subdominio DNS al VPS y habilita los puertos 80 y 443 para Caddy. Crea un archivo privado con permisos 0600, por ejemplo `/ruta/privada/echobeats/ana.env`.
+2. En ese archivo fija `REMOTE_ENV_FILE` con la ruta absoluta del propio archivo, `REMOTE_DOMAIN` con el subdominio, `REMOTE_HTTP_PORT` con un puerto local libre, `POSTGRES_PASSWORD` con una contraseña exclusiva y `AI_ENABLED=false` para el arranque inicial.
+3. Valida y levanta el proyecto desde la raíz del repositorio. Usa un nombre distinto por cuenta.
+
+   ```bash
+   docker compose --env-file /ruta/privada/echobeats/ana.env -p echobeats-ana -f compose.yaml -f compose.remote.yaml config --quiet
+   docker compose --env-file /ruta/privada/echobeats/ana.env -p echobeats-ana -f compose.yaml -f compose.remote.yaml up --build -d --wait
+   ```
+
+4. Copia `deploy/remote/accounts.caddy` a `/etc/caddy/echobeats.caddy`. Genera el hash de la contraseña de acceso con `caddy hash-password`. Añade al Caddyfile los imports, sustituyendo los datos de ejemplo por los de la cuenta.
+
+   ```caddyfile
+   import /etc/caddy/echobeats.caddy
+   import echobeats_account ana.musica.example.com ana HASH_BCRYPT_ANA 18101
+   ```
+
+5. Ejecuta `sudo caddy validate --config /etc/caddy/Caddyfile` y `sudo systemctl reload caddy`. Abre el subdominio por HTTPS y verifica el certificado, el inicio de sesión y la carga y reproducción de una pista de prueba. Para mantener o detener la cuenta, reutiliza los mismos archivos y el mismo nombre de proyecto Compose.
