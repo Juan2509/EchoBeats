@@ -3,11 +3,11 @@
 Head vigente: `0011_wall_full_size` (16 de noviembre): objetos de muro hasta1.0 por
 eje, sin actualizar filas ni archivos. Aplicada tras respaldo privado de45820bytes;
 huellas de composiciones idénticas. Downgrade rechaza tamaños mayores a0.60.
-Ver APARIENCIA.md para evidencia y límites.
+Ver `APARIENCIA.md` (historial de Git) para evidencia y límites.
 
 La migración anterior `0010_track_deletion` añade retirada lógica de
 pistas sin purgar originales ni historial. Aplicada tras respaldo privado y
-comprobada con Alembic; detalle y pruebas en [ALBUMES_CARPETA.md](ALBUMES_CARPETA.md).
+comprobada con Alembic; detalle y pruebas en `ALBUMES_CARPETA.md` (historial de Git).
 Las referencias a 0009 siguientes describen la entrega histórica P28.
 
 P28: instalación/configuración actualizadas en INSTALACION.md/CONFIGURACION.md;
@@ -20,26 +20,26 @@ en todas las operaciones. No intercambiar credenciales o volúmenes entre proyec
 P26 verifica procesos HTTP nuevos con bases echobeats_test_<uuid> y medios
 temporales. El fixture global también fija MEDIA_ROOT al recrear Settings: una
 BD aislada por sí sola no aislaba archivos en helpers anteriores. Ver
-HALLAZGO_AISLAMIENTO_P26.md y VALIDACION_P26.md. Conservar los 506 MP3 sin fila,
+`HALLAZGO_AISLAMIENTO_P26.md` (historial de Git) y el informe histórico de P26. Conservar los 506 MP3 sin fila,
 sin restaurar, reimportar ni borrar por omisión. No hay migración nueva.
 
 P24 añade 0009_favorites (track_id único/FK y created_at), aplicada tras respaldo
 desde 0008. No modifica catálogo ni medios; downgrade rechaza preferencias
-existentes. Ver FAVORITOS.md y VALIDACION_P24.md. No usar principal para tests.
+existentes. Ver `FAVORITOS.md` (historial de Git) y el informe histórico de P24. No usar principal para tests.
 
 P21 añade 0008_track_embeddings: vector(1536) e identidad de modelo/entrada para
 trabajos de índice. Aplicada tras respaldo privado desde 0007. No se borran medios
 ni trabajos anteriores; downgrade protegido si hay vectores o trabajos de índice.
-La base principal se comprobó sin vectores ficticios. Ver VALIDACION_P21.md.
+La base principal se comprobó sin vectores ficticios. Ver el informe histórico de P21.
 
 P19 añade `0007_track_descriptions`: fichas actuales e historial versionado. Se
 aplicó con respaldo privado previo desde 0006, sin modificar medios. El downgrade
-rechaza retirar fichas existentes. Ver VALIDACION_P19.md para evidencia y respaldo.
+rechaza retirar fichas existentes. Ver el informe histórico de P19 para evidencia y respaldo.
 
 P18 añade `0006_processing_jobs`, sin modificar catálogo/medios. Se aplicó tras
 respaldo privado y se comprobó readiness. Conserva historial de trabajos y rechaza
 downgrade si hay filas; probar reversión solo en bases aisladas. Detalles de
-operación, respaldo y evidencia en [VALIDACION_P18.md](VALIDACION_P18.md).
+operación, respaldo y evidencia en el informe histórico de P18.
 
 Entregable P04, 12 de noviembre de 2026. Configuración para una instalación local
 de un usuario. PostgreSQL 17 con pgvector, imagen fijada por digest en Compose.
@@ -204,7 +204,7 @@ No usar --clean ni elegir como destino POSTGRES_DB. Para un dump trasladado,
 copiarlo explícitamente al contenedor con el mismo prefijo. Verificar revisión,
 filas, referencias y archivos en la copia antes de reconfigurar una aplicación;
 restaurar no la cambia automáticamente. Guardar configuración privada separadamente.
-El roundtrip P28, en datos sintéticos, queda registrado en VALIDACION_P28.md.
+El roundtrip P28, en datos sintéticos, queda registrado en el informe histórico de P28.
 
 Comprobar tablas, revisión, extensión y datos dentro de la nueva base antes de
 considerar cambiar la conexión de la aplicación. Una restauración de esquema
@@ -241,7 +241,7 @@ Los vectores tridimensionales de esta prueba verifican el operador de PostgreSQL
 no son embeddings generados mediante IA ni cumplen por sí solos RF-13/RF-14.
 La tabla es temporal y se retira al terminar su transacción.
 
-Ver [VALIDACION_P04.md](VALIDACION_P04.md) para resultados de esta sesión.
+Ver el informe histórico de P04 para resultados de esta sesión.
 
 Fuentes oficiales consultadas:
 [pgvector](https://github.com/pgvector/pgvector),
@@ -259,4 +259,4 @@ Antes de aplicar P12 se creó un respaldo local con manifiesto/hash; comprobar
 MEDIA_ROOT por separado. No probar downgrade en la principal: 0005 rechaza la
 reversión si hay elementos, fondo personalizado o revisión > 1 para conservar
 los diseños. Las pruebas de reversión usan exclusivamente bases aisladas.
-Evidencias de migración y persistencia A/B: [VALIDACION_P12.md](VALIDACION_P12.md).
+Evidencias de migración y persistencia A/B: el informe histórico de P12.

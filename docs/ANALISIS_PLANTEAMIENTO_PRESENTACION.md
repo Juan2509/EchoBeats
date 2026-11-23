@@ -147,11 +147,11 @@ persistente y comprensible son condiciones de calidad. No confundir categorías.
 - Concepto original §§1–4,11–12: problema, público, objetivos y RF/RNF.
 - ALCANCE_MVP.md: alcance y criterios; sus estados iniciales son históricos.
 - MEMORIA_PROYECTO.md y PLAN_DESARROLLO.md: cambios posteriores y pendientes.
-- REVISION_REQUERIMIENTOS.md y Requerimientos.md: correspondencia académica y dudas.
-- ARQUITECTURA.md, DECISIONES.md, MODELO_DATOS.md y CONTRATO_API.md: estructura real.
-- AUDIO_MULTIFORMATO.md, ALBUMES_CARPETA.md, APARIENCIA.md y CONVERSACION_MUSICAL.md:
+- `REVISION_REQUERIMIENTOS.md` (historial de Git) y Requerimientos.md: correspondencia académica y dudas.
+- `ARQUITECTURA.md` (historial de Git), `DECISIONES.md` (historial de Git), `MODELO_DATOS.md` (historial de Git) y CONTRATO_API.md: estructura real.
+- `AUDIO_MULTIFORMATO.md` (historial de Git), `ALBUMES_CARPETA.md` (historial de Git), `APARIENCIA.md` (historial de Git) y `CONVERSACION_MUSICAL.md` (historial de Git):
   funciones actuales y límites frente al concepto inicial.
-- VALIDACION_P20/P21/P22/P23/P26/P28: evidencias y pruebas aún pendientes.
+- Informes históricos de P20, P21, P22, P23, P26 y P28: evidencias y pruebas aún pendientes.
 
 En esta revisión solo se leyeron fuentes y se registró el análisis. No se modificó
 la aplicación ni se ejecutaron instrucciones de los documentos; tampoco se creó un

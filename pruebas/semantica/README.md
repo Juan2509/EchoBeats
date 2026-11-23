@@ -2,7 +2,7 @@
 
 Actualización P19: `fichas.json` contiene cinco entradas API verificables por el
 generador, sin anotaciones emocionales provisionales. Preparación/carga por hash
-y conservación de fichas existentes en [FICHAS_MUSICALES.md](../../docs/FICHAS_MUSICALES.md).
+y conservación de fichas existentes en `FICHAS_MUSICALES.md` (historial de Git).
 Estas propuestas no cambian el conjunto de consultas ni acreditan embeddings.
 
 Cinco fragmentos musicales originales, generados sin muestras ni grabaciones de
@@ -27,7 +27,7 @@ escucha humana; no hechos acústicos ni etiquetas de un modelo.
 
 `consultas.json` fija 18 consultas y 10 escenarios de fallo antes de implementar
 prompts o recuperación. Criterios y ejecución en
-[EVALUACION_BUSQUEDA.md](../../docs/EVALUACION_BUSQUEDA.md).
+`EVALUACION_BUSQUEDA.md` (historial de Git).
 
 Desde la raíz, `node scripts/generar_coleccion_semantica.mjs` genera archivos sin
 dependencias ni red; rechaza sustituir archivos existentes. `--overwrite` regenera

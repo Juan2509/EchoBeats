@@ -92,7 +92,16 @@ La cola de procesamiento se guarda en PostgreSQL. El trabajador local reclama y 
 | `gateway/`, `deploy/remote/` | Enrutamiento HTTP y configuración de acceso remoto. |
 | `scripts/` | Preparación del entorno, copias de seguridad y validaciones. |
 | `pruebas/` | Archivos sintéticos y casos para probar importación, reproducción y búsqueda. |
-| `docs/` | Referencias técnicas, registros históricos y evidencias de validación. |
+| `docs/` | Alcance, contrato de la API, operación de PostgreSQL, planificación, criterios de aceptación y material académico. |
+
+Las guías ampliadas y los informes de validación retirados se pueden consultar
+en el historial de Git. Estos comandos listan la colección anterior y abren
+un informe. Sustituye el nombre para ver otro documento.
+
+```bash
+git ls-tree -r --name-only edd7326a052a -- docs/
+git show edd7326a052a:docs/VALIDACION_P28.md
+```
 
 ## Configuración
 

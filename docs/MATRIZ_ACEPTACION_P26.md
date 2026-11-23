@@ -5,12 +5,12 @@ Actualización P28: otro proyecto vacío aprobó build/migraciones/dependencias,
 dump/restauración a nueva BD y copia de medios sintéticos verificados. Complementa
 el arranque/transporte/persistencia de CA-01 a nivel técnico; no sustituye los
 otros recorridos P26, navegador/escucha ni CA-10/CA-11.
-Guía repetible en GUIA_DEMOSTRACION.md, evidencia en VALIDACION_P28.md.
+Guía repetible en `GUIA_DEMOSTRACION.md` (historial de Git), evidencia en el informe histórico de P28.
 
 14 de noviembre de 2026. Fuente de aceptación: ALCANCE_MVP.md, CA-01–CA-13.
 **Ningún recorrido audible/visual se declara superado solo por HTTP o dobles.**
 Pruebas ejecutadas sin OpenAI real, con PostgreSQL/pgvector y medios aislados.
-Detalle de ejecución y artefactos en [VALIDACION_P26.md](VALIDACION_P26.md).
+Detalle de ejecución y artefactos en el informe histórico de P26.
 
 | Caso | Resultado observado | Evidencia repetible | Pendiente de aceptación completa |
 | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Detalle de ejecución y artefactos en [VALIDACION_P26.md](VALIDACION_P26.md).
 | CA-07 Aislamiento A/B | Aprobado en API: A/B distintos, revisión ajena rechazada y composiciones independientes antes/después de dos reinicios; reset A no cambia B. Respuestas tardías cubiertas con controlador. | Recorrido HTTP, test_walls.py y wall-saving/walls.test.ts. | Alternar visualmente A/B y verificar selección/recursos después de reinicio. |
 | CA-08 Bloqueo y audio | Aprobado con dobles: muro arranca bloqueado, rechaza cambio, editar/guardar/bloquear y fallo de Explorar no interrumpen seek, volumen y cola del mismo reproductor. | player.test.ts: flujo integrado P26; walls.test.ts. | Intento real de arrastre bloqueado y controles accesibles con audio en los tres anchos. |
 | CA-09 Búsqueda textual | Aprobado en API: título/artista/álbum y ausencia de coincidencias, sin perder catálogo. | Recorrido HTTP y test_library.py. | Teclado, foco y estados de vacío/carga/error visibles. |
-| CA-10 API/vector real | Pendiente por petición del usuario: no se repitieron llamadas tras falta de créditos. SQL/pgvector con proveedor simulado aprobado como evidencia técnica complementaria. | test_indexing.py/test_search.py; VALIDACION_P20–P22.md. | Embeddings y consulta de API real compatibles, recibo sin secretos y evaluación. Vectores artificiales no cuentan. |
+| CA-10 API/vector real | Pendiente por petición del usuario: no se repitieron llamadas tras falta de créditos. SQL/pgvector con proveedor simulado aprobado como evidencia técnica complementaria. | test_indexing.py/test_search.py; informes históricos de P20 a P22. | Embeddings y consulta de API real compatibles, recibo sin secretos y evaluación. Vectores artificiales no cuentan. |
 | CA-11 Sensaciones y escucha | Pendiente real/musical. Recuperación, fuentes/versiones, citas literales, preferencias y cola verificadas técnicamente. | test_exploration.py/test_preferences.py; explore/player.test.ts; corpus P17. | Consultas y música autorizada, pertinencia, explicación y reproducción audible con API real. No calibrar con reservadas ni vectores ficticios. |
 | CA-12 Fallos de proveedor | Aprobado en API/controladores: cuota/timeout/respuesta inválida, catálogo/playlist/favoritos y rangos utilizables; consulta textual disponible y proveedor simulado recuperado en petición posterior explícita. Generación con fallback/citas inválidas cubierta en P23. | test_runtime_integration.py: test_provider_failure_then_recovery_keeps_catalog_audio_and_preferences_usable (3 variantes); test_exploration.py; flujo integrado player.test.ts. | Estado visual y audio audible durante fallo. Simular fallo no acredita RF-14 ni éxito del proveedor real. |
 | CA-13 Reconocimiento | **No aplica: reconocimiento no incluido (O01/RF-18 aplazados).** | Alcance vigente y ausencia de integración de identificación. | Solo se ejecutará si se habilita O01. Nunca registrar como superado. |
@@ -41,4 +41,4 @@ Detalle de ejecución y artefactos en [VALIDACION_P26.md](VALIDACION_P26.md).
 Matriz elaborada y evidencias automáticas repetibles disponibles. **P26 no cierra
 el MVP**: conserva aceptación visual/audio y CA-10/CA-11 pendientes. P08, P15,
 P16 y P20–P25 mantienen sus limitaciones registradas. El protocolo pendiente está
-en [RECORRIDOS_P26.md](RECORRIDOS_P26.md). Avanzar de etapa no borra estas deudas.
+en `RECORRIDOS_P26.md` (historial de Git). Avanzar de etapa no borra estas deudas.

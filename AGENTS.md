@@ -1,5 +1,10 @@
 # EchoBeats: contexto del proyecto
 
+El README reúne la documentación principal. Para consultar una guía o un
+informe marcado como histórico, ejecutar
+`git show edd7326a052a:docs/VALIDACION_P28.md` con el nombre del archivo
+correspondiente. La revisión conserva la colección de documentación anterior.
+
 Consigna de presentación recibida: descripción, justificación, objetivo general,
 objetivos específicos, RF y RNF, para lunes sin fecha exacta. Usuario pidió primero
 analizar y conservar contexto. Leer docs/ANALISIS_PLANTEAMIENTO_PRESENTACION.md antes
@@ -23,7 +28,7 @@ sesión via playing, memoria sin BD/localStorage, opción olvidar. No enviar aud
 Mensajes acotados; planes/referencias validados;500 candidatos de catálogo máximo,
 no anunciar pertinencia musical evaluada.251 backend aisladas/100 frontend/build y
 Chrome con respuestas simuladas360/768 aprobados. Sin API real ni migración; sigue
-pendiente por créditos. Leer docs/CONVERSACION_MUSICAL.md antes de ampliar IA.
+pendiente por créditos. Leer `CONVERSACION_MUSICAL.md` (historial de Git) antes de ampliar IA.
 
 Directriz posterior: álbum cabe entero en viewport desde651px. Editar pared junto
 a Mi biblioteca mediante portal. Room/sidebar alto adaptativo entre toolbar/player;
@@ -85,7 +90,7 @@ acotada y selección/foco/hover explícitos sin verde oscuro heredado. Pedido po
 quitar recuadro/título visible La pared de…, mantener Editar pared y estado compactos;
 título solo accesible. No poner panel detrás del lienzo. 95 pruebas frontend/build,
 flujo de carpetas simulado y contraste acotado 4,5:1 con blanco/negro/magenta en
-inicio/biblioteca/explorar/álbum/diálogos y 360/768 aprobados. Ver APARIENCIA.md.
+inicio/biblioteca/explorar/álbum/diálogos y 360/768 aprobados. Ver `APARIENCIA.md` (historial de Git).
 Sin certificación universal, escrituras personales, API real ni cierre de pendientes.
 
 15 noviembre: álbumes como carpetas, botón Crear álbum en Inicio con nombre,
@@ -99,7 +104,7 @@ respaldo privado; downgrade protegido solo probado en BD aislada. X solo en mini
 propia, jamás presets/herencia; lienzo de fondo con arrastre/giro/rueda/teclado.
 244 pruebas backend aisladas, 95 frontend y build aprobados. Chrome con mutaciones
 simuladas verificó flujo, destino, X, giro y creación 360/768; sin borrados personales.
-Leer docs/ALBUMES_CARPETA.md. Sin API real, purga de medios ni commit; pendientes
+Leer `ALBUMES_CARPETA.md` (historial de Git). Sin API real, purga de medios ni commit; pendientes
 previos de audio/aceptación vigentes.
 
 Filas del álbum ya no repiten enlace al propio álbum ni Ficha y opciones por pista.
@@ -108,7 +113,7 @@ sin reintentos PUT). Fichas y opciones del álbum al final del panel: selector d
 todas las pistas, incluso más de 100, carga perezosa/cancelable; editor original
 con procedencia/versiones, preparación y similares. No indexa/genera al abrir.
 91 pruebas frontend/build y Chrome aislado con 125 pistas/guardados simulados
-aprobados; edición de última pista y corazones/móvil. Ver docs/APARIENCIA.md.
+aprobados; edición de última pista y corazones/móvil. Ver `APARIENCIA.md` (historial de Git).
 
 Stickers: Objeto → Editar contorno permite color hexadecimal y grosor 0–12, paso .5,
 con preview inmediata; 0 sin contorno. Filtro SVG dilata alfa del PNG sin marco ni
@@ -136,7 +141,7 @@ opuesta/ejes girados, limita a geometría existente 3–60% y muro, snapshot por
 sin guardar hasta soltar; Escape/cancelar restaura. Tiradores/foco y flechas accesibles,
 solo selección; overlay por encima sin cambiar capas. Sustituye restricción previa
 de tamaño fijo; no reintroduce campos numéricos. 78 pruebas frontend/build y Chrome
-aislado con cursor/Shift/guardados simulados aprobados. Ver docs/APARIENCIA.md.
+aislado con cursor/Shift/guardados simulados aprobados. Ver `APARIENCIA.md` (historial de Git).
 
 Selección del muro ahora solo directa sobre imágenes (también foco de teclado),
 sin desplegable Seleccionar objeto. El objeto seleccionado muestra contorno de
@@ -149,14 +154,14 @@ sin backdrop/desenfoque/bloqueo del muro. Minimizar/Expandir y movimiento por te
 posición acotada a viewport/resize, solo durante apertura. Selección sobre muro
 muestra Objeto automáticamente sin impedir arrastre/rotación. 74 pruebas/build;
 Chrome aislado verificó panel/imagen móviles a la vez, cambio de apariencia con
-guardado simulado, teclado y 768/360 sin desbordamiento. Ver docs/APARIENCIA.md.
+guardado simulado, teclado y 768/360 sin desbordamiento. Ver `APARIENCIA.md` (historial de Git).
 
 Herramientas inferiores trasladadas a diálogo desde Editar pared, con páginas
 Añadir/Objeto/Capas/Guardar. Volver al muro/Escape conserva edición; Terminar edición
 guarda y bloquea. Scroll/foco restaurados al cerrar. Chrome aislado verificó cuatro
 páginas sin scroll a 1280x800/768x800/360x640 con muro/guardados simulados; fallback
 de scroll para zoom/ventana menor/errores extensos. 74 pruebas/build aprobados.
-Ver docs/APARIENCIA.md. No se modificaron muros principales ni backend.
+Ver `APARIENCIA.md` (historial de Git). No se modificaron muros principales ni backend.
 
 Ajuste del 15 de noviembre: objeto seleccionado permite cambiar Imagen sin marco /
 Sticker con contorno en edición; conserva ID/asset/geometría/capas y autoguardado.
@@ -171,7 +176,7 @@ Imagen sin marco y sticker con contorno alfa; Póster oculto, heredados como ima
 Sin ancho/alto independientes ni campo Giro. Doble clic activa/desactiva ↻; arrastre
 rota o mueve; R/flechas/Escape accesibles. rotateGesture conserva snapshot y guarda
 al soltar, mantiene CAS/autosave/encaje. 73 pruebas/build y Chrome aislado con mocks
-de muro/guardado aprobados; no escrituras en principal. Ver docs/APARIENCIA.md.
+de muro/guardado aprobados; no escrituras en principal. Ver `APARIENCIA.md` (historial de Git).
 
 Última ampliación: controles/navegación con bordes y superficie opaca; galería de
 fondos con miniaturas/selección inspirada en captura adjunta. Imagen del muro es
@@ -180,7 +185,7 @@ transparencia/color reversibles. Lienzo más ancho y Ampliar muro, sin modificar
 geometría ni composiciones BD. Vinilo/Portada recuperados en biblioteca y detalle,
 selección predeterminada y por álbum en preferencias locales, no BD/multi-PC.
 71 pruebas frontend y build; Chrome aislado con Canvas real y upload simulado,
-galería móvil/imagen del muro/ampliación/vinilos/recarga comprobados. Ver APARIENCIA.md.
+galería móvil/imagen del muro/ampliación/vinilos/recarga comprobados. Ver `APARIENCIA.md` (historial de Git).
 
 Ampliación de apariencia del 14 de noviembre: sin recuadro vacío del muro ni panel
 inline de personalización. Configuración abre diálogo; Fondo del álbum ofrece
@@ -188,14 +193,14 @@ principal/herencia o fondo propio. Synthwave/vaporwave/imagen, encuadre cover/co
 zoom y posición no destructivos. Transparente/Color del muro reversibles por álbum,
 sin borrar color BD. Preferencias siguen locales por navegador/origen, no multi-PC.
 PNG/JPEG/WebP se preparan en navegador como copia JPEG <=2560 px/5 MiB; original
-intacto, entrada <=25 MiB/48 MP/16384 por lado. Ver docs/APARIENCIA.md.
+intacto, entrada <=25 MiB/48 MP/16384 por lado. Ver `APARIENCIA.md` (historial de Git).
 69 pruebas frontend/build aprobados; interacción headless con Canvas real y subida
 simulada (no prueba de upload real). Capturas diálogo 360/768 y fondo 1280 revisadas.
 No cerrar pendientes previos de audio/aceptación ni llamadas reales OpenAI.
 
 Solicitud posterior a P28: el usuario ahora pide parecido visual con Refrencia.png,
 vaporwave/synthwave y colores/fondo ajustables. Sustituye su directriz previa de
-referencia solo estructural. Ver docs/APARIENCIA.md. Tema neón inicial con CSS vars,
+referencia solo estructural. Ver `APARIENCIA.md` (historial de Git). Tema neón inicial con CSS vars,
 Configuración/Tu atmósfera, localStorage por navegador/origen (no sincronizado BD),
 fondo opcional como asset local y escena del muro transparente o color por álbum.
 Elegir color en editor activa modo álbum; no sobrescribir diseños/recursos.
@@ -205,7 +210,7 @@ Vite polling resuelve estilos obsoletos en carpetas compartidas. Sin migraciones
 OpenAI ni borrado de medios; conservar 506 MP3 sin fila. No se creó commit.
 
 P28 prepara entrega: README, INSTALACION/CONFIGURACION/ARQUITECTURA y
-GUIA_DEMOSTRACION. Leer VALIDACION_P28.md. Arranque final aislado
+GUIA_DEMOSTRACION. Leer el informe histórico de P28. Arranque final aislado
 echobeats_p28_83f7845a aprobado desde BD/medios vacíos, pip/alembic check,
 build/62 pruebas frontend, importación/rangos/proxy y recreación de contenedor
 con audio persistente. Dump/restauración a BD nueva y copia de un medio verificados.
@@ -219,7 +224,7 @@ paso automático. No se crearon commits.
 
 P27 corrige lecturas N+1 de páginas (pistas 98→4 SQL, álbumes 74→4 en 24 elementos),
 carga oculta del editor, entrega visual con truncado/permisos y nombres/foco de
-diálogos/controles. Ver docs/REVISION_CALIDAD_P27.md y docs/VALIDACION_P27.md.
+diálogos/controles. Ver `REVISION_CALIDAD_P27.md` (historial de Git) y el informe histórico de P27.
 241 pruebas backend/62 frontend y build aprobados; sin migraciones/dependencias.
 Auditoría acotada con scripts/revisar_secretos.mjs no emite claves ni contenidos;
 no certificar historial completo/logs no examinados, accesibilidad o rendimiento
@@ -228,8 +233,8 @@ medios/respaldos; no reanudar OpenAI. Visual/escucha y aceptación P26 pendiente
 P27 conserva cierre visual abierto. Próximo P28 a petición del usuario.
 
 P26 verifica integración HTTP con dos reinicios reales de procesos aislados y
-recuperación ante fallos simulados. Leer docs/VALIDACION_P26.md,
-docs/MATRIZ_ACEPTACION_P26.md y docs/HALLAZGO_AISLAMIENTO_P26.md. 237 pruebas
+recuperación ante fallos simulados. Leer el informe histórico de P26,
+docs/MATRIZ_ACEPTACION_P26.md y `HALLAZGO_AISLAMIENTO_P26.md` (historial de Git). 237 pruebas
 backend/61 frontend y build aprobados. Corregido aislamiento de tests: fixture
 autouse fija MEDIA_ROOT temporal, vacía clave y desactiva IA/worker por omisión,
 también al recrear Settings. Antes algunos helpers podían escribir en medios
@@ -240,7 +245,7 @@ llamadas reales. CA-13 no aplica; visual/escucha y CA-10/CA-11 pendientes, P26
 no cerrado. Próximo P27 a petición; conservar todos los pendientes anteriores.
 
 P25 incorpora preferencias off/favorites/discovery en consulta y similares.
-Leer `docs/PREFERENCIAS.md` y `docs/VALIDACION_P25.md`. Regla adjacent_pairs_v1:
+Leer `PREFERENCIAS.md` (historial de Git) y el informe histórico de P25. Regla adjacent_pairs_v1:
 pares disjuntos dentro del top K, desplazamiento máximo uno; no cambiar scores
 ni incorporar favoritas ajenas. Discovery excluye antes del límite. Revalidar
 favoritos/filtros/elegibilidad después de generación y reconstruir comparación;
@@ -250,7 +255,7 @@ frontend y build aprobados; evaluación musical/visual pendiente. Sin migracione
 llamadas reales; conservar pendientes anteriores. Próximo bloque P26 a petición.
 
 P24 añade favoritos explícitos locales, controles compartidos y listado/cola
-filtrada. Leer `docs/FAVORITOS.md` y `docs/VALIDACION_P24.md`. 0009_favorites
+filtrada. Leer `FAVORITOS.md` (historial de Git) y el informe histórico de P24. 0009_favorites
 aplicada tras respaldo; 222 pruebas backend/57 frontend y build aprobados.
 PUT expresa estado deseado; no reintentar automáticamente guardados inciertos.
 No historial, cuentas ni cambios de ranking (P25). Downgrade rechaza favoritos
@@ -258,7 +263,7 @@ existentes; probar solo en bases aisladas. Revisión visual pendiente; conservar
 pendientes anteriores y no llamar a OpenAI. Próxima implementación prevista P25.
 
 P23 implementa Explorar, filtros, similares, fuentes y reproducción de la cola
-recuperada. Leer `docs/EXPLORACION.md` y `docs/VALIDACION_P23.md`. Selección de
+recuperada. Leer `EXPLORACION.md` (historial de Git) y el informe histórico de P23. Selección de
 citas con IA solo mediante opt-in; no publicar prosa libre del modelo. Comprobar
 citas literales/versión y revalidar elegibilidad/filtros tras red, sin transacción
 abierta durante proveedor. Ante fallo conservar descripciones registradas.
@@ -268,7 +273,7 @@ cierre real/evaluación y revisión visual pendientes. Próxima implementación 
 no iniciar sin petición. Conservar pendientes visuales/audio anteriores.
 
 P22 implementa API exacta semántica/textual/híbrida, filtros y similares sin repetir
-referencia. Ver `docs/RECUPERACION_SEMANTICA.md` y `docs/VALIDACION_P22.md`.
+referencia. Ver `RECUPERACION_SEMANTICA.md` (historial de Git) y el informe histórico de P22.
 197 pruebas backend/45 frontend y build aprobados. Sin llamadas reales por petición
 del usuario; P20–P22 conservan cierre/evaluación pendientes. No elegir umbral con
 vectores ficticios ni presentar distancias/RRF como confianza. Sin umbral calibrado
@@ -277,7 +282,7 @@ no abrir transacción durante red. Evaluador local no certifica API real. Interf
 Explorar y explicaciones corresponden a P23; conservar pendientes visuales/audio.
 
 P21 implementa almacenamiento pgvector(1536), cola index_description y controles.
-Leer `docs/EMBEDDINGS.md` y `docs/VALIDACION_P21.md`. 0008 aplicada tras respaldo,
+Leer `EMBEDDINGS.md` (historial de Git) y el informe histórico de P21. 0008 aplicada tras respaldo,
 175 pruebas backend/45 frontend y build aprobados. Proveedor simulado solo en BD
 aisladas; principal sin vectores de prueba. El usuario confirmó falta de créditos y
 pidió dejar pendiente la prueba real: no repetir llamadas sin resolver/reanudar.
@@ -287,7 +292,7 @@ con CAS por intento y versión/hash/elegibilidad/modelo. Conservar historial.
 Próxima implementación prevista P22; mantener revisiones visuales/audio pendientes.
 
 P20 implementado con cierre real pendiente por OpenAI credit_balance_exhausted.
-Leer `docs/INTEGRACION_IA.md` y `docs/VALIDACION_P20.md`. Clave en .env privado,
+Leer `INTEGRACION_IA.md` (historial de Git) y el informe histórico de P20. Clave en .env privado,
 nunca mostrarla/versionarla ni copiarla al frontend. API de estado no consume ni
 acredita proveedor válido. AI_ENABLED=false por defecto. Dos pruebas --live con
 texto sintético fallaron por 429; cero respuestas validadas. No repetir hasta
@@ -295,7 +300,7 @@ resolver créditos ni marcar P20 cerrado con mocks. app.ai_check --live es expl�
 hasta dos solicitudes, sin reintentos, sin biblioteca/audio. P21 depende de P20.
 
 P19 implementa fichas con procedencia/atributos, versiones e historial, editor y
-precondiciones. Leer `docs/FICHAS_MUSICALES.md` y `docs/VALIDACION_P19.md` antes de
+precondiciones. Leer `FICHAS_MUSICALES.md` (historial de Git) y el informe histórico de P19 antes de
 P20/P21. 0007 aplicada tras respaldo. No sobrescribir manuales desde P18 ni anunciar
 embeddings existentes. Derivados de metadatos conservan revisión y metadata_stale;
 emociones/energía/contexto son interpretaciones manuales. Corpus P17 preparado en
@@ -304,7 +309,7 @@ crea ausentes por hash exacto con --apply. 135 pruebas backend/45 frontend y bui
 aprobados. UI pendiente; conservar pendientes anteriores. Próxima implementación P20.
 
 P18 implementa cola durable PostgreSQL, trabajador local y API/controles de
-preparación de metadatos. Ver `docs/PROCESAMIENTO.md` y `docs/VALIDACION_P18.md`.
+preparación de metadatos. Ver `PROCESAMIENTO.md` (historial de Git) y el informe histórico de P18.
 0006_processing_jobs aplicada tras respaldo; no usar la principal para downgrades.
 No llamar recover fuera del dueño del bloqueo de trabajador; conservar CAS por
 intento/revisión. No anunciar fichas, embeddings ni análisis acústico por completed.
@@ -312,7 +317,7 @@ intento/revisión. No anunciar fichas, embeddings ni análisis acústico por com
 Próxima implementación P19. P08/P15/P16/audio conservan pendientes.
 
 P17 completó casos y protocolo de evaluación, no recuperación ni IA. Leer
-`docs/EVALUACION_BUSQUEDA.md`, `docs/VALIDACION_P17.md` y `pruebas/semantica/` antes
+`EVALUACION_BUSQUEDA.md` (historial de Git), el informe histórico de P17 y `pruebas/semantica/` antes
 de trabajar P18–P23. Cinco WAV originales, 18 consultas y diez fallos; verificar con
 `node scripts/validar_coleccion_semantica.mjs`. Reservadas no sirven para ajustar
 prompts. Emociones editoriales pendientes de escucha no son hechos verificados.
@@ -320,11 +325,11 @@ No importar ni indexar por leer documentos. Próxima implementación P18.
 
 P16 añade autoguardado agrupado y serializado, conserva ediciones nuevas durante
 una escritura y ofrece restauración/reset versionado con confirmación. Ver
-`docs/VALIDACION_P16.md`. 42 pruebas frontend aprobadas; recorrido visual y reinicio
+el informe histórico de P16. 42 pruebas frontend aprobadas; recorrido visual y reinicio
 CA-06/CA-07 pendientes por host de navegador no disponible. Próxima implementación P17.
 
 P15 implementa tamaño, giro y capas con selector de objetos tapados; ver
-`docs/VALIDACION_P15.md`. Pruebas frontend y build aprobados; cierre visual
+el informe histórico de P15. Pruebas frontend y build aprobados; cierre visual
 360/768/1280 pendiente por bloqueo de identificación de URL en Computer Use.
 No marcar P15 cerrado sin esa revisión; próxima implementación P16.
 
@@ -332,14 +337,14 @@ El usuario confirmó el 12 de noviembre de 2026 que el nombre definitivo es
 **EchoBeats**. «Dream Radio» es únicamente el nombre histórico del documento conceptual.
 
 Para recuperar el contexto, leer `docs/MEMORIA_PROYECTO.md` y consultar
-`docs/GUIA_DOCUMENTACION.md` para localizar el material técnico relevante.
+`GUIA_DOCUMENTACION.md` (historial de Git) para localizar el material técnico relevante.
 El trabajo por etapas y commits, sus dependencias y el registro de continuidad
 están en `docs/PLAN_DESARROLLO.md`; consultar su estado antes de implementar.
 Los documentos completos se conservan en `docs/referencias/`.
 
 El alcance del MVP y las matrices RF/CA están en `docs/ALCANCE_MVP.md`.
-P02 define la arquitectura en `docs/DECISIONES.md`, las vistas en
-`docs/DISENO_PANTALLAS.md`, el modelo en `docs/MODELO_DATOS.md` y la API en
+P02 define la arquitectura en `DECISIONES.md` (historial de Git), las vistas en
+`DISENO_PANTALLAS.md` (historial de Git), el modelo en `MODELO_DATOS.md` (historial de Git) y la API en
 `docs/CONTRATO_API.md`. Consultarlos antes de implementar: aplicación local
 de un usuario, React/TypeScript/Vite, Python/FastAPI y PostgreSQL/pgvector,
 con medios gestionados y sin autenticación ni exposición pública en el MVP.
@@ -357,38 +362,38 @@ por sí sola elegir todo el stack, instalar dependencias ni implementar la aplic
 Las solicitudes posteriores autorizaron desarrollar P01 y P02; las decisiones
 técnicas de P02 son elecciones de trabajo documentadas, no aprobaciones docentes.
 El usuario también autorizó P03: ya hay estructura y arranque mínimo local.
-Leer `README.md` y `docs/VALIDACION_P03.md` para instalación y comprobaciones.
+Leer `README.md` y el informe histórico de P03 para instalación y comprobaciones.
 Los locks se instalan con `npm ci` y `pip --require-hashes`;
 no usar el Python 3.10 del host como entorno del backend Python 3.12.
 P04 incorpora BD real, Alembic, /ready, respaldo y restauración.
-Consultar `docs/BASE_DATOS.md` y `docs/VALIDACION_P04.md`. Host PostgreSQL 5433;
+Consultar `docs/BASE_DATOS.md` y el informe histórico de P04. Host PostgreSQL 5433;
 interno postgres:5432. Mantener .env privado, volumen y backups existentes.
 Nunca borrar volúmenes al arrancar ni usar la base principal para downgrades/tests.
 P05/P06 añaden catálogo e importación real de MP3.
-Consultar `docs/IMPORTACION_MP3.md` y `docs/VALIDACION_P06.md`. La importación
+Consultar `IMPORTACION_MP3.md` (historial de Git) y el informe histórico de P06. La importación
 completa etiquetas desde P07; no implementa reproducción todavía.
 Conservar medios importados; `python -m app.media_audit` es solo lectura.
 P07 añade etiquetas, portadas, edición con procedencia y protección de cambios
-manuales. Consultar `docs/METADATOS.md` y `docs/VALIDACION_P07.md`; siguiente P08.
+manuales. Consultar `METADATOS.md` (historial de Git) y el informe histórico de P07; siguiente P08.
 No reescribir MP3 originales ni sobrescribir campos manuales al extraer etiquetas.
 P08 incorpora inicio, navegación, biblioteca visual paginada, búsqueda textual y
-detalle de álbum. Ver `docs/VALIDACION_P08.md`: implementación y pruebas HTTP
+detalle de álbum. Ver el informe histórico de P08: implementación y pruebas HTTP
 listas; revisión visual pendiente por bloqueo de la herramienta de navegador.
 No declarar cerrado P08 sin revisar teclado y anchos 360/768/1280; después P09.
 El usuario autorizó avanzar P09 aunque P08 conserve esa revisión pendiente.
 P09 sirve MP3 originales mediante GET/HEAD y rangos; fichas incluyen audio_url.
-Consultar `docs/VALIDACION_P09.md`: pruebas de bytes/HTTP listas; reproducción y
+Consultar el informe histórico de P09: pruebas de bytes/HTTP listas; reproducción y
 seek manual no confirmados por actividad del usuario durante el control UI.
 Siguiente implementación P10, manteniendo registradas las revisiones pendientes.
 El usuario autorizó P10: reproductor compartido único, selección desde pistas,
 cola completa del álbum/búsqueda, controles y errores de audio. Consultar
-`docs/VALIDACION_P10.md`; las pruebas de controlador usan un doble de audio,
+el informe histórico de P10; las pruebas de controlador usan un doble de audio,
 no acreditan escucha real ni continuidad visual. La revisión manual quedó
 pendiente por actividad del usuario en Brave; P08/P09 mantienen sus pendientes.
 Siguiente implementación P11. No iniciar audio automáticamente al recargar.
 P09/P10 quedaron registrados posteriormente en `6e001a0`, con los recorridos
 manuales aún pendientes. El usuario habilitó O06 expresamente: MP3, WAV PCM,
-FLAC nativo y Ogg Vorbis/Opus (.ogg/.opus). Ver `docs/AUDIO_MULTIFORMATO.md`.
+FLAC nativo y Ogg Vorbis/Opus (.ogg/.opus). Ver `AUDIO_MULTIFORMATO.md` (historial de Git).
 Migración 0004_audio_formats amplía claves sin reescribir originales; downgrade
 rechaza medios de formatos nuevos en vez de borrarlos. MIME por contenido,
 etiquetas ID3/Vorbis Comments, portadas y avisos de compatibilidad del navegador.
@@ -401,27 +406,27 @@ siguiente implementación P11, conservando las validaciones manuales pendientes.
 
 P11 incorpora playlists versionadas, canciones ordenadas, imagen PNG/JPEG con
 apariencia vinilo/tarjeta y reproducción en orden guardado. Consultar
-`docs/VALIDACION_P11.md`. Tablas P05 reutilizadas, sin migración. Guardados de
+el informe histórico de P11. Tablas P05 reutilizadas, sin migración. Guardados de
 ficha y secuencia serializados con ETag; ante fallo parcial conservar borrador
 y comunicar el resultado incierto. Siguiente P12; pendientes anteriores vigentes.
 
 P11 quedó registrado en `12bd0e5`. P12 añade `0005_album_walls`, muro inicial
 por álbum (incluidos preexistentes), GET/PUT/reset versionados, geometría y
-recursos validados, guardado atómico. Ver `docs/VALIDACION_P12.md`: 102 pruebas
+recursos validados, guardado atómico. Ver el informe histórico de P12: 102 pruebas
 y recuperación A/B tras reiniciar backend. Downgrade rechaza diseños guardados;
 nunca probarlo en la principal. No hay editor visual aún; siguiente P13.
 Se conservan los pendientes manuales anteriores y todos los medios/volúmenes.
 
 P12 registrado en `4c5c0d4`. P13 muestra el muro en la vista de álbum, arranca
 bloqueado y permite editar/guardar color sin perder elementos ni reiniciar audio.
-Ver `docs/VALIDACION_P13.md`: 25 pruebas frontend y recorrido Chrome en
+Ver el informe histórico de P13: 25 pruebas frontend y recorrido Chrome en
 360/768/1280, teclado, aislamiento y conflictos. Solo se cambió el fondo del
 álbum de demostración A. No hay aún arrastre/carga/borrado de objetos: siguiente
 P14. Pendientes de audio/revisión anteriores vigentes; P16 ampliará el guardado.
 
 P13 registrado en `655add4`. P14 añade purpose=wall para PNG/JPEG/GIF con
 preview estática; selección/arrastre/flechas/botones/quitar solo en edición.
-Ver `docs/VALIDACION_P14.md`: 112 pruebas backend, 29 frontend, GIF real y
+Ver el informe histórico de P14: 112 pruebas backend, 29 frontend, GIF real y
 persistencia tras reinicio. Hasta 30 objetos, 5 MiB, 4096 por lado/16 MP; GIF
 hasta 200 fotogramas/32 MP decodificados totales. Quitar o descartar no elimina
 archivos registrados; conservar recursos compartidos. Sin migración nueva.
@@ -429,7 +434,7 @@ Siguiente P15; P16 completará coordinación/guardados. Pendientes previos vigen
 
 Directriz expresa del usuario del 13 de noviembre: incorporar progresivamente
 lo descrito en `Requerimientos.md` en las próximas etapas de EchoBeats.
-Leer `docs/REVISION_REQUERIMIENTOS.md` y la directriz al inicio de la memoria.
+Leer `REVISION_REQUERIMIENTOS.md` (historial de Git) y la directriz al inicio de la memoria.
 Orientar la fase IA a procesamiento asíncrono, OpenAI Embeddings, pgvector,
 búsqueda híbrida y respuestas con fuentes; registrar cobertura y evidencias.
 Adaptar al dominio musical y aclarar Java/Spring Boot, VPS/tenants y PDF/OCR

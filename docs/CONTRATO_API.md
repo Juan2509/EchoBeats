@@ -2,14 +2,14 @@
 
 Muros, actualización16 noviembre: cada elemento admite width/height0.03–1.0;
 se siguen validando los bordes rotados. La geometría continúa en unidades
-normalizadas de1000x700 y el guardado conserva If-Match/autosave. Ver APARIENCIA.md.
+normalizadas de1000x700 y el guardado conserva If-Match/autosave. Ver `APARIENCIA.md` (historial de Git).
 
 Ampliación16 noviembre: `POST /api/v1/explore/chat`, conversación musical acotada.
 Entrada: messages (1–6, role user/assistant, content1–1000; último user),
 current_track_id opcional, recent_track_ids hasta12, previous_track_ids hasta20,
 reference_track_id opcional y use_ai=false. Salida: reply, mode local/ai,
 recommendations (track, reason, evidence), warnings y context. Sin historial
-persistente ni audio enviado. Ver [CONVERSACION_MUSICAL.md](CONVERSACION_MUSICAL.md).
+persistente ni audio enviado. Ver `CONVERSACION_MUSICAL.md` (historial de Git).
 
 P27 conserva payloads/orden de páginas, con lectura agrupada interna. GET
 /assets/{id}/content valida archivo regular/tamaño/acceso antes de cabeceras:
@@ -23,7 +23,7 @@ favorites o discovery. GET /tracks/{id}/similar admite el mismo parámetro. 422 
 es inválido. Respuesta preferences {mode,policy,baseline_order,result_order,reordered}
 y cada candidato preference {favorite,base_rank,rank,reason}. Política versionada
 adjacent_pairs_v1; misma consulta/filtros/scores, descubrimiento excluye antes de K.
-Las razones son de orden y no afirmaciones musicales. Ver PREFERENCIAS.md.
+Las razones son de orden y no afirmaciones musicales. Ver `PREFERENCIAS.md` (historial de Git).
 
 ## Actualización efectiva P24 — Favoritos
 
@@ -32,7 +32,7 @@ PUT recibe `{favorite: boolean}` estricto y aplica ese estado idempotentemente,
 sin alternancia ni historial. GET `/api/v1/favorites` devuelve página de pistas
 completas filtradas por q, limit 1–100 y offset >=0; orden título/ID. Sin caché.
 404 pista desconocida, 422 datos inválidos, 403 origen de escritura ajeno,
-503 BD no disponible. Usuario local único. Contrato y concurrencia en FAVORITOS.md.
+503 BD no disponible. Usuario local único. Contrato y concurrencia en `FAVORITOS.md` (historial de Git).
 
 P02 · 12 de noviembre de 2026. Especificación previa a implementación.
 P03 implementó health, P04 ready y P06 imports. P07 incorpora lectura/edición de
@@ -44,8 +44,8 @@ P11 implementa playlists y P12 la API de muros; editor visual e IA siguen pendie
 El OpenAPI generado por FastAPI se
 contrastará con este contrato durante los pasos correspondientes.
 
-Ver [modelo](MODELO_DATOS.md), [decisiones](DECISIONES.md) y
-[recorridos de interfaz](DISENO_PANTALLAS.md).
+Ver `MODELO_DATOS.md` (historial de Git), `DECISIONES.md` (historial de Git) y
+`DISENO_PANTALLAS.md` (historial de Git).
 
 ## 1. Convenciones
 
@@ -147,7 +147,7 @@ del framework; 416 incluye `Content-Range: bytes */tamaño`.
 
 Implementado en P11, sin nueva migración. Máximo 1000 canciones por lista.
 Listado devuelve image_url y track_count sin items; detalle y escrituras devuelven
-items completos en orden. Ver [validación](VALIDACION_P11.md).
+items completos en orden. Ver el informe histórico de P11.
 
 | Método y ruta | Entrada / salida | Regla |
 | --- | --- | --- |
@@ -174,7 +174,7 @@ idéntica recupera el asset existente. Quitar objetos no borra estos recursos.
 
 ## 4. Muro por álbum y concurrencia
 
-Implementado en P12 con `0005_album_walls`; ver [validación](VALIDACION_P12.md).
+Implementado en P12 con `0005_album_walls`; ver el informe histórico de P12.
 Fondo inicial #242038, esquema/revisión 1 y elements vacíos. Colores se devuelven
 en mayúsculas; rotación normalizada a [−180,180), valores finitos. Comprobación
 rotada sobre lienzo 1000 × 700 con tolerancia `1e-7` unidades. Orden por z_index/UUID.
@@ -252,7 +252,7 @@ histórica con revisión de pista actual, incluso después de completar.
 result solo aparece en completados y contiene metadatos ya existentes, hash y aviso
 de alcance; errores no publican excepciones, rutas privadas ni credenciales.
 No modifica pista ni su ETag. El trabajador local serializa ejecución y la API
-no espera su resultado. Ver PROCESAMIENTO.md y VALIDACION_P18.md.
+no espera su resultado. Ver `PROCESAMIENTO.md` (historial de Git) y el informe histórico de P18.
 
 ### Diseño posterior: fichas, embeddings y exploración
 
@@ -262,7 +262,7 @@ GET devuelve 404 description_missing si no existe, o ficha con ETag. PUT devuelv
 412 si hay conflicto, 422 si son inválidos el cuerpo/condiciones simultáneas.
 Admite source manual/verified/metadata y source_details obligatorio. text puede
 ser vacío; features es lista de {name,value,source,evidence,interpretation} con
-atributos permitidos y límites en FICHAS_MUSICALES.md. model no es admisible.
+atributos permitidos y límites en `FICHAS_MUSICALES.md` (historial de Git). model no es admisible.
 Version/content_hash cambian al corregir contenido; no-op conserva versión/ETag.
 Respuesta añade can_index, needs_indexing, index_status=not_indexed,
 input_track_revision, metadata_stale e index_notice. No son pruebas de embeddings.
@@ -271,7 +271,7 @@ o 404 description_version_missing. GET de pista añade content_sha256 de solo le
 para vincular corpus por hash; no cambia su revisión por crear/corregir ficha.
 Las rutas index-jobs/explore/search y el estado compuesto de indexación de pista
 siguen siendo diseño P20–P23. El contrato efectivo P19 tiene prioridad sobre las
-propuestas de la tabla histórica siguiente. Ver VALIDACION_P19.md.
+propuestas de la tabla histórica siguiente. Ver el informe histórico de P19.
 
 La tabla siguiente y `index_status` son diseño para P19–P23; no están implementados
 por P18. GET /jobs y retry ya existen con el contrato efectivo anterior; se
@@ -336,7 +336,7 @@ generation_usage y explanation por resultado; explanation_source=recorded o
 generated_selection. Solo se publican citas literales ID/versión comprobados,
 nunca prosa libre del modelo. Fallo de generación conserva respuesta recuperada
 con alternativa/aviso. Revalidación posterior de versión/hash/modelo/filtros;
-referencia cambiada devuelve 409 reference_changed. Ver EXPLORACION.md.
+referencia cambiada devuelve 409 reference_changed. Ver `EXPLORACION.md` (historial de Git).
 RF-14/CA-11 real y validación de pertinencia siguen pendientes por petición del usuario.
 
 P22 efectivo: POST /explore/search con query, limit (5 por defecto, 1–20), mode
@@ -351,7 +351,7 @@ relevance=candidates_only, warnings y query_usage cuando procede. Resultados
 incluyen track/description/evidence, distance, fusion_score, semantic_rank,
 lexical_rank y explanation_source=recorded. No hay vector ni generación LLM.
 No se confunde ok con pertinencia demostrada: sin umbral calibrado devuelve
-candidatos. Estados vacíos y errores completos en RECUPERACION_SEMANTICA.md.
+candidatos. Estados vacíos y errores completos en `RECUPERACION_SEMANTICA.md` (historial de Git).
 La interfaz Explorar/explicaciones sigue en P23; P20–P22 conservan evidencia real pendiente.
 
 P21 efectivo: POST /tracks/{id}/index-jobs (202, sin cuerpo o {}), GET
@@ -360,7 +360,7 @@ index_description. Modelo/versión/hash se capturan en servidor; entrada arbitra
 no admitida. El trabajo conserva input_version de ficha, input_hash y model_key.
 GET de índice devuelve estado y trabajo, sin vector y sin consumo. GET/PUT ficha
 informan index_status real, incluido ready/stale; el historial permanece histórico.
-Reglas y errores completos en EMBEDDINGS.md. Las rutas de exploración siguen sin
+Reglas y errores completos en `EMBEDDINGS.md` (historial de Git). Las rutas de exploración siguen sin
 implementarse y la evidencia real P20/P21 sigue pendiente mientras falte resolver
 el último error de créditos. No presentar vectores de pruebas aisladas como API real.
 
@@ -369,7 +369,7 @@ available, embedding_model, dimensions, generation_model, prompt_version,
 verification=not_checked y notice. No devuelve clave ni llama a OpenAI; available
 es solo configuración, no cuota/conectividad demostrada. No hay ruta pública de
 generación/embedding ni prueba facturable por HTTP en P20. Adaptadores internos
-y comando explícito app.ai_check --live en INTEGRACION_IA.md. Los rechazos reales
+y comando explícito app.ai_check --live en `INTEGRACION_IA.md` (historial de Git). Los rechazos reales
 por credit_balance_exhausted mantienen pendiente el cierre real de la integración.
 
 No se exponen endpoints de favoritos, estaciones, reconocimiento, cuentas ni

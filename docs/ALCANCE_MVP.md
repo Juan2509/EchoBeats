@@ -6,7 +6,7 @@ Actualización O06 por solicitud posterior del usuario: RF-01 se amplía a MP3,
 WAV PCM, FLAC nativo, Ogg Vorbis y Ogg Opus (.ogg/.opus). Aplican los mismos
 límites, procedencia, edición y conservación de originales. La reproducción
 depende del navegador; no se promete soporte de cualquier códec/contenedor.
-Ver [ampliación y validación](AUDIO_MULTIFORMATO.md).
+Ver `AUDIO_MULTIFORMATO.md` (historial de Git).
 P03 incorporó el entorno y una pantalla de conexión; las funciones musicales
 y las pruebas de aceptación de este alcance todavía no se han implementado/ejecutado.
 
@@ -20,7 +20,7 @@ de IA y consultas reales en PostgreSQL con pgvector.
 Referencias: [concepto original](referencias/Dream_Radio_Documento_Concepto_y_Planificacion.md),
 [memoria](MEMORIA_PROYECTO.md) y [plan de desarrollo](PLAN_DESARROLLO.md).
 Este documento concreta el alcance funcional. P02 resolvió stack, despliegue
-y modelo de usuarios en [DECISIONES.md](DECISIONES.md): aplicación local de
+y modelo de usuarios en `DECISIONES.md` (historial de Git): aplicación local de
 un usuario, sin autenticación ni publicación en internet.
 
 ## 2. Recorridos incluidos
@@ -146,7 +146,7 @@ la evaluación de pertinencia de CA-11, no como una prueba ya superada.
 Actualización P17: se prepararon cinco fragmentos musicales originales de síntesis
 en [pruebas/semantica](../pruebas/semantica/README.md), con archivo/hash, autor,
 procedencia/uso y descripciones verificables por construcción. El
-[protocolo](EVALUACION_BUSQUEDA.md) fija 18 consultas y diez escenarios de fallo.
+`EVALUACION_BUSQUEDA.md` (historial de Git) fija 18 consultas y diez escenarios de fallo.
 Las emociones editoriales siguen pendientes de escucha humana. Esto completa
 la preparación controlada de P17, sin acreditar CA-10/CA-11 ni calidad en música
 externa; ampliar con música autorizada antes de generalizar los resultados.
@@ -157,7 +157,7 @@ Actualización del 13 de noviembre de 2026: el usuario confirma temática libre
 usando los contenidos de clase; EchoBeats puede ser el producto elegido.
 Se recibió `Requerimientos.md`, con un caso RAG documental que debe contrastarse
 con las obligaciones universales de la evaluación. Ver
-[revisión y correspondencia](REVISION_REQUERIMIENTOS.md). Las notas históricas
+`REVISION_REQUERIMIENTOS.md` (historial de Git). Las notas históricas
 siguientes no reabren la libertad de temática ya confirmada.
 
 | Tema | Lo conocido | Pendiente y momento de resolución |
@@ -169,7 +169,7 @@ siguientes no reabren la libertad de temática ya confirmada.
 | RAG | La recuperación de fichas y generación de explicaciones es una aplicación prevista. | Confirmar si la rúbrica exige además una base documental u otra demostración específica. |
 | Evidencias y sustentación | El curso pide repositorio, pruebas, documentación y defensa individual. | Obtener rúbrica, fecha de entrega y formatos exactos; exportar workflows si se incorporan. |
 | Entorno y cuentas | P02 adopta ejecución local de un usuario, sin cuentas ni publicación. | Cambiar a servidor/multiusuario requiere nueva decisión de autenticación y propiedad. |
-| Stack, límites y servicios | P02 define stack y límites iniciales en DECISIONES.md. | Fijar/probar versiones en P03; verificar IA al seleccionar proveedor en P20. |
+| Stack, límites y servicios | P02 define stack y límites iniciales en `DECISIONES.md` (historial de Git). | Fijar/probar versiones en P03; verificar IA al seleccionar proveedor en P20. |
 
 Las preguntas académicas no impiden preparar alcance, diseño y biblioteca.
 No se considera confirmada una exigencia docente solo porque aparezca como
