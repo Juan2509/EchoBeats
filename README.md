@@ -60,11 +60,6 @@ Docker inicia PostgreSQL, aplica las migraciones y levanta Spring Boot, FastAPI 
 Para publicar EchoBeats por HTTPS en un VPS Linux, usa el modo remoto
 con Caddy y un proyecto aislado por cuenta. [Guía de acceso remoto](docs/ACCESO_REMOTO.md).
 
-### Consultar documentos PDF
-
-La sección **Documentos** procesa PDF con OCR, indexa el texto en pgvector y
-responde con citas por página. [Guía del flujo documental](docs/DOCUMENTOS.md).
-
 ### Buscar canciones por sonido
 
 Importa al menos dos canciones. El trabajador local analiza en segundo plano
