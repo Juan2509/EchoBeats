@@ -6,17 +6,56 @@ EchoBeats es un proyecto académico para organizar, reproducir y explorar una co
 
 Necesitas una copia del repositorio, Python 3 o Node.js para preparar el entorno, Docker con contenedores Linux, Docker Compose 2.24 o posterior y conexión a internet para la primera construcción. Docker instala las dependencias de la aplicación dentro de sus imágenes.
 
+### Antes de crear `.env`
+
+EchoBeats conserva PostgreSQL en el volumen Docker `echobeats_postgres_data`. El volumen puede sobrevivir aunque borres o vuelvas a clonar la carpeta del proyecto. La contraseña se guarda por separado en `.env`, que Git no copia. PostgreSQL solo aplica `POSTGRES_PASSWORD` cuando inicializa un volumen vacío.
+
+Comprueba ambos elementos antes de ejecutar el preparador. En PowerShell:
+
+```powershell
+Test-Path .env
+docker volume inspect echobeats_postgres_data
+```
+
+En Linux:
+
+```bash
+test -f .env && echo ".env encontrado" || echo ".env ausente"
+docker volume inspect echobeats_postgres_data >/dev/null 2>&1 && echo "volumen encontrado" || echo "volumen ausente"
+```
+
+| `.env` | Volumen | Cómo continuar |
+| --- | --- | --- |
+| Ausente | Ausente | Instalación nueva. Ejecuta el preparador y continúa con el arranque. |
+| Presente | Ausente | Instalación nueva con configuración preparada. Conserva `.env` y continúa. |
+| Presente | Presente | Instalación existente. No ejecutes de nuevo el preparador. Verifica la contraseña con el paso de PostgreSQL y continúa. |
+| Ausente | Presente | Hay datos de una instalación anterior. Recupera primero el `.env` asociado. Si se perdió, sigue **Recuperar el arranque si PostgreSQL rechaza la contraseña**. No generes otra contraseña y arranques todos los servicios directamente. |
+
+Una copia nueva del repositorio no implica que el volumen esté vacío. Conserva juntos el `.env`, el volumen PostgreSQL y `data/media/` para mantener recuperable la biblioteca.
+
 ### Windows
 
 Inicia Docker Desktop en modo de contenedores Linux. Abre PowerShell en la carpeta del proyecto, junto a `compose.yaml`.
 
 ```powershell
-py -3 scripts/preparar_entorno.py
+if (-not (Test-Path .env)) {
+    docker volume inspect echobeats_postgres_data 2>$null | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        throw "Existe el volumen echobeats_postgres_data pero falta .env. Recupera el archivo o sigue la sección de recuperación."
+    }
+    py -3 scripts/preparar_entorno.py
+}
 docker compose config --quiet
+docker compose up -d --wait postgres
+docker compose exec -T postgres sh -c 'PGPASSWORD="$POSTGRES_PASSWORD" exec psql -X -w -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT 1"'
 docker compose up --build -d --wait
+docker compose ps -a
+Invoke-RestMethod http://localhost:8000/api/v1/ready
 ```
 
-Si PowerShell no reconoce `py`, usa `python scripts/preparar_entorno.py`. Si tienes Node.js, también puedes usar `node scripts/preparar_entorno.mjs`. Si Docker Desktop está abierto pero PowerShell no encuentra `docker`, abre una terminal nueva y comprueba `docker compose version`. Para errores al validar o levantar el proyecto, consulta las soluciones que siguen.
+El bloque ejecuta el preparador solo cuando faltan tanto `.env` como el volumen. Si PowerShell no reconoce `py`, sustituye esa línea por `python scripts/preparar_entorno.py`. Si tienes Node.js, también puedes usar `node scripts/preparar_entorno.mjs`. Si Docker Desktop está abierto pero PowerShell no encuentra `docker`, abre una terminal nueva y comprueba `docker compose version`.
+
+La consulta a PostgreSQL debe imprimir `1`. Si rechaza la contraseña, detente y usa la recuperación documentada abajo. Cuando el arranque termine, `migrate` debe aparecer como `Exited (0)` en `docker compose ps -a` y `/api/v1/ready` debe devolver el estado `ready`.
 
 ### Linux
 
@@ -34,24 +73,39 @@ docker info
 Con Docker disponible, prepara el entorno, valida la configuración y levanta los servicios. Si un comando falla, resuélvelo antes de continuar con el siguiente.
 
 ```bash
-python3 scripts/preparar_entorno.py
+if [ ! -f .env ]; then
+  if docker volume inspect echobeats_postgres_data >/dev/null 2>&1; then
+    echo "Existe el volumen echobeats_postgres_data pero falta .env. Recupera el archivo o sigue la sección de recuperación." >&2
+    exit 1
+  fi
+  python3 scripts/preparar_entorno.py
+fi
 docker compose config --quiet
+docker compose up -d --wait postgres
+docker compose exec -T postgres sh -c 'PGPASSWORD="$POSTGRES_PASSWORD" exec psql -X -w -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT 1"'
 docker compose up --build -d --wait
+docker compose ps -a
+curl --fail http://localhost:8000/api/v1/ready
 ```
+
+El bloque ejecuta el preparador solo cuando faltan tanto `.env` como el volumen. La consulta a PostgreSQL debe imprimir `1`. Si devuelve `password authentication failed`, detente y usa la recuperación documentada abajo. No repitas el arranque completo porque `migrate` recibirá la misma credencial rechazada.
+
+Al terminar, `docker compose ps -a` debe mostrar PostgreSQL, backend, Spring Boot, gateway y frontend en estado saludable. `migrate` debe aparecer como `Exited (0)`, que indica que aplicó las migraciones y terminó correctamente. El endpoint `/api/v1/ready` debe responder con `"status":"ready"`.
 
 | Si falla este paso | Qué hacer |
 | --- | --- |
 | `python3 scripts/preparar_entorno.py` | Si falta `python3` y tienes Node.js, ejecuta `node scripts/preparar_entorno.mjs`. Si falta el script o la plantilla, comprueba que estás en la raíz y que tu copia incluye `.env.example`. Si hay un error de escritura, revisa los permisos de la carpeta del proyecto con tu usuario. |
 | `docker compose config --quiet` | Si termina sin imprimir nada, la validación pasó. Si falta `POSTGRES_PASSWORD` o `.env`, revisa la preparación del entorno. Si ya existe una biblioteca, recupera su `.env` antes de preparar otro. Si hay un valor inesperado, revisa también las variables exportadas en la terminal, que pueden tener prioridad sobre `.env`. |
+| Consulta `SELECT 1` | Si imprime `1`, `.env` coincide con el rol guardado en PostgreSQL. Si rechaza la contraseña, conserva el volumen y recupera o sincroniza la credencial antes de iniciar `migrate`. |
 | `docker compose up --build -d --wait` | Si falla la descarga de una imagen, revisa la conexión y el error del registro. Si un puerto está ocupado, identifica el proceso con `ss -ltnp` y cambia el puerto correspondiente en `.env`. Si falla un servicio, ejecuta `docker compose ps -a` y consulta sus registros en la sección **Diagnóstico**. |
 
 El preparador crea un `.env` privado con una contraseña aleatoria cuando el archivo falta. Conserva el `.env` original junto con el volumen de PostgreSQL para poder recuperar una biblioteca existente.
 
 ### Recuperar el arranque si PostgreSQL rechaza la contraseña
 
-Si las imágenes se construyen pero aparece `service "migrate" didn't complete successfully: exit 1`, consulta `docker compose logs --tail=50 migrate`. Un PostgreSQL en estado `Healthy` puede seguir rechazando la conexión de Alembic. El estado del contenedor solo indica que el servidor está disponible.
+Si las imágenes se construyen pero aparece `service "migrate" didn't complete successfully: exit 1`, consulta `docker compose logs --tail=50 migrate`. Un PostgreSQL en estado `Healthy` puede seguir rechazando la conexión de Alembic. El healthcheck usa `pg_isready`: confirma que el servidor acepta conexiones, pero no valida la contraseña de `.env`.
 
-Si el registro dice `password authentication failed for user "echobeats"` después de crear un `.env` nuevo sobre un volumen existente, restaura primero el `.env` que corresponde a ese volumen y ejecuta `docker compose up -d --wait`. Crear otro `.env` no actualiza la contraseña guardada en PostgreSQL.
+Si el registro dice `password authentication failed for user "echobeats"` después de crear un `.env` nuevo sobre un volumen existente, restaura primero el `.env` que corresponde a ese volumen. Crear otro `.env` no actualiza la contraseña guardada en PostgreSQL. Esto puede ocurrir después de volver a clonar el repositorio porque `name: echobeats` hace que la copia nueva reutilice `echobeats_postgres_data` en el mismo motor Docker.
 
 Antes de recuperar o cambiar la contraseña, puedes comprobar desde la raíz del proyecto si PostgreSQL acepta la que tiene cargada el contenedor. La prueba usa la misma red que `migrate` y mantiene la contraseña fuera de la salida del comando.
 
@@ -66,7 +120,14 @@ Si devuelve `1`, la contraseña del contenedor funciona por la red de Compose. S
 
 Repetir `docker compose up -d --wait` deja el mismo error mientras PostgreSQL siga rechazando la contraseña. Comprueba primero que la consulta por red devuelve `1`. El estado `Healthy` y una conexión al socket local por sí solos no verifican esa contraseña.
 
-Si perdiste ese archivo y administras la instalación local, puedes sincronizar la contraseña del rol con la del `.env` actual. Abre la consola de PostgreSQL mediante el socket local.
+Si perdiste el `.env` original y administras esta instalación local, crea primero una configuración nueva. Este paso genera una contraseña, pero todavía no cambia el rol guardado en PostgreSQL.
+
+```bash
+python3 scripts/preparar_entorno.py
+docker compose config --quiet
+```
+
+En Windows usa `py -3 scripts/preparar_entorno.py`. Después inicia solo PostgreSQL y abre su consola mediante el socket local, que permite reparar la credencial sin borrar la biblioteca.
 
 ```bash
 docker compose up -d --wait postgres
