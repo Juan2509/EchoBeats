@@ -7,7 +7,7 @@ from starlette.concurrency import run_in_threadpool
 from app.integrations.ai import AIError,ConversationPlan
 from pydantic import ValidationError
 from app.models.catalog import artist, track, track_artist, favorite, track_description
-from app.services import metadata,search,exploration
+from app.services import audio_similarity,metadata,search,exploration
 
 def normalized(text):
     return ''.join(c for c in unicodedata.normalize('NFKD',text.lower()) if not unicodedata.combining(c))
@@ -17,11 +17,29 @@ def context_for(engine,current,recent,reference):
         favorites=list(connection.scalars(select(favorite.c.track_id).join(track,track.c.id==favorite.c.track_id).where(track.c.deleted_at.is_(None)).order_by(favorite.c.created_at.desc()).limit(8)))
         requested=list(dict.fromkeys([identity for identity in [reference,current,*recent,*favorites] if identity]))[:24]
         valid=list(connection.scalars(select(track.c.id).where(track.c.id.in_(requested),track.c.deleted_at.is_(None))))
+        acoustic=[];neighbor_ids=[]
+        for seed in valid[:4]:
+            candidates=audio_similarity.nearest_audio(connection,seed,3)
+            if not candidates:continue
+            neighbors=[{'track_id':str(item.id),'distance':round(float(item.distance),6)} for item in candidates]
+            acoustic.append({'seed_track_id':str(seed),'neighbors':neighbors})
+            neighbor_ids.extend(item.id for item in candidates)
+        valid=list(dict.fromkeys([*valid,*neighbor_ids]))[:24]
         data=metadata.tracks_data(connection,valid)
         # IDs vienen del cliente, pero títulos/autor/fichas se resuelven en servidor.
         desc=dict(connection.execute(select(track_description.c.track_id,track_description.c.text).where(track_description.c.track_id.in_(valid))).all())
         rows=[{'id':str(item['id']),'title':item['title'],'album':item['album_title'],'artists':[a['name'] for a in item['artists']], 'description':desc.get(item['id'],'')[:180]} for item in data]
-        return {'tracks':rows,'favorites':[str(i) for i in favorites if i in valid], 'recent':[str(i) for i in recent if i in valid], 'current':str(current) if current in valid else None,'reference':str(reference) if reference in valid else None}
+        return {'tracks':rows,'favorites':[str(i) for i in favorites if i in valid], 'recent':[str(i) for i in recent if i in valid], 'current':str(current) if current in valid else None,'reference':str(reference) if reference in valid else None,
+            'acoustic':{'method':'local_first_30_seconds_rank_v1','raw_audio_sent':False,'distance_is_confidence':False,'seeds':acoustic}}
+
+
+def acoustic_recommendations(engine,reference,exclude):
+    if not reference:return []
+    try:data=audio_similarity.similar_audio(engine,UUID(reference),5)
+    except metadata.MetadataError:return []
+    return [{'track':item['track'],
+        'reason':'Su comienzo tiene uno de los perfiles acústicos más cercanos en el análisis local de los primeros 30 segundos.',
+        'evidence':[]} for item in data['results'] if item['track']['id'] not in exclude]
 
 def local_discussion(messages, *, clarify):
     user_messages = [m['content'] for m in messages if m['role'] == 'user']
@@ -241,7 +259,9 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
     else:
         data=None
         try:
-            if plan['reference_id']:data=await run_in_threadpool(search.similar,engine,settings,UUID(plan['reference_id']),5,None,None,'discovery' if plan['discovery'] else 'favorites')
+            if plan['reference_id']:
+                recommendations=await run_in_threadpool(acoustic_recommendations,engine,plan['reference_id'],exclude)
+                if not recommendations:data=await run_in_threadpool(search.similar,engine,settings,UUID(plan['reference_id']),5,None,None,'discovery' if plan['discovery'] else 'favorites')
             else:
                 query=plan['query'] or messages[-1]['content']
                 preference_mode='discovery' if plan['discovery'] else 'favorites'
@@ -261,5 +281,8 @@ async def respond(engine,settings,provider,messages,current,recent,reference,use
         if not recommendations:
             recommendations,truncated=await run_in_threadpool(catalog_fallback,engine,plan['query'],context,plan['discovery'],plan['reference_id'],exclude)
             if truncated:warnings.append('La alternativa local revisó hasta 500 pistas, priorizando las señales de contexto y las incorporaciones recientes.')
-        reply='Estas son las pistas de tu biblioteca con las señales más cercanas. Cada tarjeta indica por qué apareció; el parecido musical es orientativo.' if recommendations else 'En la búsqueda que pediste dentro de tu biblioteca no encontré resultados con señales suficientes. Si quieres, puedo explorar música en general.'
+        if recommendations and plan['reference_id'] and any('acústic' in item['reason'] for item in recommendations):
+            reply='Estas son las pistas con el perfil acústico más cercano al comienzo de tu referencia. Es una comparación local y orientativa de los primeros 30 segundos.'
+        else:
+            reply='Estas son las pistas de tu biblioteca con las señales más cercanas. Cada tarjeta indica por qué apareció; el parecido musical es orientativo.' if recommendations else 'En la búsqueda que pediste dentro de tu biblioteca no encontré resultados con señales suficientes. Si quieres, puedo explorar música en general.'
     return {'reply':reply,'mode':mode,'provider':'openai' if used_ai else None,'recommendations':recommendations,'suggestions':suggestions,'warnings':warnings,'context':{'favorites':len(context['favorites']),'recent':len(context['recent']),'current':context['current']}}

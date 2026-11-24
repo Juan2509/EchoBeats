@@ -131,25 +131,32 @@ def retry_audio_index(engine, track_id, worker_enabled):
     return audio_index_status(engine, track_id, worker_enabled)
 
 
+def nearest_audio(connection, track_id, limit):
+    """Return ranked local candidates, or None when the reference is not indexed."""
+    reference = connection.scalar(
+        select(audio_index.c.embedding).select_from(track.join(audio_index, CURRENT_AUDIO))
+        .where(track.c.id == track_id)
+    )
+    if reference is None:
+        return None
+    distance = audio_index.c.embedding.op("<=>", return_type=Float)(reference)
+    return connection.execute(
+        select(track.c.id, distance.label("distance"))
+        .select_from(track.join(audio_index, CURRENT_AUDIO))
+        .where(track.c.deleted_at.is_(None), track.c.id != track_id)
+        .order_by(distance, track.c.id)
+        .limit(limit)
+    ).all()
+
+
 def similar_audio(engine, track_id, limit):
     with engine.connect().execution_options(isolation_level="REPEATABLE READ") as connection, connection.begin():
         require_track(connection, track_id)
-        reference = connection.scalar(
-            select(audio_index.c.embedding).select_from(track.join(audio_index, CURRENT_AUDIO))
-            .where(track.c.id == track_id)
-        )
-        if reference is None:
+        candidates = nearest_audio(connection, track_id, limit)
+        if candidates is None:
             raise MetadataError(
                 "audio_not_indexed", "Esta canción aún no está lista para buscar por sonido.", 409,
             )
-        distance = audio_index.c.embedding.op("<=>", return_type=Float)(reference)
-        candidates = connection.execute(
-            select(track.c.id, distance.label("distance"))
-            .select_from(track.join(audio_index, CURRENT_AUDIO))
-            .where(track.c.deleted_at.is_(None), track.c.id != track_id)
-            .order_by(distance, track.c.id)
-            .limit(limit)
-        ).all()
         documents = tracks_data(connection, [candidate.id for candidate in candidates])
         return {
             "model_key": MODEL_KEY,

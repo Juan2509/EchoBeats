@@ -4,10 +4,14 @@ import json
 import httpx
 import pytest
 from pydantic import SecretStr
+from sqlalchemy import select
 from app.config import Settings
 from app.main import create_app
 from app.integrations.ai import OpenAIProvider,AIError
+from app.integrations.audio_embedding import MODEL_KEY as AUDIO_MODEL_KEY
+from app.models.catalog import track,track_audio_embedding
 from app.services.music_chat import local_plan
+from test_audio_similarity import tone,wav
 from test_descriptions import body
 from test_metadata import tagged,upload
 
@@ -93,6 +97,41 @@ async def test_chat_uses_cited_lexical_fiches_before_catalog_fallback(chat_clien
     recommendation,=data['recommendations']
     assert recommendation['track']['id']==identity
     assert recommendation['evidence'][0]['quote']==description
+
+
+async def test_chat_connects_local_audio_neighbors_without_sending_audio(chat_client,catalog_engine):
+    api,app=chat_client
+    ids=[(await upload(api,wav(tone(frequency)),f'{title}.wav'))['track_id']
+         for title,frequency in [('Referencia',440),('Cercana',450),('Lejana',2800)]]
+    vectors=[[1.0,*([0.0]*25)],[.99,.1,*([0.0]*24)],[0.0,1.0,*([0.0]*24)]]
+    with catalog_engine.begin() as connection:
+        rows=connection.execute(select(track.c.id,track.c.audio_asset_id,track.c.content_sha256).where(track.c.id.in_(ids))).all()
+        by_id={str(row.id):row for row in rows}
+        connection.execute(track_audio_embedding.insert(),[{
+            'track_id':row.id,'model_key':AUDIO_MODEL_KEY,'audio_asset_id':row.audio_asset_id,
+            'content_sha256':row.content_sha256,'embedding':vector,
+        } for identity,vector in zip(ids,vectors,strict=True) for row in [by_id[identity]]])
+
+    local=(await post(api,'Algo parecido a lo que escucho en mi biblioteca',current_track_id=ids[0])).json()
+    assert local['recommendations'][0]['track']['id']==ids[1]
+    assert 'primeros 30 segundos' in local['reply']
+    assert 'perfil acústico' in local['recommendations'][0]['reason']
+
+    app.state.settings.ai_enabled=True
+    app.state.settings.openai_api_key=SecretStr('fake-test-only')
+    class Planner:
+        async def conversation_plan(self,context):
+            assert context['acoustic']['raw_audio_sent'] is False
+            assert context['acoustic']['distance_is_confidence'] is False
+            seed,=context['acoustic']['seeds']
+            assert seed['seed_track_id']==ids[0]
+            assert seed['neighbors'][0]['track_id']==ids[1]
+            assert all('audio' not in item for item in context['tracks'])
+            return {'intent':'recommend','query':'','reference_id':ids[0],
+                    'discovery':False,'reply':'Comparo el sonido local.','suggestions':[]}
+    app.state.ai_provider=Planner()
+    cloud=(await post(api,'Busca algo parecido en mi biblioteca',current_track_id=ids[0],use_ai=True)).json()
+    assert cloud['mode']=='ai' and cloud['recommendations'][0]['track']['id']==ids[1]
 
 async def test_conversation_adapter_structured_plan_no_store_or_tools():
     settings=Settings(_env_file=None,ai_enabled=True,openai_api_key='fake-test-only')
