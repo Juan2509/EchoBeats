@@ -7,7 +7,7 @@ import httpx
 import pytest
 from pydantic import SecretStr
 from app.config import Settings
-from app.integrations.ai import AIError, OpenAIProvider, status
+from app.integrations.ai import AIError, OpenAIProvider, status, validate_library_answer
 from app.main import create_app
 
 pytestmark = pytest.mark.anyio
@@ -26,6 +26,61 @@ def generated(**changes):
 
 
 SOURCES = [{'source_id':'a','version':1,'text':'Fragmento sintético sin voces.'}]
+
+
+async def test_library_conversation_explains_the_previous_choice_from_available_evidence():
+    candidates = [{'id': 'a', 'title': 'Tally Screen', 'artists': ['Jake Kaufman'],
+                   'acoustic': {'summary': 'Predominan los graves en el comienzo.'}}]
+    messages = [{'role': 'user', 'content': '¿Cuál te gusta más?'},
+                {'role': 'assistant', 'content': 'Elegiría Tally Screen para empezar.'},
+                {'role': 'user', 'content': '¿Y por qué te gusta más esa?'}]
+    answer = {'reply': 'Elegí Tally Screen por el peso de los graves en el comienzo. '
+                       'Si lo que buscas es un grave presente desde el arranque, empezaría por esa.',
+              'selections': [{'track_id': 'a', 'reason': 'El comienzo medido da más peso a los graves.'}]}
+
+    def handle(request):
+        body = json.loads(request.content)
+        assert body['input'][1:] == messages
+        data = json.loads(body['input'][0]['content'].split(': ', 1)[1])
+        assert data == {'action': 'explain', 'candidates': candidates}
+        assert body['store'] is False and 'tools' not in body
+        spec = body['text']['format']
+        assert spec['name'] == 'library_conversation' and spec['strict'] is True
+        assert spec['schema']['$defs']['LibrarySelection']['properties']['track_id']['enum'] == ['a']
+        output = generated()
+        output['output'][0]['content'][0]['text'] = json.dumps(answer)
+        output['output'].insert(0, {'type': 'reasoning', 'summary': []})
+        return httpx.Response(200, json=output)
+
+    provider = OpenAIProvider(config(), httpx.MockTransport(handle))
+    assert await provider.library_conversation(messages, candidates, 'explain') == answer
+
+
+def test_library_conversation_accepts_discussion_and_rejects_unknown_or_repeated_tracks():
+    candidates = [{'id': 'a'}]
+    discussion = {'reply': 'Solo consta el título de esa grabación.', 'selections': []}
+    assert validate_library_answer(discussion, candidates) == discussion
+    for ids in (['outside'], ['a', 'a']):
+        invalid = {**discussion, 'selections': [{'track_id': identity, 'reason': 'Para empezar.'} for identity in ids]}
+        with pytest.raises(AIError) as failure:
+            validate_library_answer(invalid, candidates)
+        assert failure.value.code == 'ai_invalid_response'
+
+
+@pytest.mark.parametrize('source', ['previous_tracks', 'catalog_matches'])
+async def test_conversation_accepts_references_returned_by_catalog_lookup(source):
+    plan = {'intent': 'recommend', 'query': '', 'reference_id': 'catalog-id', 'discovery': False,
+            'reply': 'Buscaré pistas cercanas a esa.', 'suggestions': []}
+    envelope = generated()
+    envelope['output'][0]['content'][0]['text'] = json.dumps(plan)
+    provider = OpenAIProvider(config(), httpx.MockTransport(lambda _: httpx.Response(200, json=envelope)))
+    context = {'tracks': [], source: [{'id': 'catalog-id'}], 'library_requested': True,
+               'messages': [{'role': 'user', 'content': 'Algo similar a esa.'}]}
+    assert await provider.conversation_plan(context) == plan
+    context[source] = []
+    with pytest.raises(AIError) as failure:
+        await provider.conversation_plan(context)
+    assert failure.value.code == 'ai_invalid_response'
 
 
 async def test_embedding_uses_exact_model_dimensions_and_private_authorization():

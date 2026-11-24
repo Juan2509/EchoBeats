@@ -5,13 +5,14 @@ import shutil
 import struct
 import subprocess
 import sys
+from uuid import UUID
 import wave
 
 import pytest
 
 from app.integrations.audio_embedding import RATE, AudioEmbeddingError, embedding_from_pcm
 from app.integrations.storage import MediaStore
-from app.services.audio_similarity import index_audio, pending_tracks
+from app.services.audio_similarity import acoustic_criterion, acoustic_profiles, describe_profile, index_audio, pending_tracks, recommend_by_profile
 from test_metadata import client, upload
 
 
@@ -41,6 +42,21 @@ def test_audio_vectors_reflect_frequency_and_reject_silence():
         embedding_from_pcm(bytes(RATE * 2))
 
 
+def test_profile_describes_measured_band_weight_and_spectral_variation():
+    low = describe_profile(embedding_from_pcm(tone(150)))
+    high = describe_profile(embedding_from_pcm(tone(2800)))
+    changing = describe_profile(embedding_from_pcm(tone(150) + tone(2800)))
+    assert low["frequency_weights"]["bass"] > high["frequency_weights"]["bass"]
+    assert high["frequency_weights"]["treble"] > low["frequency_weights"]["treble"]
+    assert changing["spectral_variation"] > low["spectral_variation"]
+    assert "frecuencias graves" in low["summary"]
+    assert describe_profile([0] * 26) is None
+    assert acoustic_criterion("Dame canciones con frecuencias agudas") == "treble"
+    assert acoustic_criterion("Busco un perfil espectral uniforme") == "stable"
+    assert acoustic_criterion("Busco pistas sin graves marcados") is None
+    assert acoustic_criterion("¿Cómo suena esta canción?") is None
+
+
 @pytest.mark.integration
 @pytest.mark.anyio
 @pytest.mark.skipif(not shutil.which("ffmpeg"), reason="Requiere FFmpeg")
@@ -67,6 +83,13 @@ async def test_real_audio_index_cosine_order_and_retired_track(client, catalog_e
     assert not index_audio(catalog_engine, store, candidates[0])
     with catalog_engine.connect() as connection:
         assert pending_tracks(connection) == []
+        profiles = acoustic_profiles(connection, [UUID(ids[2])])
+    assert "frecuencias agudas" in profiles[UUID(ids[2])]["summary"]
+    ranked = recommend_by_profile(catalog_engine, "treble", limit=1)
+    assert str(ranked[0]["track"]["id"]) == ids[2]
+    assert (await api.put(f"/api/v1/tracks/{ids[2]}/favorite", json={"favorite": True})).status_code == 200
+    discovery = recommend_by_profile(catalog_engine, "treble", limit=1, discovery=True)
+    assert str(discovery[0]["track"]["id"]) != ids[2]
 
     response = await api.get(route)
     assert response.status_code == 200, response.text

@@ -21,4 +21,42 @@ function validSource(value:unknown):boolean{
 function validText(value:unknown,max:number):boolean{
   return typeof value==='string'&&!!value.trim()&&Array.from(value).length<=max
 }
-export function conversationMessages(turns:ChatTurn[],question:string):Message[]{return [...turns.filter(t=>t.answer).slice(-4).flatMap(t=>[{role:'user' as const,content:t.question},{role:'assistant' as const,content:[t.answer!.reply,...(t.answer!.suggestions??[]).map(item=>[item.title,item.artist,item.work].filter(Boolean).join(' — '))].join('\n').slice(0,1000)}]),{role:'user' as const,content:question.trim()}]}
+function excerpt(text: string, limit: number): string {
+  const chars = Array.from(text)
+  return chars.length > limit ? chars.slice(0, limit - 1).join('') + '…' : text
+}
+
+function assistantHistory(answer: ChatReply): string {
+  const externalTitles = (answer.suggestions ?? []).map(item => [item.title, item.artist, item.work].filter(Boolean).join(' — '))
+  const narrative = [answer.reply, ...externalTitles].join('\n')
+  const shown = answer.recommendations.slice(0, 5)
+  if (!shown.length) return excerpt(narrative, 1000)
+
+  // Leave room for both the reply and the identification and rationale of each card.
+  const perCard = Math.floor(650 / shown.length)
+  const lines = shown.map(({track, reason}) => {
+    const title = excerpt(track.title.replace(/\s+/g, ' '), Math.floor(perCard / 3))
+    return excerpt(`[${track.id}] ${title} — ${reason.replace(/\s+/g, ' ')}`, perCard)
+  })
+  const cards = '\nTarjetas mostradas en ese turno\n' + lines.join('\n')
+  return excerpt(narrative, 1000 - Array.from(cards).length) + cards
+}
+
+export function conversationMessages(turns: ChatTurn[], question: string): Message[] {
+  const history = turns.filter(turn => turn.answer).slice(-4)
+  const messages: Message[] = []
+  for (const turn of history) {
+    messages.push({role: 'user', content: turn.question})
+    messages.push({role: 'assistant', content: assistantHistory(turn.answer!)})
+  }
+  messages.push({role: 'user', content: question.trim()})
+  return messages
+}
+
+export function previousRecommendationIds(turns: readonly ChatTurn[]): string[] {
+  for (let index = turns.length - 1; index >= 0; index--) {
+    const recommendations = turns[index].answer?.recommendations
+    if (recommendations?.length) return recommendations.map(item => item.track.id)
+  }
+  return []
+}

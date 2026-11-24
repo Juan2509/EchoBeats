@@ -158,7 +158,7 @@ Para detener EchoBeats, ejecuta `docker compose stop`. Para usarlo de nuevo, eje
 2. **Reproductor y playlists.** Reproduce desde un álbum, una búsqueda o una playlist. La cola se mantiene al navegar. Puedes pausar, cambiar de pista, avanzar, ajustar volumen, usar repetición u orden aleatorio y marcar favoritos. La reproducción de cada formato depende de los decodificadores del navegador.
 3. **Portada y muro.** En **Editar álbum y portada**, elige una imagen o la portada de una canción. En **Editar pared**, añade imágenes o GIF y ajusta su posición, tamaño, giro y capas. Los cambios del muro se autoguardan. **Configuración** reúne fondos, colores y estilo. Los fondos del muro se ajustan en **Editar pared → Fondo**.
 4. **Fichas musicales.** En **Fichas y opciones**, elige una pista para editar su descripción y conservar la procedencia de sus datos. Una ficha puede prepararse para búsqueda semántica mediante su indexación.
-5. **Explorar.** El chat tiene un modo básico que usa metadatos, favoritos y, cuando corresponde, la pista actual y las reproducciones recientes de la sesión. Ese contexto se mantiene en memoria y se puede olvidar desde **Opciones**. En **Opciones → Búsqueda avanzada** puedes consultar fichas por texto, por similitud semántica o mediante búsqueda híbrida cuando haya índices vigentes y el proveedor esté habilitado.
+5. **Explorar.** Puedes consultar archivos, pedir recomendaciones de tu biblioteca o retomar las tarjetas que acaba de mostrar el chat. El chat usa metadatos, favoritos, la pista actual y reproducciones recientes de la sesión cuando corresponda. Ese contexto se mantiene en memoria.
 
 ### Buscar canciones por sonido
 
@@ -226,6 +226,12 @@ En el modo local, abre **Configuración → Conexión e IA**, pega tu clave y pu
 El modo remoto usa la clave del archivo privado de cada cuenta. En cualquier modalidad, `AI_ENABLED=false` desactiva la integración. El proveedor recibe texto para el chat y los embeddings de fichas. Las consultas e indexaciones pueden consumir créditos. El catálogo, la reproducción, los muros y la búsqueda acústica siguen disponibles con la IA externa desactivada.
 
 La búsqueda textual usa texto de las fichas, la semántica compara sus vectores vigentes y la híbrida combina ambos órdenes. Cuando hay evidencia registrada, la interfaz puede mostrar citas de fichas. La distancia y el orden de los resultados representan criterios de recuperación, sin equivalencia con un porcentaje de confianza.
+
+En **Explorar** puedes preguntar «¿Sabes la música que escucho?», «¿Tengo Órbita Azul en mi biblioteca?» o «Identifica grabacion-rara.mp3». Puedes buscar por título, artista, álbum o nombre original del archivo en todo el catálogo activo, incluidas las pistas sin ficha o índice. «¿Cuál te gusta más?» permite elegir entre las tarjetas que acaba de mostrar el chat. La elección puede apoyarse en un favorito, una reproducción reciente o un perfil acústico disponible.
+
+Para indagar por sonido, prueba «¿Cómo suena esta canción?», «Busca algo similar a Órbita Azul» o «Recomiéndame canciones con graves marcados de mi biblioteca». La descripción se basa en las frecuencias del comienzo, hasta 30 segundos. Si falta el índice de una pista concreta, el servidor puede analizarla al pedir la descripción. Las recomendaciones acústicas comparan las pistas con análisis vigente. No se infieren instrumentos, género ni tempo a partir de ese perfil.
+
+Para búsquedas con OpenAI, EchoBeats comparte metadatos de los candidatos pertinentes, las últimas tarjetas resueltas en el servidor, perfiles acústicos disponibles y contexto de la conversación. Los nombres originales de archivo se usan localmente para encontrar coincidencias. Los archivos de audio permanecen en el servidor de EchoBeats.
 
 ## Respaldar y restaurar
 

@@ -1,4 +1,3 @@
-from pathlib import Path
 from uuid import UUID,uuid4
 import json
 import httpx
@@ -9,11 +8,13 @@ from app.config import Settings
 from app.main import create_app
 from app.integrations.ai import OpenAIProvider,AIError
 from app.integrations.audio_embedding import MODEL_KEY as AUDIO_MODEL_KEY
-from app.models.catalog import track,track_audio_embedding
+from app.models.catalog import artist,media_asset,track,track_artist,track_audio_embedding
+from app.integrations.storage import MediaStore
+from app.services import audio_similarity
 from app.services.music_chat import local_plan
 from test_audio_similarity import tone,wav
 from test_descriptions import body
-from test_metadata import tagged,upload
+from test_metadata import upload
 
 pytestmark=[pytest.mark.integration,pytest.mark.anyio]
 
@@ -30,8 +31,74 @@ async def chat_client(catalog_engine,tmp_path):
 
 async def post(c,text,**extra):return await c.post('/api/v1/explore/chat',json={'messages':[{'role':'user','content':text}],**extra})
 
+async def test_chat_identifies_old_unindexed_track_in_full_catalog(chat_client):
+    client, app = chat_client
+    collection = (await client.post('/api/v1/albums', json={'title': 'Colección'})).json()
+    album_id = UUID(collection['id'])
+    identity = uuid4()
+    with app.state.database_engine.begin() as connection:
+        assets = [uuid4() for _ in range(502)]
+        connection.execute(media_asset.insert(), [
+            {'id': asset, 'kind': 'audio', 'storage_key': f'audio/{asset.hex}.mp3',
+             'sha256': f'{index:064x}', 'original_name': 'grabacion-rara.mp3' if index == 0 else 'sintetico.mp3',
+             'mime_type': 'audio/mpeg', 'byte_size': 1}
+            for index, asset in enumerate(assets)
+        ])
+        connection.execute(track.insert().values(
+            id=identity, audio_asset_id=assets[0], album_id=album_id, content_sha256='0' * 64,
+            title='Órbita Azul', duration_ms=1000,
+        ))
+        author = connection.scalar(artist.insert().values(name='Ana Norte', normalized_name='ana norte').returning(artist.c.id))
+        connection.execute(track_artist.insert().values(track_id=identity, artist_id=author, position=0))
+    with app.state.database_engine.begin() as connection:
+        connection.execute(track.insert(), [
+            {'audio_asset_id': asset, 'album_id': album_id, 'content_sha256': f'{index:064x}',
+             'title': f'Pista sintética {index}', 'duration_ms': 1000}
+            for index, asset in enumerate(assets[1:], start=1)
+        ])
+
+    identified = (await post(client, '¿Tengo Órbita Azul en mi biblioteca?', use_ai=True)).json()
+    assert [item['track']['id'] for item in identified['recommendations']] == [str(identity)]
+    assert identified['recommendations'][0]['track']['artists'][0]['name'] == 'Ana Norte'
+    result = (await post(client, 'Busca Orbita Azul en mi biblioteca')).json()
+    assert result['recommendations'][0]['track']['id'] == str(identity)
+    current = (await post(client, '¿Quién canta esta canción?', current_track_id=str(identity))).json()
+    assert [item['track']['id'] for item in current['recommendations']] == [str(identity)]
+    unknown = (await post(client, 'Identifica Desconocida', current_track_id=str(identity))).json()
+    assert unknown['recommendations'] == []
+    by_filename = (await post(client, 'Identifica grabacion-rara.mp3')).json()
+    match, = by_filename['recommendations']
+    assert match['track']['id'] == str(identity)
+    assert 'nombre del archivo importado' in match['reason']
+
+    overview = (await post(client, '¿Sabes la música que escucho?', use_ai=True)).json()
+    assert '502 pistas importadas' in overview['reply']
+    assert 'Todavía no has reproducido pistas en esta sesión' in overview['reply']
+    assert len(overview['recommendations']) == 5
+    with_listening = (await post(client, '¿Qué música escucho?', recent_track_ids=[str(identity)], use_ai=True)).json()
+    assert with_listening['recommendations'][0]['track']['id'] == str(identity)
+    assert 'Empezó a reproducirse' in with_listening['recommendations'][0]['reason']
+
+    class Planner:
+        async def conversation_plan(self, context):
+            assert context['catalog_matches'] == [
+                {'id': str(identity), 'title': 'Órbita Azul', 'album': 'Colección', 'artists': ['Ana Norte']}
+            ]
+            return {'intent': 'recommend', 'query': 'Órbita Azul', 'reference_id': None,
+                    'discovery': False, 'reply': 'Busco en tu biblioteca.', 'suggestions': []}
+
+    app.state.settings.ai_enabled = True
+    app.state.settings.openai_api_key = SecretStr('fake-test-only')
+    app.state.ai_provider = Planner()
+    cloud = (await post(client, 'Busca Orbita Azul en mi biblioteca', use_ai=True)).json()
+    assert cloud['mode'] == 'ai'
+    assert cloud['recommendations'][0]['track']['id'] == str(identity)
+
 async def test_chat_local_empty_and_input_guards(chat_client):
     c,_=chat_client;r=await post(c,'Hola');assert r.status_code==200;assert r.json()['mode']=='local';assert not r.json()['recommendations']
+    overview = (await post(c, '¿Qué tengo en mi biblioteca?', use_ai=True)).json()
+    assert 'Tu biblioteca está vacía' in overview['reply']
+    assert overview['recommendations'] == []
     assert not (await post(c,'Algo tranquilo')).json()['recommendations']
     for text in ('hola que tal', '¡Hola! ¿Cómo estás?', '¿Qué tal?'):
         data = (await post(c, text)).json()
@@ -42,9 +109,74 @@ async def test_chat_local_empty_and_input_guards(chat_client):
     assert (await c.post('/api/v1/explore/chat',json={'messages':[{'role':'assistant','content':'hola'}]})).status_code==422
     assert (await post(c,'a'*1001)).status_code==422
 
+
+async def test_chat_keeps_library_choices_across_conversation(chat_client):
+    client, app = chat_client
+    first = (await upload(client, wav(tone(140)), 'Pulso grave.wav'))['track_id']
+    second = (await upload(client, wav(tone(2700)), 'Pulso agudo.wav'))['track_id']
+    await client.put(f'/api/v1/tracks/{second}/favorite', json={'favorite': True})
+    app.state.settings.ai_enabled = True
+    app.state.settings.openai_api_key = SecretStr('fake-test-only')
+    history = [
+        {'role': 'user', 'content': '¿Qué tengo en mi biblioteca?'},
+        {'role': 'assistant', 'content': 'Estas son algunas pistas de tu biblioteca.'},
+        {'role': 'user', 'content': '¿Cuál te gusta más?'},
+    ]
+    body = {'messages': history, 'use_ai': True, 'previous_track_ids': [first, second]}
+    choice = (await client.post('/api/v1/explore/chat', json=body)).json()
+    recommendation, = choice['recommendations']
+    assert recommendation['track']['id'] == second
+    assert 'favorita' in recommendation['reason']
+    assert not choice['suggestions']
+
+    correction = (await post(client, 'Pero de las de mi biblioteca', use_ai=True)).json()
+    assert correction['recommendations'][0]['track']['id'] == second
+    alternatives = (await post(client, 'Dame otras opciones', previous_track_ids=[second], use_ai=True)).json()
+    assert [item['track']['id'] for item in alternatives['recommendations']] == [first]
+
+    current = await client.get(f'/api/v1/tracks/{second}')
+    await client.delete(f'/api/v1/tracks/{second}', headers={'If-Match': current.headers['etag']})
+    selection = (await client.post('/api/v1/explore/chat', json=body)).json()
+    assert [item['track']['id'] for item in selection['recommendations']] == [first]
+
+
+async def test_chat_describes_audio_and_recommends_across_the_index(chat_client):
+    client, app = chat_client
+    low = (await upload(client, wav(tone(110)), 'Neblina.wav'))['track_id']
+    near = (await upload(client, wav(tone(120)), 'Humo.wav'))['track_id']
+    high = (await upload(client, wav(tone(3100)), 'Farol.wav'))['track_id']
+    engine = app.state.database_engine
+
+    preview = (await post(client, '¿Cómo suena esta canción?', current_track_id=high, use_ai=True)).json()
+    reported, = preview['recommendations']
+    assert reported['track']['id'] == high
+    assert 'agudas' in reported['reason']
+    assert audio_similarity.audio_index_status(engine, UUID(high), False)['status'] == 'pending'
+
+    store = MediaStore(app.state.settings.media_root)
+    with engine.connect() as connection:
+        pending = audio_similarity.pending_tracks(connection)
+    for candidate in pending:
+        assert audio_similarity.index_audio(engine, store, candidate)
+
+    ordinal = (await post(client, '¿Cómo suena la segunda?', previous_track_ids=[low, high])).json()
+    assert ordinal['recommendations'][0]['track']['id'] == high
+    assert 'agudas' in ordinal['recommendations'][0]['reason']
+    comparison = (await post(client, 'Compara estas canciones', previous_track_ids=[low, high])).json()
+    assert [item['track']['id'] for item in comparison['recommendations']] == [low, high]
+    assert 'graves' in comparison['recommendations'][0]['reason']
+    nearby = (await post(client, 'Busca algo similar a Neblina', current_track_id=high)).json()
+    assert nearby['recommendations'][0]['track']['id'] == near
+    assert 'perfil acústico' in nearby['reply']
+    unknown = (await post(client, 'Busca algo parecido a Desconocida en mi biblioteca', current_track_id=high)).json()
+    assert unknown['recommendations'] == []
+    assert 'No pude identificar la pista de referencia' in unknown['reply']
+    scoped = (await post(client, 'Recomiéndame canciones con graves marcados de mi biblioteca')).json()
+    assert scoped['recommendations'][0]['track']['id'] in {low, near}
+
 async def test_chat_favorites_session_context_deleted_and_discovery(chat_client):
     c,_=chat_client;a=(await c.post('/api/v1/albums',json={'title':'Prueba'})).json()
-    r=await c.post('/api/v1/imports?album_id='+a['id'],files={'files':('test.mp3',Path('/app/fixtures/sin_etiquetas.mp3').read_bytes(),'audio/mpeg')});identity=r.json()['results'][0]['track_id']
+    r=await c.post('/api/v1/imports?album_id='+a['id'],files={'files':('test.wav',wav(tone(440)),'audio/wav')});identity=r.json()['results'][0]['track_id']
     assert not (await post(c,'Algo con timbales')).json()['recommendations']
     await c.put('/api/v1/tracks/'+identity+'/favorite',json={'favorite':True})
     r=await post(c,'Recomiéndame de mis favoritos',recent_track_ids=[identity,str(uuid4())],current_track_id=identity)
@@ -73,7 +205,7 @@ async def test_chat_ai_plan_mock_quota_and_invalid_anchor(chat_client):
 
 async def test_chat_uses_cited_lexical_fiches_before_catalog_fallback(chat_client):
     api,app=chat_client
-    identity=(await upload(api,tagged(title='Pista de prueba')))['track_id']
+    identity=(await upload(api,wav(tone(440)),'Pista de prueba.wav'))['track_id']
     description='Grabación con timbales.'
     saved=await api.put(f'/api/v1/tracks/{identity}/description',headers={'If-None-Match':'*'},
         json=body(text=description))
@@ -115,7 +247,7 @@ async def test_chat_connects_local_audio_neighbors_without_sending_audio(chat_cl
     local=(await post(api,'Algo parecido a lo que escucho en mi biblioteca',current_track_id=ids[0])).json()
     assert local['recommendations'][0]['track']['id']==ids[1]
     assert 'primeros 30 segundos' in local['reply']
-    assert 'perfil acústico' in local['recommendations'][0]['reason']
+    assert 'perfiles acústicos' in local['recommendations'][0]['reason']
 
     app.state.settings.ai_enabled=True
     app.state.settings.openai_api_key=SecretStr('fake-test-only')
