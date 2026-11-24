@@ -13,6 +13,7 @@ services:
     env_file: !override
       - ${REMOTE_ENV_FILE:?Indica la ruta absoluta del archivo privado de la cuenta}
     environment:
+      AI_KEY_EDITABLE: "false"
       ALLOWED_HOSTS: localhost,127.0.0.1,backend,${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
       ALLOWED_ORIGINS: https://${REMOTE_DOMAIN:?Indica el dominio HTTPS de la cuenta}
     command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

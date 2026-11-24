@@ -219,9 +219,11 @@ Usa `.env.example` como referencia y conserva los valores privados en `.env`.
 | `ALLOWED_ORIGINS` | Orígenes permitidos para escrituras. Si cambias un puerto publicado, incluye el origen del navegador con su esquema y puerto. |
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Identidad y credenciales de PostgreSQL. |
 | `PROCESSING_WORKER_ENABLED` | Activa o pausa el procesamiento automático local. |
-| `AI_ENABLED`, `OPENAI_API_KEY` | Habilitan funciones de OpenAI en el backend. Las instalaciones nuevas arrancan con `AI_ENABLED=false`. |
+| `AI_ENABLED`, `OPENAI_API_KEY` | OpenAI está habilitado por defecto. Las funciones del proveedor requieren una clave configurada. Usa `AI_ENABLED=false` para desactivarlas. |
 
-Para usar OpenAI, configura una clave con créditos en el backend, fija `AI_ENABLED=true` y vuelve a levantar Compose para aplicar el entorno. Mantén la clave fuera de Git y de las variables públicas `VITE_*`. El proveedor recibe texto para el chat y los embeddings de fichas. Las consultas e indexaciones pueden consumir créditos. El catálogo, la reproducción, los muros y la búsqueda acústica siguen disponibles con la IA externa desactivada.
+En el modo local, abre **Configuración → Conexión e IA**, pega tu clave y pulsa **Guardar clave**. EchoBeats la aplica a la próxima consulta sin reiniciar y la conserva en `data/.openai-key`, un archivo privado fuera de Git. Si también hay una clave en `.env`, tiene prioridad la guardada desde la aplicación. Conserva ese archivo en privado si necesitas trasladar la configuración.
+
+El modo remoto usa la clave del archivo privado de cada cuenta. En cualquier modalidad, `AI_ENABLED=false` desactiva la integración. El proveedor recibe texto para el chat y los embeddings de fichas. Las consultas e indexaciones pueden consumir créditos. El catálogo, la reproducción, los muros y la búsqueda acústica siguen disponibles con la IA externa desactivada.
 
 La búsqueda textual usa texto de las fichas, la semántica compara sus vectores vigentes y la híbrida combina ambos órdenes. Cuando hay evidencia registrada, la interfaz puede mostrar citas de fichas. La distancia y el orden de los resultados representan criterios de recuperación, sin equivalencia con un porcentaje de confianza.
 

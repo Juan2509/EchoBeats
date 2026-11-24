@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from threading import Lock
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -16,7 +17,7 @@ from app.api.playlists import router as playlists_router
 from app.api.walls import router as walls_router
 from app.api.processing import router as processing_router
 from app.api.descriptions import router as descriptions_router
-from app.api.ai import router as ai_router
+from app.api.ai import load_saved_key, router as ai_router
 from app.api.search import router as search_router
 from app.api.favorites import router as favorites_router
 from app.integrations.ai import OpenAIProvider, AIError
@@ -28,6 +29,7 @@ from app.database import make_database_engine
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     config = settings or Settings()
+    load_saved_key(config)
     engine = make_database_engine(config)
 
     @asynccontextmanager
@@ -48,6 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.database_engine = engine
     app.state.settings = config
     app.state.ai_provider = OpenAIProvider(config)
+    app.state.ai_key_lock = Lock()
     app.include_router(health_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(readiness_router, prefix="/api/v1", tags=["Estado"])
     app.include_router(imports_router, prefix="/api/v1", tags=["Importación"])

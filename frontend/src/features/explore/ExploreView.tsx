@@ -23,7 +23,13 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
   const canSend=!busy&&!checking&&!!query.trim()&&(!referenceId||!!valid&&!reference.loading&&!reference.error)
   useEffect(()=>{
     alive.current=true
+    return()=>{alive.current=false;generation.current++;pending.current?.abort()}
+  },[])
+  useEffect(()=>{
+    if(!active)return
     const controller=new AbortController()
+    setAvailability(null)
+    setStatusFailed(false)
     fetch('/api/v1/explore/chat/status',{signal:controller.signal,cache:'no-store'})
       .then(response=>{if(!response.ok)throw Error();return response.json()})
       .then(status=>{
@@ -31,8 +37,8 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
         setAvailability(status)
       })
       .catch(()=>{if(!controller.signal.aborted)setStatusFailed(true)})
-    return()=>{alive.current=false;generation.current++;controller.abort();pending.current?.abort()}
-  },[])
+    return()=>controller.abort()
+  },[active])
   useEffect(()=>{if(active&&turns.length)conversation.current?.lastElementChild?.scrollIntoView({block:'nearest',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})},[active,turns,busy])
   async function send(){if(!canSend||running.current||query.trim().length>1000)return
     running.current=true
@@ -94,7 +100,7 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
       </div>
       <small>Enter para enviar · Shift+Enter para otra línea</small>
     </form>
-    <details className="chat-options"><summary>Opciones</summary>{(availability&&!availability.cloud_ready)&&<p>Para habilitar la charla con IA, configura AI_ENABLED y OPENAI_API_KEY en el servidor.</p>}<p>No hay historial permanente ni aprendizaje automático de tus gustos. Las recomendaciones pueden no coincidir con lo que buscas.</p><button type="button" className="secondary" disabled={busy||!player.state.recentTrackIds.length} onClick={()=>player.control()?.clearRecent()}>Olvidar reproducciones recientes</button><button type="button" className="secondary" disabled={busy} onClick={()=>setAdvanced(value=>!value)}>{advanced?'Cerrar búsqueda avanzada':'Búsqueda avanzada'}</button></details>
+    <details className="chat-options"><summary>Opciones</summary>{(availability&&!availability.cloud_ready)&&<p>Consulta <a href="/configuracion?seccion=conexion" onClick={event=>{event.preventDefault();navigate('/configuracion?seccion=conexion')}}>Configuración → Conexión e IA</a> para configurar OpenAI.</p>}<p>No hay historial permanente ni aprendizaje automático de tus gustos. Las recomendaciones pueden no coincidir con lo que buscas.</p><button type="button" className="secondary" disabled={busy||!player.state.recentTrackIds.length} onClick={()=>player.control()?.clearRecent()}>Olvidar reproducciones recientes</button><button type="button" className="secondary" disabled={busy} onClick={()=>setAdvanced(value=>!value)}>{advanced?'Cerrar búsqueda avanzada':'Búsqueda avanzada'}</button></details>
     {advanced&&<div className="chat-advanced"><AdvancedExploreView search={search} navigate={navigate}/></div>}
   </section>
 }

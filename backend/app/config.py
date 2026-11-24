@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     import_max_file_bytes: int = Field(default=50 * 1024 * 1024, ge=1)
     import_max_request_bytes: int = Field(default=200 * 1024 * 1024, ge=1)
     processing_worker_enabled: bool = True
-    ai_enabled: bool = False
+    ai_enabled: bool = True
+    ai_key_editable: bool = True
     openai_api_key: SecretStr = SecretStr('')
     ai_embedding_model: str = Field(default='text-embedding-3-small', pattern=r'^text-embedding-3-small$')
     ai_embedding_dimensions: int = Field(default=1536, ge=1, le=1536)

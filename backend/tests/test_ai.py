@@ -153,6 +153,31 @@ async def test_real_probe_missing_key_never_creates_success_receipt(tmp_path):
     assert err.value.code=='ai_not_configured' and not (tmp_path / 'ai_checks').exists()
 
 
+async def test_openai_key_save_applies_immediately_and_survives_restart(tmp_path):
+    settings = config(media_root=tmp_path / 'media')
+    app = create_app(settings)
+    key = 'sk-synthetic-for-test'
+    async with AsyncClient(transport=ASGITransport(app), base_url='http://localhost') as api:
+        denied = await api.put('/api/v1/ai/key', json={'key': key})
+        assert denied.status_code == 403
+        invalid = await api.put('/api/v1/ai/key', json={'key': 'invalid'}, headers={'Origin': 'http://localhost:5173'})
+        assert invalid.status_code == 422
+        assert not (tmp_path / '.openai-key').exists()
+        response = await api.put('/api/v1/ai/key', json={'key': key}, headers={'Origin': 'http://localhost:5173'})
+        assert response.status_code == 200
+        assert response.json()['available']
+        assert key not in response.text
+        assert (await api.get('/api/v1/explore/chat/status')).json()['cloud_ready']
+    assert app.state.ai_provider.settings.openai_api_key.get_secret_value() == key
+    restarted = create_app(config(media_root=settings.media_root))
+    assert restarted.state.settings.openai_api_key.get_secret_value() == key
+    remote = create_app(config(media_root=settings.media_root, ai_key_editable=False))
+    async with AsyncClient(transport=ASGITransport(remote), base_url='http://localhost') as api:
+        denied = await api.put('/api/v1/ai/key', json={'key': 'sk-another-test'}, headers={'Origin': 'http://localhost:5173'})
+        assert denied.status_code == 403
+    assert remote.state.settings.openai_api_key.get_secret_value() == 'fake-test-key'
+
+
 async def test_input_evidence_invalid_and_oversized_response_are_rejected():
     provider=OpenAIProvider(config(),httpx.MockTransport(lambda _:httpx.Response(200,content=b'x' * 1_000_001)))
     with pytest.raises(AIError) as err: await provider.embed('Texto')
