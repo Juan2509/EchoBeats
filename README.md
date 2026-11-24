@@ -53,6 +53,19 @@ Si las imágenes se construyen pero aparece `service "migrate" didn't complete s
 
 Si el registro dice `password authentication failed for user "echobeats"` después de crear un `.env` nuevo sobre un volumen existente, restaura primero el `.env` que corresponde a ese volumen y ejecuta `docker compose up -d --wait`. Crear otro `.env` no actualiza la contraseña guardada en PostgreSQL.
 
+Antes de recuperar o cambiar la contraseña, puedes comprobar desde la raíz del proyecto si PostgreSQL acepta la que tiene cargada el contenedor. La prueba usa la misma red que `migrate` y mantiene la contraseña fuera de la salida del comando.
+
+```bash
+docker compose ps -a
+docker compose logs --tail=50 migrate
+docker compose up -d --wait postgres
+docker compose exec -T postgres sh -c 'PGPASSWORD="$POSTGRES_PASSWORD" exec psql -X -w -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT 1"'
+```
+
+Si devuelve `1`, la contraseña del contenedor funciona por la red de Compose. Si `migrate` sigue fallando por autenticación, revisa si hay variables de PostgreSQL exportadas en la terminal que estén cambiando los valores de `.env`. Si la prueba devuelve `password authentication failed`, recupera el `.env` original o sincroniza la contraseña como se describe abajo.
+
+Repetir `docker compose up -d --wait` deja el mismo error mientras PostgreSQL siga rechazando la contraseña. Comprueba primero que la consulta por red devuelve `1`. El estado `Healthy` y una conexión al socket local por sí solos no verifican esa contraseña.
+
 Si perdiste ese archivo y administras la instalación local, puedes sincronizar la contraseña del rol con la del `.env` actual. Abre la consola de PostgreSQL mediante el socket local.
 
 ```bash
@@ -60,7 +73,7 @@ docker compose up -d --wait postgres
 docker compose exec postgres sh -c 'exec psql -X -w -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 ```
 
-En la consola de `psql`, ejecuta `\password` y escribe dos veces el valor actual de `POSTGRES_PASSWORD` de tu `.env` privado. Sal con `\q` y ejecuta `docker compose up -d --wait`. Si también falla el acceso por socket, recupera una credencial administrativa de esa instancia antes de continuar. Conserva el volumen y `data/media/` durante todo el procedimiento.
+En la consola de `psql`, ejecuta `\password` y escribe dos veces el valor actual de `POSTGRES_PASSWORD` de tu `.env` privado. Sal con `\q` y repite la prueba por red de arriba. Cuando devuelva `1`, ejecuta `docker compose up -d --wait` y comprueba con `docker compose ps -a` que `migrate` quedó en `Exited (0)`. Abre `http://localhost:8000/api/v1/ready` para verificar la API. Si falla el acceso por socket, recupera una credencial administrativa de esa instancia antes de continuar. Conserva el volumen y `data/media/` durante todo el procedimiento.
 
 ### Abrir, detener y reiniciar
 
