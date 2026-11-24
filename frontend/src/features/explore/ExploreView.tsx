@@ -1,5 +1,4 @@
 import {useEffect,useRef,useState} from 'react'
-import {AdvancedExploreView} from './AdvancedExploreView'
 import { AudioSimilarity } from './AudioSimilarity'
 import {decodeChat,conversationMessages} from './chat'
 import type {ChatTurn} from './chat'
@@ -14,7 +13,7 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
   const player=usePlayer(),referenceId=new URLSearchParams(search).get('similar')
   const valid=referenceId&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(referenceId)?referenceId:null
   const reference=useRead<Track>(`/tracks/${valid}`,0,!!valid)
-  const [turns,setTurns]=useState<ChatTurn[]>([]),[query,setQuery]=useState(''),[busy,setBusy]=useState(false),[advanced,setAdvanced]=useState(false),[availability,setAvailability]=useState<ChatAvailability|null>(null),[statusFailed,setStatusFailed]=useState(false)
+  const [turns,setTurns]=useState<ChatTurn[]>([]),[query,setQuery]=useState(''),[busy,setBusy]=useState(false),[availability,setAvailability]=useState<ChatAvailability|null>(null),[statusFailed,setStatusFailed]=useState(false)
   const checking=availability===null&&!statusFailed
   const useAI=availability?.cloud_ready===true
   const pending=useRef<AbortController|null>(null),alive=useRef(true),generation=useRef(0),conversation=useRef<HTMLDivElement>(null)
@@ -100,7 +99,5 @@ export function ExploreView({active,search,navigate}:{active:boolean;search:stri
       </div>
       <small>Enter para enviar · Shift+Enter para otra línea</small>
     </form>
-    <details className="chat-options"><summary>Opciones</summary>{(availability&&!availability.cloud_ready)&&<p>Consulta <a href="/configuracion?seccion=conexion" onClick={event=>{event.preventDefault();navigate('/configuracion?seccion=conexion')}}>Configuración → Conexión e IA</a> para configurar OpenAI.</p>}<p>No hay historial permanente ni aprendizaje automático de tus gustos. Las recomendaciones pueden no coincidir con lo que buscas.</p><button type="button" className="secondary" disabled={busy||!player.state.recentTrackIds.length} onClick={()=>player.control()?.clearRecent()}>Olvidar reproducciones recientes</button><button type="button" className="secondary" disabled={busy} onClick={()=>setAdvanced(value=>!value)}>{advanced?'Cerrar búsqueda avanzada':'Búsqueda avanzada'}</button></details>
-    {advanced&&<div className="chat-advanced"><AdvancedExploreView search={search} navigate={navigate}/></div>}
   </section>
 }

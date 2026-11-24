@@ -411,9 +411,6 @@ html { scroll-padding-top: calc(var(--navigation-height, 84px) + 24px); }
 .workspace .chat-composer textarea { width: 100%; min-width: 0; min-height: 80px; max-height: 240px; resize: vertical; font: inherit; font-size: 1.05rem; line-height: 1.6; padding: 14px; }
 .chat-composer button { margin: 0; }
 .chat-composer small { display: block; margin-top: 10px; color: #c7cede; }
-.chat-options { margin: 18px 0 28px; }
-.chat-options label { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
-.chat-options p { color: #c7cede; line-height: 1.6; max-width: 80ch; }
 .chat-advanced { margin-top: 24px; border-top: 1px solid #7886a4; padding-top: 24px; }
 @media(max-width:650px) {
   .chat-heading { flex-direction: column; gap: 8px; }
