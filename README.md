@@ -150,6 +150,8 @@ Cuando termine el arranque, copia la dirección en el navegador.
 
 Compose inicia PostgreSQL, aplica las migraciones y levanta FastAPI, Spring Boot, el gateway y el frontend. Es normal que `migrate` termine con código `0`. El endpoint `/api/v1/ready` verifica la base de datos, pgvector, la revisión del esquema y la disponibilidad de FastAPI.
 
+Puedes arrancar EchoBeats con `OPENAI_API_KEY` vacío. Cuando quieras habilitar OpenAI, abre **Configuración → Conexión e IA** en la aplicación local y pulsa **Guardar clave** después de pegarla. El backend la aplica sin reiniciar Docker. [Detalles de configuración](#configuración).
+
 Para detener EchoBeats, ejecuta `docker compose stop`. Para usarlo de nuevo, ejecuta `docker compose up -d --wait`. Usa el comando de instalación con `--build` al actualizar el código o las imágenes.
 
 ## Usar EchoBeats
@@ -222,6 +224,8 @@ Usa `.env.example` como referencia y conserva los valores privados en `.env`.
 | `AI_ENABLED`, `OPENAI_API_KEY` | OpenAI está habilitado por defecto. Las funciones del proveedor requieren una clave configurada. Usa `AI_ENABLED=false` para desactivarlas. |
 
 En el modo local, abre **Configuración → Conexión e IA**, pega tu clave y pulsa **Guardar clave**. EchoBeats la aplica a la próxima consulta sin reiniciar y la conserva en `data/.openai-key`, un archivo privado fuera de Git. Si también hay una clave en `.env`, tiene prioridad la guardada desde la aplicación. Conserva ese archivo en privado si necesitas trasladar la configuración.
+
+Si editas la clave directamente en `.env`, Docker la carga al recrear el backend con `docker compose up -d --no-deps --wait backend`. Recargar el navegador solo vuelve a consultar la configuración del contenedor activo.
 
 El modo remoto usa la clave del archivo privado de cada cuenta. En cualquier modalidad, `AI_ENABLED=false` desactiva la integración. El proveedor recibe texto para el chat y los embeddings de fichas. Las consultas e indexaciones pueden consumir créditos. El catálogo, la reproducción, los muros y la búsqueda acústica siguen disponibles con la IA externa desactivada.
 
